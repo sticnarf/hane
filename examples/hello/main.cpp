@@ -3,7 +3,7 @@
 //
 #include <rackcpp.h>
 
-int main() {
+int main(int argc, char *argv[]) {
     hello();
     return 0;
 }

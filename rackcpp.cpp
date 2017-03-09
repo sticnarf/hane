@@ -1,6 +1,12 @@
-#include "rackcpp.h"
-#include <iostream>
+#include <cstring>
+#include <cstdlib>
+#include <cstdio>
+#include <uv.h>
+#include "middlewares/route.h"
+#include "http.h"
+#include "middleware.h"
 
 void hello() {
-    std::cout << "Hello, World!" << std::endl;
+	middleware::Route route;
+	HTTPServer server(route, "127.0.0.1", 8080);
 }

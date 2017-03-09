@@ -1,6 +1,3 @@
-#ifndef RACKCPP_LIBRARY_H
-#define RACKCPP_LIBRARY_H
+#pragma once
 
 void hello();
-
-#endif
