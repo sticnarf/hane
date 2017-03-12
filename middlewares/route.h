@@ -4,6 +4,7 @@
 namespace middleware {
 	class Route : public Middleware {
 	public:
+		Route(Middleware *next_middleware);
 		void call() override;
 	};
 }
