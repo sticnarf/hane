@@ -1,4 +1,5 @@
-#pragma once
+#ifndef RACKCPP_ROUTE_MIDDLEWARE_H
+#define RACKCPP_ROUTE_MIDDLEWARE_H
 
 #include "../middleware.h"
 
@@ -7,8 +8,10 @@ namespace middleware {
     public:
         Route(Middleware *next_middleware);
 
-        void call() override;
+        void call(const Request &req, Response &resp) override;
 
         ~Route();
     };
 }
+
+#endif

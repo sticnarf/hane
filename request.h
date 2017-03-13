@@ -1,9 +1,11 @@
-#pragma once
+#ifndef RACKCPP_REQUEST_H
+#define RACKCPP_REQUEST_H
 
 #include <string>
 #include <vector>
 #include <map>
 #include <uv.h>
+#include "request.fwd.h"
 #include "http.h"
 
 class Request {
@@ -40,3 +42,5 @@ public:
 
     void push_buf(const uv_buf_t *buf, ssize_t nread);
 };
+
+#endif

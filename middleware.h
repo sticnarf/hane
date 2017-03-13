@@ -1,9 +1,15 @@
-#pragma once
+#ifndef RACKCPP_MIDDLEWARE_H
+#define RACKCPP_MIDDLEWARE_H
+
+#include "request.fwd.h"
+#include "response.h"
+
+class Request;
 
 namespace middleware {
     class Middleware {
     public:
-        virtual void call() = 0;
+        virtual void call(const Request &req, Response &resp) = 0;
 
         virtual ~Middleware() {}
 
@@ -11,3 +17,5 @@ namespace middleware {
         Middleware *next_middleware;
     };
 }
+
+#endif

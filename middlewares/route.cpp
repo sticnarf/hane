@@ -7,7 +7,7 @@ namespace middleware {
         this->next_middleware = next_middleware;
     }
 
-    void Route::call() {
+    void Route::call(const Request &req, Response &resp) {
         std::cout << "Hello!" << std::endl;
     }
 

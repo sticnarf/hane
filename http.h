@@ -1,7 +1,9 @@
-#pragma once
+#ifndef RACKCPP_HTTP_H
+#define RACKCPP_HTTP_H
 
 #include <string>
 #include <unordered_map>
+#include <uv.h>
 #include "middleware.h"
 
 using namespace middleware;
@@ -48,3 +50,5 @@ public:
         return mapping[string_method];
     }
 };
+
+#endif

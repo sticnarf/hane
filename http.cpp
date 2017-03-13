@@ -60,7 +60,7 @@ void __on_new_connection(uv_stream_t *tcp, int status) {
 }
 
 void HttpServer::start() {
-    middleware->call();
+//    middleware->call();
     std::cout << bind_addr << std::endl;
     std::cout << port << std::endl;
     int r = uv_listen((uv_stream_t *) &server, DEFAULT_BACKLOG, __on_new_connection);
