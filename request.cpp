@@ -1,3 +1,4 @@
+#include <string>
 #include <cctype>
 #include <uv.h>
 #include "request.h"
@@ -51,7 +52,7 @@ void Request::Parser::parse_message_body(Request &req) {
 		// TODO: Transfer-Encoding is not supported
 	}
 	else {
-		int content_length = atoi(req.headers["Content-Length"].c_str());
+		int content_length = stoi(req.headers["Content-Length"]);
 		if (buf.size() - buf_pos >= content_length) {
 			auto body_start = buf.begin() + buf_pos;
 			auto body_end = body_start + content_length;

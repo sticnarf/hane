@@ -5,7 +5,7 @@ list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
 set(CMAKE_CXX_STANDARD 11)
 
 find_package(LibUV)
-set(SOURCE_FILES rackcpp.cpp rackcpp.h http.cpp http.h request.cpp request.h middlewares/route.cpp middlewares/route.h)
+set(SOURCE_FILES rackcpp.cpp http.cpp request.cpp middlewares/route.cpp)
 include_directories(${LIBUV_INCLUDE_DIRS})
 add_library(rackcpp STATIC ${SOURCE_FILES})
 target_link_libraries(rackcpp ${LIBUV_LIBRARIES})

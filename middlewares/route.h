@@ -6,5 +6,6 @@ namespace middleware {
 	public:
 		Route(Middleware *next_middleware);
 		void call() override;
+		~Route() override;
 	};
 }
