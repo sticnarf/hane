@@ -1,0 +1,24 @@
+language: cpp
+sudo: required
+dist: trusty
+compiler:
+- gcc
+- clang
+os:
+- linux
+
+before_install:
+- mkdir build
+- sudo apt-get install -y libtool automake
+- wget http://dist.libuv.org/dist/v1.11.0/libuv-v1.11.0.tar.gz
+- tar zxvf libuv-v1.11.0.tar.gz
+- cd libuv-v1.11.0
+- ./autogen.sh
+- ./configure
+- make
+- sudo make install
+- cd ../build
+
+script:
+- cmake ..
+- make
