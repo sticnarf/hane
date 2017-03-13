@@ -1,12 +1,13 @@
 #pragma once
 
 namespace middleware {
-	class Middleware {
-	public:
-		virtual void call() = 0;
-		virtual ~Middleware();
+    class Middleware {
+    public:
+        virtual void call() = 0;
 
-	protected:
-		Middleware *next_middleware;
-	};
+        virtual ~Middleware() {}
+
+    protected:
+        Middleware *next_middleware;
+    };
 }
