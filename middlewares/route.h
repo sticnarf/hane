@@ -10,6 +10,8 @@ namespace middleware {
 
         void call(const Request &req, Response &resp) override;
 
+        void process(const Request &req, Response &resp) override;
+
         ~Route();
     };
 }

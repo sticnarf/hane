@@ -8,7 +8,16 @@ namespace middleware {
     }
 
     void Route::call(const Request &req, Response &resp) {
-        std::cout << "Hello!" << std::endl;
+        process(req, resp);
+        if (next_middleware)
+            next_middleware->call(req, resp);
+    }
+
+    void Route::process(const Request &req, Response &resp) {
+        resp.set_status_code(Response::StatusCode::HTTP_OK);
+        resp.headers.insert({"Content-Type", "text/html"});
+        std::string resp_str = "<!DOCTYPE HTML>\n<title>Hello</title><h1>Hello world!</h1>\n";
+        resp.body.insert(resp.body.end(), resp_str.begin(), resp_str.end());
     }
 
     Route::~Route() {

@@ -3,24 +3,27 @@
 
 #include <string>
 #include <vector>
-#include <map>
+#include <unordered_map>
 #include <uv.h>
 #include "request.fwd.h"
 #include "http.h"
 
 class Request {
+    friend class HttpServer;
+    HttpServer *http_server;
     uv_tcp_t *client;
     HttpServer::Method method;
     std::string request_target;
     std::string http_version;
-    std::map<std::string, std::string> headers;
+    std::unordered_map<std::string, std::string> headers;
     std::vector<char> body;
 
     class Parser {
         enum class Stage {
             REQUEST_LINE,
             HEADER_FIELDS,
-            MESSAGE_BODY
+            MESSAGE_BODY,
+            PARSING_FINISHED
         } stage = Stage::REQUEST_LINE;
         std::string buf;
         size_t buf_pos = 0;
@@ -38,9 +41,21 @@ class Request {
     } parser;
 
 public:
-    Request(uv_tcp_t *client);
+    Request(HttpServer *http_server, uv_tcp_t *client);
 
     void push_buf(const uv_buf_t *buf, ssize_t nread);
+
+    void process();
+
+    HttpServer::Method get_method() const;
+
+    const std::string &get_request_target() const;
+
+    const std::string &get_http_version() const;
+
+    const std::unordered_map<std::string, std::string> &get_headers() const;
+
+    const std::vector<char> &get_body() const;
 };
 
 #endif

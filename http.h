@@ -2,7 +2,7 @@
 #define RACKCPP_HTTP_H
 
 #include <string>
-#include <unordered_map>
+#include <map>
 #include <uv.h>
 #include "middleware.h"
 
@@ -16,6 +16,8 @@ class HttpServer {
     sockaddr_in addr;
 
     const int DEFAULT_BACKLOG = 128;
+
+    void write_response(uv_stream_t *client, const Response &resp);
 
 public:
     HttpServer(Middleware *middleware, const std::string bind_addr, int port);
@@ -37,7 +39,7 @@ public:
     };
 
     static Method parse_method(const std::string &string_method) {
-        static std::unordered_map<std::string, Method> mapping = {
+        static std::map<std::string, Method> mapping = {
                 {"GET",     Method::HTTP_GET},
                 {"HEAD",    Method::HTTP_HEAD},
                 {"POST",    Method::HTTP_POST},
@@ -49,6 +51,8 @@ public:
         };
         return mapping[string_method];
     }
+
+    void process(const Request &req);
 };
 
 #endif
