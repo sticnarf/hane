@@ -1,6 +1,7 @@
 #include <string>
 #include <iostream>
 #include <sstream>
+#include <cstring>
 #include <uv.h>
 #include "middleware.h"
 #include "http.h"
