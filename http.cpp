@@ -82,11 +82,11 @@ void HttpServer::write_response(uv_stream_t *client, const Response &resp) {
     memcpy(bufs.back().base, "\r\n", 2);
     bufs.push_back(uv_buf_init(new char[resp.body.size()], resp.body.size()));
     memcpy(bufs.back().base, &resp.body[0], resp.body.size());
+    //delete &resp;
     uv_write(new uv_write_t, client, &bufs[0], bufs.size(), NULL);
 }
 
 void HttpServer::start() {
-//    middleware->call();
     std::cout << bind_addr << std::endl;
     std::cout << port << std::endl;
     int r = uv_listen((uv_stream_t *) &server, DEFAULT_BACKLOG, __on_new_connection);
@@ -100,5 +100,6 @@ void HttpServer::start() {
 void HttpServer::process(const Request &req) {
     Response *resp = new Response(req.get_http_version());
     middleware->call(req, *resp);
+    //delete &req;
     write_response((uv_stream_t *) req.client, *resp);
 }
