@@ -16,7 +16,7 @@ namespace middleware {
     void Route::process(const Request &req, Response &resp) {
         resp.set_status_code(Response::StatusCode::HTTP_OK);
         resp.headers.insert({"Content-Type", "text/html"});
-        std::string resp_str = "<!DOCTYPE HTML>\n<title>Hello</title><h1>Hello world!</h1>\n";
+        std::string resp_str = "<!DOCTYPE HTML>\n<title>Hello</title>\n<meta charset=\"UTF-8\">\n<h1>Hello world!</h1>\n";
         resp.body.insert(resp.body.end(), resp_str.begin(), resp_str.end());
     }
 

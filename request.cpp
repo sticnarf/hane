@@ -7,11 +7,15 @@ Request::Request(HttpServer *http_server, uv_tcp_t *client) : http_server(http_s
 
 void Request::push_buf(const uv_buf_t *buf, ssize_t nread) {
     parser.push_buf(buf->base, nread);
-    delete[] buf->base;
     parser.parse(*this);
 }
 
 void Request::process() {
+    auto new_req = new Request(http_server, client);
+	if (parser.buf_pos < parser.buf.size()) {
+		new_req->parser.push_buf(parser.buf.data() + parser.buf_pos, parser.buf.size() - parser.buf_pos);
+	}
+    client->data = new_req;
     http_server->process(*this);
 }
 
@@ -38,6 +42,7 @@ const std::vector<char> &Request::get_body() const {
 void Request::Parser::parse_request_line(Request &req) {
     size_t line_end = buf.find("\r\n", buf_pos);
     if (line_end != std::string::npos) {
+        fprintf(stdout, "Start parsing request_line\n");
         size_t sep = buf.find(' ', buf_pos);
         req.method = HttpServer::parse_method(buf.substr(buf_pos, (sep++) - buf_pos));
         size_t sep2 = buf.find(' ', sep);
@@ -69,28 +74,28 @@ void Request::Parser::parse_header_fields(Request &req) {
 }
 
 void Request::Parser::parse_message_body(Request &req) {
-    if (req.method == HttpServer::Method::HTTP_GET) {
-        stage = Stage::PARSING_FINISHED;
-        parse(req);
-        return;
-    }
-    auto transfer_encoding = req.headers.find("Transfer-Encoding");
-    if (transfer_encoding != req.headers.end()) {
-        // TODO: Transfer-Encoding is not supported
-    } else {
-        int content_length = stoi(req.headers["Content-Length"]);
-        if (buf.size() - buf_pos >= content_length) {
-            auto body_start = buf.begin() + buf_pos;
-            auto body_end = body_start + content_length;
-            req.body.insert(req.body.end(), body_start, body_end);
-            auto new_req = new Request(req.http_server, req.client);
-            auto buf_left = buf.substr(buf_pos + content_length);
-            new_req->parser.push_buf(buf_left.c_str(), buf_left.size());
-            req.client->data = new_req;
+    buf_pos += 2;
+    switch (req.method) {
+        case HttpServer::Method::HTTP_GET:
             stage = Stage::PARSING_FINISHED;
-            parse(req);
-        }
+            break;
+        default:
+            auto transfer_encoding = req.headers.find("Transfer-Encoding");
+            if (transfer_encoding != req.headers.end()) {
+                // TODO: Transfer-Encoding is not supported
+            } else {
+                int content_length = stoi(req.headers["Content-Length"]);
+                if (buf.size() - buf_pos >= content_length) {
+                    auto body_start = buf.begin() + buf_pos;
+                    auto body_end = body_start + content_length;
+                    req.body.insert(req.body.end(), body_start, body_end);
+                    buf_pos += content_length;
+                    stage = Stage::PARSING_FINISHED;
+                }
+            }
+            break;
     }
+    parse(req);
     // End of Parsing
 }
 

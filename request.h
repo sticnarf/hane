@@ -10,6 +10,7 @@
 
 class Request {
     friend class HttpServer;
+
     HttpServer *http_server;
     uv_tcp_t *client;
     HttpServer::Method method;
@@ -19,6 +20,13 @@ class Request {
     std::vector<char> body;
 
     class Parser {
+        void parse_request_line(Request &req);
+
+        void parse_header_fields(Request &req);
+
+        void parse_message_body(Request &req);
+
+    public:
         enum class Stage {
             REQUEST_LINE,
             HEADER_FIELDS,
@@ -28,13 +36,6 @@ class Request {
         std::string buf;
         size_t buf_pos = 0;
 
-        void parse_request_line(Request &req);
-
-        void parse_header_fields(Request &req);
-
-        void parse_message_body(Request &req);
-
-    public:
         void push_buf(const char *buf, size_t len);
 
         void parse(Request &req);

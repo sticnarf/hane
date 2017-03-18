@@ -15,7 +15,7 @@ class HttpServer {
     uv_tcp_t server;
     sockaddr_in addr;
 
-    const int DEFAULT_BACKLOG = 128;
+    const int DEFAULT_BACKLOG = 2048;
 
     void write_response(uv_stream_t *client, const Response &resp);
 
