@@ -3,6 +3,6 @@
 
 void hello() {
     Middleware *middleware = new middleware::Route(nullptr);
-    HttpServer *server = new HttpServer(middleware, "127.0.0.1", 8080);
+    HttpServer *server = new HttpServer(middleware, "0.0.0.0", 8080);
     server->start();
 }

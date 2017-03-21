@@ -13,7 +13,7 @@ HttpServer::HttpServer(Middleware *middleware, const std::string bind_addr, int 
                                                                                         bind_addr(bind_addr),
                                                                                         port(port) {
     uv_tcp_init(uv_default_loop(), &server);
-	uv_tcp_keepalive(&server, 1, 60);
+    uv_tcp_keepalive(&server, 1, 60);
     uv_ip4_addr(bind_addr.c_str(), port, &addr);
     uv_tcp_bind(&server, (const sockaddr *) &addr, 0);
     server.data = this;
@@ -23,11 +23,10 @@ HttpServer::~HttpServer() {
     delete middleware;
 }
 
-static void __clear_client(uv_tcp_t *client) {
-    delete (Request *) client->data;
-    uv_close((uv_handle_t *) client, NULL);
-    delete client;
-    fprintf(stdout, "Clear client: %p\n", client);
+static void __close_callback(uv_handle_t *handle) {
+    delete (Request *) handle->data;
+    delete (uv_tcp_t *) handle;
+    fprintf(stdout, "Clear client: %p\n", handle);
 }
 
 static void __alloc_buffer(uv_handle_t *handle, size_t suggested_size, uv_buf_t *buf) {
@@ -44,9 +43,8 @@ static void __read_callback(uv_stream_t *client, ssize_t nread, const uv_buf_t *
     if (nread < 0) {
         if (nread != UV_EOF)
             fprintf(stderr, "Read error %s\n", uv_err_name((int) nread));
-        __clear_client((uv_tcp_t *) client);
+        uv_close((uv_handle_t *) client, __close_callback);
     }
-
     delete[] buf->base;
 }
 
@@ -55,7 +53,7 @@ static void __write_callback(uv_write_t *req, int status) {
         fprintf(stderr, "Write error %s\n", uv_strerror(status));
         // error!
     }
-	fprintf(stdout, "Write to client: %p\n", req->handle);
+    fprintf(stdout, "Write to client: %p\n", req->handle);
     delete (std::vector<char> *) req->data;
 }
 
@@ -72,7 +70,7 @@ static void __on_new_connection(uv_stream_t *tcp, int status) {
     if (uv_accept(tcp, (uv_stream_t *) client) == 0) {
         uv_read_start((uv_stream_t *) client, __alloc_buffer, __read_callback);
     } else {
-        __clear_client(client);
+        uv_close((uv_handle_t *) client, __close_callback);
     }
 }
 

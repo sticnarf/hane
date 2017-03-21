@@ -1,4 +1,4 @@
-#ifndef RACKCPP_HTTP_H
+﻿#ifndef RACKCPP_HTTP_H
 #define RACKCPP_HTTP_H
 
 #include <string>
@@ -15,7 +15,7 @@ class HttpServer {
     uv_tcp_t server;
     sockaddr_in addr;
 
-    const int DEFAULT_BACKLOG = 2048;
+    const int DEFAULT_BACKLOG = 128;
 
     void write_response(uv_stream_t *client, const Response &resp);
 
