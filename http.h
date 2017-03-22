@@ -42,6 +42,10 @@ public:
 
     void error_log(const std::string &msg);
 
+    bool is_info_log_enabled() const;
+
+    bool is_error_log_enabled() const;
+
     void start();
 
     // See also: https://tools.ietf.org/html/rfc7231#section-4

@@ -52,6 +52,10 @@ public:
 
     void error_log(const std::string &msg);
 
+    bool is_info_log_enabled() const;
+
+    bool is_error_log_enabled() const;
+
     HttpServer::Method get_method() const;
 
     const std::string &get_request_target() const;

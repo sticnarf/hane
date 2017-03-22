@@ -42,7 +42,7 @@ static void __read_callback(uv_stream_t *client, ssize_t nread, const uv_buf_t *
         req->push_buf(buf, nread);
     }
     if (nread < 0) {
-        if (nread != UV_EOF)
+        if (nread != UV_EOF && req->is_error_log_enabled())
             req->error_log(std::string("Read error: ") + uv_strerror((int) nread) + "\n");
         uv_close((uv_handle_t *) client, __close_callback);
     }
@@ -55,10 +55,9 @@ struct write_response_req {
 };
 
 static void __write_callback(uv_write_t *req, int status) {
-    if (status < 0) {
-        ((write_response_req *) req)->server->error_log(
-            std::string("New connection error: ") + uv_strerror(status) + "\n");
-        fprintf(stderr, "Write to client error %s\n", uv_strerror(status));
+    HttpServer *server = ((write_response_req *) req)->server;
+    if (status < 0 && server->is_error_log_enabled()) {
+        server->error_log(std::string("New connection error: ") + uv_strerror(status) + "\n");
         // error!
     }
     delete (std::vector<char> *) req->data;
@@ -68,7 +67,8 @@ static void __write_callback(uv_write_t *req, int status) {
 static void __on_new_connection(uv_stream_t *tcp, int status) {
     HttpServer *server = (HttpServer *) tcp->data;
     if (status < 0) {
-        server->error_log(std::string("New connection error: ") + uv_strerror(status));
+        if (server->is_error_log_enabled())
+            server->error_log(std::string("New connection error: ") + uv_strerror(status));
         return;
     }
     uv_tcp_t *client = new uv_tcp_t;
@@ -167,7 +167,7 @@ void HttpServer::set_error_log(const std::string &path) {
 
 static void __write_log_callback(uv_fs_t *req) {
     if (req->result < 0) {
-        fprintf(stderr, "Write error: %s\n", uv_strerror((int) req->result));
+        fprintf(stderr, "Write log error: %s\n", uv_strerror((int) req->result));
     }
     fs_write_req *write_req = (fs_write_req *) req;
     delete[] write_req->buf.base;
@@ -188,4 +188,12 @@ void HttpServer::error_log(const std::string &msg) {
     memcpy(write_req->buf.base, msg.data(), msg.size());
     uv_fs_write(uv_default_loop(), (uv_fs_t *) write_req, error_log_fs.result, &write_req->buf, 1, -1,
                 __write_log_callback);
+}
+
+bool HttpServer::is_info_log_enabled() const {
+    return info_log_enabled;
+}
+
+bool HttpServer::is_error_log_enabled() const {
+    return error_log_enabled;
 }

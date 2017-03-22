@@ -49,6 +49,14 @@ void Request::error_log(const std::string &msg) {
     http_server->error_log(msg);
 }
 
+bool Request::is_info_log_enabled() const {
+    return http_server->is_info_log_enabled();
+}
+
+bool Request::is_error_log_enabled() const {
+    return http_server->is_error_log_enabled();
+}
+
 void Request::Parser::parse_request_line(Request &req) {
     size_t line_end = buf.find("\r\n", buf_pos);
     if (line_end != std::string::npos) {
