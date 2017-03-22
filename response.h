@@ -55,6 +55,7 @@ public:
     };
 
     Response(const std::string &http_version);
+    ~Response();
 
     void set_status_code(StatusCode status_code);
 

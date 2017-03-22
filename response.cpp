@@ -51,6 +51,8 @@ void Response::set_status_code(StatusCode status_code) {
 
 Response::Response(const std::string &http_version) : http_version(http_version) {}
 
+Response::~Response() {}
+
 //const std::unordered_map<std::string, std::string> &Response::get_headers() const {
 //    return headers;
 //}

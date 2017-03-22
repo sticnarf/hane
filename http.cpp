@@ -29,6 +29,7 @@ static void __close_callback(uv_handle_t *handle) {
     fprintf(stdout, "Clear client: %p\n", handle);
 }
 
+
 static void __alloc_buffer(uv_handle_t *handle, size_t suggested_size, uv_buf_t *buf) {
     buf->base = new char[suggested_size];
     buf->len = suggested_size;
@@ -55,6 +56,7 @@ static void __write_callback(uv_write_t *req, int status) {
     }
     fprintf(stdout, "Write to client: %p\n", req->handle);
     delete (std::vector<char> *) req->data;
+    delete req;
 }
 
 static void __on_new_connection(uv_stream_t *tcp, int status) {

@@ -5,6 +5,8 @@
 
 Request::Request(HttpServer *http_server, uv_tcp_t *client) : http_server(http_server), client(client) {}
 
+Request::~Request() {}
+
 void Request::push_buf(const uv_buf_t *buf, ssize_t nread) {
     parser.push_buf(buf->base, nread);
     parser.parse(*this);
@@ -12,9 +14,9 @@ void Request::push_buf(const uv_buf_t *buf, ssize_t nread) {
 
 void Request::process() {
     auto new_req = new Request(http_server, client);
-	if (parser.buf_pos < parser.buf.size()) {
-		new_req->parser.push_buf(parser.buf.data() + parser.buf_pos, parser.buf.size() - parser.buf_pos);
-	}
+    if (parser.buf_pos < parser.buf.size()) {
+        new_req->parser.push_buf(parser.buf.data() + parser.buf_pos, parser.buf.size() - parser.buf_pos);
+    }
     client->data = new_req;
     http_server->process(*this);
 }

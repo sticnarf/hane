@@ -57,6 +57,8 @@ public:
     const std::unordered_map<std::string, std::string> &get_headers() const;
 
     const std::vector<char> &get_body() const;
+
+    ~Request();
 };
 
 #endif
