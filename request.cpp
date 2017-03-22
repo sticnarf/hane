@@ -41,6 +41,14 @@ const std::vector<char> &Request::get_body() const {
     return body;
 }
 
+void Request::info_log(const std::string &msg) {
+    http_server->info_log(msg);
+}
+
+void Request::error_log(const std::string &msg) {
+    http_server->error_log(msg);
+}
+
 void Request::Parser::parse_request_line(Request &req) {
     size_t line_end = buf.find("\r\n", buf_pos);
     if (line_end != std::string::npos) {

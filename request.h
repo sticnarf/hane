@@ -48,6 +48,10 @@ public:
 
     void process();
 
+    void info_log(const std::string &msg);
+
+    void error_log(const std::string &msg);
+
     HttpServer::Method get_method() const;
 
     const std::string &get_request_target() const;
