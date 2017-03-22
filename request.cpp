@@ -44,7 +44,6 @@ const std::vector<char> &Request::get_body() const {
 void Request::Parser::parse_request_line(Request &req) {
     size_t line_end = buf.find("\r\n", buf_pos);
     if (line_end != std::string::npos) {
-        fprintf(stdout, "Start parsing request_line\n");
         size_t sep = buf.find(' ', buf_pos);
         req.method = HttpServer::parse_method(buf.substr(buf_pos, (sep++) - buf_pos));
         size_t sep2 = buf.find(' ', sep);

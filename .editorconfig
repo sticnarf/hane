@@ -3,7 +3,7 @@ root = true
 [*]
 end_of_line = lf
 insert_final_newline = true
-charset = utf-8
+charset = utf-8 # compatible with Visual Studio
 trim_trailing_whitespace = true
 
 [*.{h,cpp,cmake}]

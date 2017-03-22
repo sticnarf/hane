@@ -1,4 +1,6 @@
 .idea
 .vs
 cmake-build-debug
+build
 CMakeSettings.json
+Debug/

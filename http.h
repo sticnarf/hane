@@ -1,4 +1,4 @@
-﻿#ifndef RACKCPP_HTTP_H
+#ifndef RACKCPP_HTTP_H
 #define RACKCPP_HTTP_H
 
 #include <string>
@@ -20,9 +20,13 @@ class HttpServer {
     void write_response(uv_stream_t *client, const Response &resp);
 
 public:
-    HttpServer(Middleware *middleware, const std::string bind_addr, int port);
+    HttpServer(Middleware *middleware, const std::string bind_addr, int port, bool logger);
 
     ~HttpServer();
+
+    void set_info_log(std::string path);
+
+    void set_error_log(std::string path);
 
     void start();
 
