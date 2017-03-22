@@ -7,6 +7,10 @@ compiler:
 os:
 - linux
 
+env:
+  global:
+    - MAKEFLAGS="-j 2"
+
 before_install:
 - wget http://dist.libuv.org/dist/v1.11.0/libuv-v1.11.0.tar.gz
 - tar zxf libuv-v1.11.0.tar.gz
