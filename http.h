@@ -17,9 +17,12 @@ class HttpServer {
     bool info_log_enabled;
     std::string info_log_path;
     uv_fs_t info_log_fs;
+    int info_log_fd;
     bool error_log_enabled;
     std::string error_log_path;
     uv_fs_t error_log_fs;
+    int error_log_fd;
+    uv_loop_t log_init_loop;
 
     const int DEFAULT_BACKLOG = 128;
 

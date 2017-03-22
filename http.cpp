@@ -11,15 +11,16 @@ using namespace middleware;
 
 HttpServer::HttpServer(Middleware *middleware, const std::string bind_addr, int port, bool log) : middleware(
     middleware), bind_addr(bind_addr), port(port) {
+    uv_loop_init(&log_init_loop);
+    if (log) {
+        set_info_log("info.log");
+        set_error_log("error.log");
+    }
     uv_tcp_init(uv_default_loop(), &server);
     uv_tcp_keepalive(&server, 1, 60);
     uv_ip4_addr(bind_addr.c_str(), port, &addr);
     uv_tcp_bind(&server, (const sockaddr *) &addr, 0);
     server.data = this;
-    if (log) {
-        set_info_log("info.log");
-        set_error_log("error.log");
-    }
 }
 
 HttpServer::~HttpServer() {
@@ -110,8 +111,11 @@ void HttpServer::write_response(uv_stream_t *client, const Response &resp) {
 }
 
 void HttpServer::start() {
-    std::cout << bind_addr << std::endl;
-    std::cout << port << std::endl;
+    if (is_info_log_enabled()) {
+        std::stringstream ss;
+        ss << "Start listening " << bind_addr << " port " << port << "\n";
+        info_log(ss.str());
+    }
     int r = uv_listen((uv_stream_t *) &server, DEFAULT_BACKLOG, __on_new_connection);
     if (r) {
         fprintf(stderr, "Listen error %s\n", uv_strerror(r));
@@ -128,41 +132,25 @@ void HttpServer::process(const Request &req) {
     write_response((uv_stream_t *) client, *resp);
 }
 
-void __open_info_log_callback(uv_fs_t *req) {
-    if (req->result >= 0) {
-        HttpServer *server = (HttpServer *) req->data;
-        server->info_log_enabled = true;
-    } else {
-        fprintf(stderr, "Open info log file error: %s\n", uv_strerror((int) req->result));
-    }
-}
-
-void HttpServer::set_info_log(const std::string &path) {
-    info_log_path = path;
-    info_log_fs.data = this;
-    uv_fs_open(uv_default_loop(), &info_log_fs, path.c_str(), O_WRONLY | O_CREAT | O_APPEND, 0644,
-               __open_info_log_callback);
-}
-
 struct fs_write_req {
     uv_fs_t wt;
     uv_buf_t buf;
 };
 
-void __open_error_log_callback(uv_fs_t *req) {
-    if (req->result >= 0) {
-        HttpServer *server = (HttpServer *) req->data;
-        server->error_log_enabled = true;
-    } else {
-        fprintf(stderr, "Open info log file error: %s\n", uv_strerror((int) req->result));
-    }
+void HttpServer::set_info_log(const std::string &path) {
+    info_log_path = path;
+    info_log_fs.data = this;
+    uv_fs_open(uv_default_loop(), &info_log_fs, path.c_str(), O_WRONLY | O_CREAT | O_APPEND, 0644, NULL);
+    info_log_enabled = true;
+    info_log_fd = info_log_fs.result;
 }
 
 void HttpServer::set_error_log(const std::string &path) {
     this->error_log_path = path;
     error_log_fs.data = this;
-    uv_fs_open(uv_default_loop(), &error_log_fs, path.c_str(), O_WRONLY | O_CREAT | O_APPEND, 0644,
-               __open_error_log_callback);
+    uv_fs_open(uv_default_loop(), &error_log_fs, path.c_str(), O_WRONLY | O_CREAT | O_APPEND, 0644, NULL);
+    error_log_enabled = true;
+    error_log_fd = error_log_fs.result;
 }
 
 static void __write_log_callback(uv_fs_t *req) {
@@ -178,7 +166,7 @@ void HttpServer::info_log(const std::string &msg) {
     fs_write_req *write_req = new fs_write_req;
     write_req->buf = uv_buf_init(new char[msg.size()], msg.size());
     memcpy(write_req->buf.base, msg.data(), msg.size());
-    uv_fs_write(uv_default_loop(), (uv_fs_t *) write_req, info_log_fs.result, &write_req->buf, 1, -1,
+    uv_fs_write(uv_default_loop(), (uv_fs_t *) write_req, info_log_fd, &write_req->buf, 1, -1,
                 __write_log_callback);
 }
 
@@ -186,7 +174,7 @@ void HttpServer::error_log(const std::string &msg) {
     fs_write_req *write_req = new fs_write_req;
     write_req->buf = uv_buf_init(new char[msg.size()], msg.size());
     memcpy(write_req->buf.base, msg.data(), msg.size());
-    uv_fs_write(uv_default_loop(), (uv_fs_t *) write_req, error_log_fs.result, &write_req->buf, 1, -1,
+    uv_fs_write(uv_default_loop(), (uv_fs_t *) write_req, error_log_fd, &write_req->buf, 1, -1,
                 __write_log_callback);
 }
 

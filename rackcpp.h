@@ -1,6 +1,7 @@
 #ifndef RACKCPP_H
 #define RACKCPP_H
 
-void hello();
+#include "http.h"
+#include "middleware.h"
 
 #endif
