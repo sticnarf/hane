@@ -1,7 +1,7 @@
 #ifndef RACKCPP_HELLO_H
 #define RACKCPP_HELLO_H
 
-#include "../middleware.h"
+#include "../http.h"
 
 namespace middleware {
     class Hello : public Middleware {

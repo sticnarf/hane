@@ -1,7 +1,6 @@
-#ifndef RACKCPP_MIDDLEWARE_H
+﻿#ifndef RACKCPP_MIDDLEWARE_H
 #define RACKCPP_MIDDLEWARE_H
 
-#include "request.fwd.h"
 #include "response.h"
 
 class Request;

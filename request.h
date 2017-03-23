@@ -5,7 +5,6 @@
 #include <vector>
 #include <unordered_map>
 #include <uv.h>
-#include "request.fwd.h"
 #include "http.h"
 
 class Request {
@@ -17,10 +16,15 @@ class Request {
     std::string request_target;
     std::string http_version;
     std::unordered_map<std::string, std::string> headers;
+
+private:
+    std::unordered_map<std::string, std::string> queries;
     std::vector<char> body;
 
     class Parser {
         void parse_request_line(Request &req);
+
+        void parse_url_queries(Request &req);
 
         void parse_header_fields(Request &req);
 
@@ -63,6 +67,8 @@ public:
     const std::string &get_http_version() const;
 
     const std::unordered_map<std::string, std::string> &get_headers() const;
+
+    const std::unordered_map<std::string, std::string> &get_queries() const;
 
     const std::vector<char> &get_body() const;
 

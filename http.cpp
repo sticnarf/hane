@@ -7,6 +7,15 @@
 #include "http.h"
 #include "request.h"
 
+namespace middleware {
+    void Middleware::call(const Request &req, Response &resp) {
+        process(req, resp);
+        if (next_middleware)
+            next_middleware->call(req, resp);
+    }
+}
+
+
 using namespace middleware;
 
 HttpServer::HttpServer(Middleware *middleware, const std::string bind_addr, int port, bool log) : middleware(

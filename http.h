@@ -4,7 +4,22 @@
 #include <string>
 #include <map>
 #include <uv.h>
-#include "middleware.h"
+#include "request.h"
+#include "response.h"
+
+namespace middleware {
+    class Middleware {
+    public:
+        virtual void call(const Request &req, Response &resp);
+
+        virtual void process(const Request &req, Response &resp) = 0;
+
+        virtual ~Middleware() {}
+
+    protected:
+        Middleware *next_middleware;
+    };
+}
 
 using namespace middleware;
 

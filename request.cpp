@@ -25,6 +25,10 @@ HttpServer::Method Request::get_method() const {
     return method;
 }
 
+const std::unordered_map<std::string, std::string> &Request::get_queries() const {
+    return queries;
+}
+
 const std::string &Request::get_request_target() const {
     return request_target;
 }
@@ -64,6 +68,7 @@ void Request::Parser::parse_request_line(Request &req) {
         req.method = HttpServer::parse_method(buf.substr(buf_pos, (sep++) - buf_pos));
         size_t sep2 = buf.find(' ', sep);
         req.request_target = buf.substr(sep, (sep2++) - sep);
+        parse_url_queries(req);
         req.http_version = buf.substr(sep2, line_end - sep2);
         buf_pos = line_end + 2;
         stage = Stage::HEADER_FIELDS;
@@ -134,5 +139,34 @@ void Request::Parser::parse(Request &req) {
         case Stage::PARSING_FINISHED:
             req.process();
             break;
+    }
+}
+
+void Request::Parser::parse_url_queries(Request &req) {
+    const std::string &target = req.request_target;
+    size_t begin = target.find_last_of('?');
+    while (begin != std::string::npos) {
+        size_t equal_sign = target.find('=', begin);
+        if (equal_sign == std::string::npos)
+            break;
+        std::string key, val;
+        for (size_t i = begin + 1; i < equal_sign; i++) {
+            if (target[i] == '%') {
+                key += std::stoi(target.substr(i + 1, 2), 0, 16);
+            } else {
+                key += target[i];
+            }
+        }
+        size_t ampersand = target.find('&', equal_sign);
+        size_t end = ampersand == std::string::npos ? target.size() : ampersand;
+        for (size_t i = equal_sign + 1; i < end; i++) {
+            if (target[i] == '%') {
+                val += std::stoi(target.substr(i + 1, 2), 0, 16);
+            } else {
+                val += target[i];
+            }
+        }
+        req.queries.insert({key, val});
+        begin = ampersand;
     }
 }
