@@ -145,7 +145,7 @@ void Request::Parser::parse(Request &req) {
 
 void Request::Parser::parse_url_queries(Request &req) {
     const std::string &target = req.request_target;
-    size_t begin = target.find_last_of('?');
+    size_t begin = target.find('?');
     while (begin != std::string::npos) {
         size_t equal_sign = target.find('=', begin);
         if (equal_sign == std::string::npos)

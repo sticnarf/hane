@@ -15,7 +15,6 @@ HttpServer::HttpServer(Middleware *middleware, const std::string bind_addr, int 
         set_error_log("error.log");
     }
     uv_tcp_init(uv_default_loop(), &server);
-    uv_tcp_keepalive(&server, 1, 60);
     uv_ip4_addr(bind_addr.c_str(), port, &addr);
     uv_tcp_bind(&server, (const sockaddr *) &addr, 0);
     server.data = this;
@@ -56,7 +55,7 @@ struct write_response_req {
 static void __write_callback(uv_write_t *req, int status) {
     HttpServer *server = ((write_response_req *) req)->server;
     if (status < 0 && server->is_error_log_enabled()) {
-        server->error_log(std::string("New connection error: ") + uv_strerror(status) + "\n");
+        server->error_log(std::string("Write error: ") + uv_strerror(status) + "\n");
         // error!
     }
     delete (std::vector<char> *) req->data;
@@ -164,6 +163,7 @@ void HttpServer::info_log(const std::string &msg) {
     fs_write_req *write_req = new fs_write_req;
     write_req->buf = uv_buf_init(new char[msg.size()], msg.size());
     memcpy(write_req->buf.base, msg.data(), msg.size());
+    std::cout << msg;
     uv_fs_write(uv_default_loop(), (uv_fs_t *) write_req, info_log_fd, &write_req->buf, 1, -1,
                 __write_log_callback);
 }
@@ -172,6 +172,7 @@ void HttpServer::error_log(const std::string &msg) {
     fs_write_req *write_req = new fs_write_req;
     write_req->buf = uv_buf_init(new char[msg.size()], msg.size());
     memcpy(write_req->buf.base, msg.data(), msg.size());
+    std::cerr << msg;
     uv_fs_write(uv_default_loop(), (uv_fs_t *) write_req, error_log_fd, &write_req->buf, 1, -1,
                 __write_log_callback);
 }
