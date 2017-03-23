@@ -7,19 +7,8 @@
 #include "http.h"
 #include "request.h"
 
-namespace middleware {
-    void Middleware::call(const Request &req, Response &resp) {
-        process(req, resp);
-        if (next_middleware)
-            next_middleware->call(req, resp);
-    }
-}
-
-
-using namespace middleware;
-
 HttpServer::HttpServer(Middleware *middleware, const std::string bind_addr, int port, bool log) : middleware(
-    middleware), bind_addr(bind_addr), port(port) {
+        middleware), bind_addr(bind_addr), port(port) {
     uv_loop_init(&log_init_loop);
     if (log) {
         set_info_log("info.log");

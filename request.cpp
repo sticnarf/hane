@@ -2,6 +2,7 @@
 #include <cctype>
 #include <uv.h>
 #include "request.h"
+#include "http.h"
 
 Request::Request(HttpServer *http_server, uv_tcp_t *client) : http_server(http_server), client(client) {}
 
@@ -21,11 +22,11 @@ void Request::process() {
     http_server->process(*this);
 }
 
-HttpServer::Method Request::get_method() const {
+Method Request::get_method() const {
     return method;
 }
 
-const std::unordered_map<std::string, std::string> &Request::get_queries() const {
+const std::map<std::string, std::string> &Request::get_queries() const {
     return queries;
 }
 
@@ -37,7 +38,7 @@ const std::string &Request::get_http_version() const {
     return http_version;
 }
 
-const std::unordered_map<std::string, std::string> &Request::get_headers() const {
+const std::map<std::string, std::string> &Request::get_headers() const {
     return headers;
 }
 
@@ -65,7 +66,7 @@ void Request::Parser::parse_request_line(Request &req) {
     size_t line_end = buf.find("\r\n", buf_pos);
     if (line_end != std::string::npos) {
         size_t sep = buf.find(' ', buf_pos);
-        req.method = HttpServer::parse_method(buf.substr(buf_pos, (sep++) - buf_pos));
+        req.method = parse_method(buf.substr(buf_pos, (sep++) - buf_pos));
         size_t sep2 = buf.find(' ', sep);
         req.request_target = buf.substr(sep, (sep2++) - sep);
         parse_url_queries(req);
@@ -98,7 +99,7 @@ void Request::Parser::parse_header_fields(Request &req) {
 void Request::Parser::parse_message_body(Request &req) {
     buf_pos += 2;
     switch (req.method) {
-        case HttpServer::Method::HTTP_GET:
+        case Method::HTTP_GET:
             stage = Stage::PARSING_FINISHED;
             break;
         default:
@@ -152,18 +153,20 @@ void Request::Parser::parse_url_queries(Request &req) {
         std::string key, val;
         for (size_t i = begin + 1; i < equal_sign; i++) {
             if (target[i] == '%') {
-                key += std::stoi(target.substr(i + 1, 2), 0, 16);
+                key.push_back((char) (std::stoi(target.substr(i + 1, 2), 0, 16)));
+                i += 2;
             } else {
-                key += target[i];
+                key.push_back(target[i]);
             }
         }
         size_t ampersand = target.find('&', equal_sign);
         size_t end = ampersand == std::string::npos ? target.size() : ampersand;
         for (size_t i = equal_sign + 1; i < end; i++) {
             if (target[i] == '%') {
-                val += std::stoi(target.substr(i + 1, 2), 0, 16);
+                val.push_back((char) (std::stoi(target.substr(i + 1, 2), 0, 16)));
+                i += 2;
             } else {
-                val += target[i];
+                val.push_back(target[i]);
             }
         }
         req.queries.insert({key, val});

@@ -3,22 +3,24 @@
 
 #include <string>
 #include <vector>
-#include <unordered_map>
+#include <map>
 #include <uv.h>
-#include "http.h"
+#include "method.h"
+
+class HttpServer;
 
 class Request {
     friend class HttpServer;
 
     HttpServer *http_server;
     uv_tcp_t *client;
-    HttpServer::Method method;
+    Method method;
     std::string request_target;
     std::string http_version;
-    std::unordered_map<std::string, std::string> headers;
+    std::map<std::string, std::string> headers;
 
 private:
-    std::unordered_map<std::string, std::string> queries;
+    std::map<std::string, std::string> queries;
     std::vector<char> body;
 
     class Parser {
@@ -60,15 +62,15 @@ public:
 
     bool is_error_log_enabled() const;
 
-    HttpServer::Method get_method() const;
+    Method get_method() const;
 
     const std::string &get_request_target() const;
 
     const std::string &get_http_version() const;
 
-    const std::unordered_map<std::string, std::string> &get_headers() const;
+    const std::map<std::string, std::string> &get_headers() const;
 
-    const std::unordered_map<std::string, std::string> &get_queries() const;
+    const std::map<std::string, std::string> &get_queries() const;
 
     const std::vector<char> &get_body() const;
 

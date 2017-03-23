@@ -1,6 +1,5 @@
-#include "../middleware.h"
 #include "route.h"
-#include <iostream>
+#include "response.h"
 
 namespace middleware {
     Route::Route(Middleware *next_middleware) {

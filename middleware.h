@@ -1,22 +1,20 @@
 ﻿#ifndef RACKCPP_MIDDLEWARE_H
 #define RACKCPP_MIDDLEWARE_H
 
-#include "response.h"
-
 class Request;
 
-namespace middleware {
-    class Middleware {
-    public:
-        virtual void call(const Request &req, Response &resp);
+class Response;
 
-        virtual void process(const Request &req, Response &resp) = 0;
+class Middleware {
+public:
+    virtual void call(const Request &req, Response &resp);
 
-        virtual ~Middleware() {}
+    virtual void process(const Request &req, Response &resp) = 0;
 
-    protected:
-        Middleware *next_middleware;
-    };
-}
+    virtual ~Middleware() {}
+
+protected:
+    Middleware *next_middleware;
+};
 
 #endif

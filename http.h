@@ -7,21 +7,7 @@
 #include "request.h"
 #include "response.h"
 
-namespace middleware {
-    class Middleware {
-    public:
-        virtual void call(const Request &req, Response &resp);
-
-        virtual void process(const Request &req, Response &resp) = 0;
-
-        virtual ~Middleware() {}
-
-    protected:
-        Middleware *next_middleware;
-    };
-}
-
-using namespace middleware;
+class Middleware;
 
 class HttpServer {
     Middleware *middleware;
@@ -65,32 +51,6 @@ public:
     bool is_error_log_enabled() const;
 
     void start();
-
-    // See also: https://tools.ietf.org/html/rfc7231#section-4
-    enum class Method {
-        HTTP_GET,
-        HTTP_HEAD,
-        HTTP_POST,
-        HTTP_PUT,
-        HTTP_DELETE,
-        HTTP_CONNECT,
-        HTTP_OPTIONS,
-        HTTP_TRACE
-    };
-
-    static Method parse_method(const std::string &string_method) {
-        static std::map<std::string, Method> mapping = {
-            {"GET",     Method::HTTP_GET},
-            {"HEAD",    Method::HTTP_HEAD},
-            {"POST",    Method::HTTP_POST},
-            {"PUT",     Method::HTTP_PUT},
-            {"DELETE",  Method::HTTP_DELETE},
-            {"CONNECT", Method::HTTP_CONNECT},
-            {"OPTIONS", Method::HTTP_OPTIONS},
-            {"TRACE",   Method::HTTP_TRACE}
-        };
-        return mapping[string_method];
-    }
 
     void process(const Request &req);
 };

@@ -2,7 +2,7 @@
 #define RACKCPP_RESPONSE_H
 
 #include <string>
-#include <unordered_map>
+#include <map>
 #include <vector>
 #include <uv.h>
 
@@ -59,7 +59,7 @@ public:
 
     void set_status_code(StatusCode status_code);
 
-    std::unordered_map<std::string, std::string> headers;
+    std::map<std::string, std::string> headers;
     std::vector<char> body;
 
 private:
