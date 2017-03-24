@@ -38,11 +38,11 @@ const std::string &Request::get_http_version() const {
     return http_version;
 }
 
-const std::map<std::string, std::string> &Request::get_headers() const {
-    return headers;
+const Header &Request::get_header() const {
+    return header;
 }
 
-const std::vector<char> &Request::get_body() const {
+const std::string &Request::get_body() const {
     return body;
 }
 
@@ -90,36 +90,32 @@ void Request::Parser::parse_header_fields(Request &req) {
         size_t value_end = line_end - 1;
         while (isspace(buf[value_end])) value_end--;
         std::string field_value = buf.substr(sep, value_end + 1 - sep);
-        req.headers.insert({field_name, field_value});
+        req.header.put(field_name, field_value);
         buf_pos = line_end + 2;
         parse(req);
     }
 }
 
 void Request::Parser::parse_message_body(Request &req) {
-    buf_pos += 2;
     switch (req.method) {
         case Method::HTTP_GET:
             stage = Stage::PARSING_FINISHED;
             break;
         default:
-            auto transfer_encoding = req.headers.find("Transfer-Encoding");
-            if (transfer_encoding != req.headers.end()) {
+            auto transfer_encoding = req.header.get_value("Transfer-Encoding");
+            if (transfer_encoding != req.header.end_iterator()) {
                 // TODO: Transfer-Encoding is not supported
             } else {
-                int content_length = stoi(req.headers["Content-Length"]);
+                int content_length = stoi(req.header.get_value("Content-Length")->second);
                 if (buf.size() - buf_pos >= content_length) {
-                    auto body_start = buf.begin() + buf_pos;
-                    auto body_end = body_start + content_length;
-                    req.body.insert(req.body.end(), body_start, body_end);
+                    req.body += buf.substr(buf_pos, content_length);
                     buf_pos += content_length;
-                    stage = Stage::PARSING_FINISHED;
+                    stage = Stage::BODY_PROCESSING;
                 }
             }
             break;
     }
     parse(req);
-    // End of Parsing
 }
 
 void Request::Parser::push_buf(const char *buf, size_t len) {
@@ -137,39 +133,63 @@ void Request::Parser::parse(Request &req) {
         case Stage::MESSAGE_BODY:
             parse_message_body(req);
             break;
+        case Stage::BODY_PROCESSING:
+            process_body(req);
+            break;
         case Stage::PARSING_FINISHED:
             req.process();
             break;
     }
 }
 
+
 void Request::Parser::parse_url_queries(Request &req) {
     const std::string &target = req.request_target;
     size_t begin = target.find('?');
-    while (begin != std::string::npos) {
-        size_t equal_sign = target.find('=', begin);
+    if (begin != std::string::npos) {
+        parse_queries(req, target.substr(begin + 1));
+    }
+}
+
+void Request::Parser::process_body(Request &req) {
+    std::string content_type = req.header.get_value("Content-Type")->second;
+    if (content_type.find("x-www-form-urlencoded") != std::string::npos) {
+        parse_queries(req, req.body);
+    }
+    stage = Stage::PARSING_FINISHED;
+    parse(req);
+}
+
+void Request::Parser::parse_queries(Request &req, const std::string &query_text) {
+    size_t begin = 0;
+    while (isspace(query_text[begin]))
+        begin++;
+    for (;;) {
+        size_t equal_sign = query_text.find('=', begin);
         if (equal_sign == std::string::npos)
             break;
         std::string key, val;
-        for (size_t i = begin + 1; i < equal_sign; i++) {
-            if (target[i] == '%') {
-                key.push_back((char) (std::stoi(target.substr(i + 1, 2), 0, 16)));
+        for (size_t i = begin; i < equal_sign; i++) {
+            if (query_text[i] == '%') {
+                key.push_back((char) (std::stoi(query_text.substr(i + 1, 2), 0, 16)));
                 i += 2;
             } else {
-                key.push_back(target[i]);
+                key.push_back(query_text[i]);
             }
         }
-        size_t ampersand = target.find('&', equal_sign);
-        size_t end = ampersand == std::string::npos ? target.size() : ampersand;
+        size_t ampersand = query_text.find('&', equal_sign);
+        size_t end = ampersand == std::string::npos ? query_text.size() : ampersand;
         for (size_t i = equal_sign + 1; i < end; i++) {
-            if (target[i] == '%') {
-                val.push_back((char) (std::stoi(target.substr(i + 1, 2), 0, 16)));
+            if (query_text[i] == '%') {
+                val.push_back((char) (std::stoi(query_text.substr(i + 1, 2), 0, 16)));
                 i += 2;
             } else {
-                val.push_back(target[i]);
+                val.push_back(query_text[i]);
             }
         }
-        req.queries.insert({key, val});
-        begin = ampersand;
+        req.queries[key] = val;
+        if (ampersand == std::string::npos)
+            break;
+        begin = ampersand + 1;
     }
 }
