@@ -14,8 +14,8 @@ class Request
 {
     friend class HttpServer;
 
-    HttpServer *httpServer;
-    uv_tcp_t *client;
+    HttpServer* httpServer;
+    uv_tcp_t* client;
     Method method;
     std::string requestTarget;
     std::string httpVersion;
@@ -27,17 +27,17 @@ private:
 
     class Parser
     {
-        void parseRequestLine(Request &req);
+        void parseRequestLine(Request& req);
 
-        void parseUrlQueries(Request &req);
+        void parseUrlQueries(Request& req);
 
-        void parseQueries(Request &req, const std::string &queryText);
+        void parseQueries(Request& req, const std::string& queryText);
 
-        void parseHeaderFields(Request &req);
+        void parseHeaderFields(Request& req);
 
-        void parseMessageBody(Request &req);
+        void parseMessageBody(Request& req);
 
-        void processBody(Request &req);
+        void processBody(Request& req);
 
     public:
         enum class Stage
@@ -51,21 +51,21 @@ private:
         std::string buf;
         size_t bufPos = 0;
 
-        void push_buf(const char *buf, size_t len);
+        void push_buf(const char* buf, size_t len);
 
-        void parse(Request &req);
+        void parse(Request& req);
     } parser;
 
 public:
-    Request(HttpServer *http_server, uv_tcp_t *client);
+    Request(HttpServer* http_server, uv_tcp_t* client);
 
-    void push_buf(const uv_buf_t *buf, ssize_t nread);
+    void push_buf(const uv_buf_t* buf, ssize_t nread);
 
     void process();
 
-    void infoLog(const std::string &msg);
+    void infoLog(const std::string& msg);
 
-    void errorLog(const std::string &msg);
+    void errorLog(const std::string& msg);
 
     bool isInfoLogEnabled() const;
 
@@ -73,15 +73,15 @@ public:
 
     Method getMethod() const;
 
-    const std::string &getRequestTarget() const;
+    const std::string& getRequestTarget() const;
 
-    const std::string &getHttpVersion() const;
+    const std::string& getHttpVersion() const;
 
-    const Header &getHeader() const;
+    const Header& getHeader() const;
 
-    const std::map<std::string, std::string> &getQueries() const;
+    const std::map<std::string, std::string>& getQueries() const;
 
-    const std::string &getBody() const;
+    const std::string& getBody() const;
 
     ~Request();
 };

@@ -3,19 +3,19 @@
 
 namespace middleware
 {
-Route::Route(Middleware *nextMiddleware)
+Route::Route(Middleware* nextMiddleware)
 {
     this->nextMiddleware = nextMiddleware;
 }
 
-void Route::call(const Request &req, Response &resp)
+void Route::call(const Request& req, Response& resp)
 {
     process(req, resp);
     if (nextMiddleware)
         nextMiddleware->call(req, resp);
 }
 
-void Route::process(const Request &req, Response &resp)
+void Route::process(const Request& req, Response& resp)
 {
     resp.setStatusCode(Response::StatusCode::HTTP_OK);
     resp.headers.insert({"Content-Type", "text/html"});

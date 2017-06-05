@@ -57,7 +57,7 @@ public:
         HTTP_HTTP_VERSION_NOT_SUPPORTED = 505
     };
 
-    Response(const std::string &httpVersion);
+    Response(const std::string& httpVersion);
 
     ~Response();
 

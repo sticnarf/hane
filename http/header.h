@@ -10,16 +10,16 @@ class Header
 
     std::map<std::string, std::string> data;
 
-    void put(const std::string &fieldName, const std::string &fieldValue);
+    void put(const std::string& fieldName, const std::string& fieldValue);
 
 public:
     size_t size();
 
     std::map<std::string, std::string>::const_iterator endIterator() const;
 
-    std::map<std::string, std::string>::const_iterator getValue(const std::string &fieldName) const;
+    std::map<std::string, std::string>::const_iterator getValue(const std::string& fieldName) const;
 
-    bool contains(const std::string &fieldName);
+    bool contains(const std::string& fieldName);
 };
 
 #endif

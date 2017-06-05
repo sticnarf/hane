@@ -1,7 +1,7 @@
 #include <map>
 #include "method.h"
 
-Method parseMethod(const std::string &stringMethod)
+Method parseMethod(const std::string& stringMethod)
 {
     static std::map<std::string, Method> mapping = {
         {"GET", Method::HTTP_GET},

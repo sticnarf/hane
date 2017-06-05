@@ -11,7 +11,7 @@ class Middleware;
 
 class HttpServer
 {
-    Middleware *middleware;
+    Middleware* middleware;
     std::string bindAddr;
     int port;
     uv_tcp_t server;
@@ -28,24 +28,24 @@ class HttpServer
 
     const int DEFAULT_BACKLOG = 128;
 
-    void writeResponse(uv_stream_t *client, const Response &resp);
+    void writeResponse(uv_stream_t* client, const Response& resp);
 
-    friend void __open_info_log_callback(uv_fs_t *req);
+    friend void __open_info_log_callback(uv_fs_t* req);
 
-    friend void __open_error_log_callback(uv_fs_t *req);
+    friend void __open_error_log_callback(uv_fs_t* req);
 
 public:
-    HttpServer(Middleware *middleware, const std::string _bindAddr, int port, bool logger);
+    HttpServer(Middleware* middleware, const std::string _bindAddr, int port, bool logger);
 
     ~HttpServer();
 
-    void setInfoLog(const std::string &path);
+    void setInfoLog(const std::string& path);
 
-    void setErrorLog(const std::string &path);
+    void setErrorLog(const std::string& path);
 
-    void infoLog(const std::string &msg);
+    void infoLog(const std::string& msg);
 
-    void errorLog(const std::string &msg);
+    void errorLog(const std::string& msg);
 
     bool isInfoLogEnabled() const;
 
@@ -53,7 +53,7 @@ public:
 
     void start();
 
-    void process(const Request &req);
+    void process(const Request& req);
 };
 
 #endif

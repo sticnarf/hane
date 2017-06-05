@@ -5,14 +5,14 @@
 
 namespace middleware
 {
-class Route: public Middleware
+class Route : public Middleware
 {
 public:
-    Route(Middleware *nextMiddleware);
+    Route(Middleware* nextMiddleware);
 
-    void call(const Request &req, Response &resp) override;
+    void call(const Request& req, Response& resp) override;
 
-    void process(const Request &req, Response &resp) override;
+    void process(const Request& req, Response& resp) override;
 
     ~Route();
 };

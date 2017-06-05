@@ -7,22 +7,13 @@
 class Logger
 {
 private:
-    static Logger *logger = nullptr;
+    static Logger* logger = nullptr;
     uv_loop_t logLoop;
 
-    Logger()
-    {
-        uv_loop_init(&logLoop);
-    }
+    Logger();
 
 public:
-    Logger *getInstance()
-    {
-        if (logger == nullptr) {
-            logger = new Logger();
-        }
-        return logger;
-    }
+    Logger* getInstance();
 };
 
 #endif

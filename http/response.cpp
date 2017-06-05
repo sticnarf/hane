@@ -50,12 +50,10 @@ void Response::setStatusCode(StatusCode statusCode)
     this->reasonPhrase = reason_mapping[statusCode];
 }
 
-Response::Response(const std::string &httpVersion)
-    : httpVersion(httpVersion)
-{}
+Response::Response(const std::string& httpVersion)
+    :httpVersion(httpVersion) { }
 
-Response::~Response()
-{}
+Response::~Response() { }
 
 //const std::map<std::string, std::string> &Response::get_headers() const {
 //    return headers;

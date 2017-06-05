@@ -8,7 +8,7 @@ find_package(LibUV)
 set(SOURCE_FILES
         http/http.cpp http/request.cpp http/response.cpp http/header.cpp http/method.cpp
         middlewares/middleware.cpp middlewares/route.cpp
-        utils/logger.h)
+        utils/logger.cpp)
 include_directories(${LIBUV_INCLUDE_DIRS})
 add_library(rackcpp STATIC ${SOURCE_FILES})
 target_link_libraries(rackcpp ${LIBUV_LIBRARIES})
