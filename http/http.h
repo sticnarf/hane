@@ -9,7 +9,8 @@
 
 class Middleware;
 
-class HttpServer {
+class HttpServer
+{
     Middleware *middleware;
     std::string bindAddr;
     int port;

@@ -4,7 +4,8 @@
 #include <map>
 #include <string>
 
-class Header {
+class Header
+{
     friend class Request;
 
     std::map<std::string, std::string> data;

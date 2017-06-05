@@ -6,12 +6,14 @@
 #include <vector>
 #include <uv.h>
 
-class Response {
+class Response
+{
     friend class HttpServer;
 
 public:
     // See also: https://tools.ietf.org/html/rfc7231#section-6.1
-    enum class StatusCode {
+    enum class StatusCode
+    {
         HTTP_CONTINUE = 100,
         HTTP_SWITCHING_PROTOCOLS_CODE = 101,
         HTTP_OK = 200,

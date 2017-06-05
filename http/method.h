@@ -4,7 +4,8 @@
 #include <string>
 
 // See also: https://tools.ietf.org/html/rfc7231#section-4
-enum class Method {
+enum class Method
+{
     HTTP_GET,
     HTTP_HEAD,
     HTTP_POST,

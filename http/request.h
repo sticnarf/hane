@@ -10,7 +10,8 @@
 
 class HttpServer;
 
-class Request {
+class Request
+{
     friend class HttpServer;
 
     HttpServer *httpServer;
@@ -24,7 +25,8 @@ private:
     std::map<std::string, std::string> queries;
     std::string body;
 
-    class Parser {
+    class Parser
+    {
         void parseRequestLine(Request &req);
 
         void parseUrlQueries(Request &req);
@@ -38,7 +40,8 @@ private:
         void processBody(Request &req);
 
     public:
-        enum class Stage {
+        enum class Stage
+        {
             REQUEST_LINE,
             HEADER_FIELDS,
             MESSAGE_BODY,

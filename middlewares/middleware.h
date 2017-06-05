@@ -5,13 +5,15 @@ class Request;
 
 class Response;
 
-class Middleware {
+class Middleware
+{
 public:
     virtual void call(const Request &req, Response &resp);
 
     virtual void process(const Request &req, Response &resp) = 0;
 
-    virtual ~Middleware() {}
+    virtual ~Middleware()
+    {}
 
 protected:
     Middleware *nextMiddleware;
