@@ -1,5 +1,4 @@
 #include <string>
-#include <cctype>
 #include <uv.h>
 #include "request.h"
 #include "http/http.h"
@@ -18,9 +17,9 @@ void Request::push_buf(const uv_buf_t* buf, ssize_t nread)
 void Request::process()
 {
     auto new_req = new Request(httpServer, client);
-    if (parser.bufPos<parser.buf.size())
+    if (parser.bufPos < parser.buf.size())
     {
-        new_req->parser.push_buf(parser.buf.data()+parser.bufPos, parser.buf.size()-parser.bufPos);
+        new_req->parser.push_buf(parser.buf.data() + parser.bufPos, parser.buf.size() - parser.bufPos);
     }
     client->data = new_req;
     httpServer->process(*this);
@@ -56,38 +55,18 @@ const std::string& Request::getBody() const
     return body;
 }
 
-void Request::infoLog(const std::string& msg)
-{
-    httpServer->infoLog(msg);
-}
-
-void Request::errorLog(const std::string& msg)
-{
-    httpServer->errorLog(msg);
-}
-
-bool Request::isInfoLogEnabled() const
-{
-    return httpServer->isInfoLogEnabled();
-}
-
-bool Request::isErrorLogEnabled() const
-{
-    return httpServer->isErrorLogEnabled();
-}
-
 void Request::Parser::parseRequestLine(Request& req)
 {
     size_t line_end = buf.find("\r\n", bufPos);
-    if (line_end!=std::string::npos)
+    if (line_end != std::string::npos)
     {
         size_t sep = buf.find(' ', bufPos);
-        req.method = parseMethod(buf.substr(bufPos, (sep++)-bufPos));
+        req.method = parseMethod(buf.substr(bufPos, (sep++) - bufPos));
         size_t sep2 = buf.find(' ', sep);
-        req.requestTarget = buf.substr(sep, (sep2++)-sep);
+        req.requestTarget = buf.substr(sep, (sep2++) - sep);
         parseUrlQueries(req);
-        req.httpVersion = buf.substr(sep2, line_end-sep2);
-        bufPos = line_end+2;
+        req.httpVersion = buf.substr(sep2, line_end - sep2);
+        bufPos = line_end + 2;
         stage = Stage::HEADER_FIELDS;
         parse(req);
     }
@@ -96,22 +75,22 @@ void Request::Parser::parseRequestLine(Request& req)
 void Request::Parser::parseHeaderFields(Request& req)
 {
     size_t line_end = buf.find("\r\n", bufPos);
-    if (line_end==bufPos)
+    if (line_end == bufPos)
     {
-        bufPos = line_end+2;
+        bufPos = line_end + 2;
         stage = Stage::MESSAGE_BODY;
         parse(req);
     }
-    else if (line_end!=std::string::npos)
+    else if (line_end != std::string::npos)
     {
         size_t sep = buf.find(':', bufPos);
-        std::string field_name = buf.substr(bufPos, (sep++)-bufPos);
+        std::string field_name = buf.substr(bufPos, (sep++) - bufPos);
         while (isspace(buf[sep])) sep++;
-        size_t value_end = line_end-1;
+        size_t value_end = line_end - 1;
         while (isspace(buf[value_end])) value_end--;
-        std::string field_value = buf.substr(sep, value_end+1-sep);
+        std::string field_value = buf.substr(sep, value_end + 1 - sep);
         req.header.put(field_name, field_value);
-        bufPos = line_end+2;
+        bufPos = line_end + 2;
         parse(req);
     }
 }
@@ -123,14 +102,14 @@ void Request::Parser::parseMessageBody(Request& req)
     case Method::HTTP_GET:stage = Stage::PARSING_FINISHED;
         break;
     default:auto transfer_encoding = req.header.getValue("Transfer-Encoding");
-        if (transfer_encoding!=req.header.endIterator())
+        if (transfer_encoding != req.header.endIterator())
         {
             // TODO: Transfer-Encoding is not supported
         }
         else
         {
             int content_length = stoi(req.header.getValue("Content-Length")->second);
-            if (buf.size()-bufPos>=content_length)
+            if (buf.size() - bufPos >= content_length)
             {
                 req.body += buf.substr(bufPos, content_length);
                 bufPos += content_length;
@@ -168,16 +147,16 @@ void Request::Parser::parseUrlQueries(Request& req)
 {
     const std::string& target = req.requestTarget;
     size_t begin = target.find('?');
-    if (begin!=std::string::npos)
+    if (begin != std::string::npos)
     {
-        parseQueries(req, target.substr(begin+1));
+        parseQueries(req, target.substr(begin + 1));
     }
 }
 
 void Request::Parser::processBody(Request& req)
 {
     std::string content_type = req.header.getValue("Content-Type")->second;
-    if (content_type.find("x-www-form-urlencoded")!=std::string::npos)
+    if (content_type.find("x-www-form-urlencoded") != std::string::npos)
     {
         parseQueries(req, req.body);
     }
@@ -193,14 +172,14 @@ void Request::Parser::parseQueries(Request& req, const std::string& queryText)
     for (;;)
     {
         size_t equal_sign = queryText.find('=', begin);
-        if (equal_sign==std::string::npos)
+        if (equal_sign == std::string::npos)
             break;
         std::string key, val;
-        for (size_t i = begin; i<equal_sign; i++)
+        for (size_t i = begin; i < equal_sign; i++)
         {
-            if (queryText[i]=='%')
+            if (queryText[i] == '%')
             {
-                key.push_back((char) (std::stoi(queryText.substr(i+1, 2), 0, 16)));
+                key.push_back((char) (std::stoi(queryText.substr(i + 1, 2), 0, 16)));
                 i += 2;
             }
             else
@@ -209,12 +188,12 @@ void Request::Parser::parseQueries(Request& req, const std::string& queryText)
             }
         }
         size_t ampersand = queryText.find('&', equal_sign);
-        size_t end = ampersand==std::string::npos ? queryText.size() : ampersand;
-        for (size_t i = equal_sign+1; i<end; i++)
+        size_t end = ampersand == std::string::npos ? queryText.size() : ampersand;
+        for (size_t i = equal_sign + 1; i < end; i++)
         {
-            if (queryText[i]=='%')
+            if (queryText[i] == '%')
             {
-                val.push_back((char) (std::stoi(queryText.substr(i+1, 2), 0, 16)));
+                val.push_back((char) (std::stoi(queryText.substr(i + 1, 2), 0, 16)));
                 i += 2;
             }
             else
@@ -223,8 +202,8 @@ void Request::Parser::parseQueries(Request& req, const std::string& queryText)
             }
         }
         req.queries[key] = val;
-        if (ampersand==std::string::npos)
+        if (ampersand == std::string::npos)
             break;
-        begin = ampersand+1;
+        begin = ampersand + 1;
     }
 }

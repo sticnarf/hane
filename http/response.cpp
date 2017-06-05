@@ -1,5 +1,4 @@
 #include"response.h"
-#include <map>
 
 void Response::setStatusCode(StatusCode statusCode)
 {

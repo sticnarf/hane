@@ -1,5 +1,4 @@
 #include "http/header.h"
-#include <cctype>
 
 static std::string toLowercase(const std::string& str)
 {
@@ -28,7 +27,7 @@ std::map<std::string, std::string>::const_iterator Header::endIterator() const
 
 bool Header::contains(const std::string& fieldName)
 {
-    return (getValue(fieldName)!=endIterator());
+    return (getValue(fieldName) != endIterator());
 }
 
 void Header::put(const std::string& fieldName, const std::string& fieldValue)
