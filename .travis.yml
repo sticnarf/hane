@@ -12,7 +12,7 @@ env:
     - MAKEFLAGS="-j 2"
 
 before_install:
-- wget http://dist.libuv.org/dist/v1.11.0/libuv-v1.12.0.tar.gz
+- wget http://dist.libuv.org/dist/v1.12.0/libuv-v1.12.0.tar.gz
 - tar zxf libuv-v1.12.0.tar.gz
 - cd libuv-v1.12.0
 - ./autogen.sh
