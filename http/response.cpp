@@ -1,7 +1,7 @@
 #include"response.h"
 #include <map>
 
-void Response::set_status_code(StatusCode status_code) {
+void Response::setStatusCode(StatusCode statusCode) {
     static std::map<StatusCode, std::string> reason_mapping = {
             {StatusCode::HTTP_CONTINUE,                      "Continue"},
             {StatusCode::HTTP_SWITCHING_PROTOCOLS_CODE,      "Switching Protocols"},
@@ -45,11 +45,11 @@ void Response::set_status_code(StatusCode status_code) {
             {StatusCode::HTTP_GATEWAY_TIMEOUT,               "Gateway Timeout"},
             {StatusCode::HTTP_HTTP_VERSION_NOT_SUPPORTED,    "HTTP Version Not Supported"}
     };
-    this->status_code = status_code;
-    this->reason_phrase = reason_mapping[status_code];
+    this->statusCode = statusCode;
+    this->reasonPhrase = reason_mapping[statusCode];
 }
 
-Response::Response(const std::string &http_version) : http_version(http_version) {}
+Response::Response(const std::string &httpVersion) : httpVersion(httpVersion) {}
 
 Response::~Response() {}
 

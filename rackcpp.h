@@ -1,7 +1,7 @@
 #ifndef RACKCPP_H
 #define RACKCPP_H
 
-#include "http.h"
-#include "middleware.h"
+#include "http/http.h"
+#include "middlewares/middleware.h"
 
 #endif

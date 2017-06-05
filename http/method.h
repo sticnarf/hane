@@ -15,6 +15,6 @@ enum class Method {
     HTTP_TRACE
 };
 
-Method parse_method(const std::string &string_method);
+Method parseMethod(const std::string &stringMethod);
 
 #endif

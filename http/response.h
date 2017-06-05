@@ -8,6 +8,7 @@
 
 class Response {
     friend class HttpServer;
+
 public:
     // See also: https://tools.ietf.org/html/rfc7231#section-6.1
     enum class StatusCode {
@@ -54,18 +55,19 @@ public:
         HTTP_HTTP_VERSION_NOT_SUPPORTED = 505
     };
 
-    Response(const std::string &http_version);
+    Response(const std::string &httpVersion);
+
     ~Response();
 
-    void set_status_code(StatusCode status_code);
+    void setStatusCode(StatusCode statusCode);
 
     std::map<std::string, std::string> headers;
     std::vector<char> body;
 
 private:
-    std::string http_version;
-    StatusCode status_code;
-    std::string reason_phrase;
+    std::string httpVersion;
+    StatusCode statusCode;
+    std::string reasonPhrase;
 };
 
 #endif

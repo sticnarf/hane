@@ -1,26 +1,26 @@
 #include "route.h"
-#include "response.h"
+#include "http/response.h"
 
 namespace middleware {
-    Route::Route(Middleware *next_middleware) {
-        this->next_middleware = next_middleware;
+    Route::Route(Middleware *nextMiddleware) {
+        this->nextMiddleware = nextMiddleware;
     }
 
     void Route::call(const Request &req, Response &resp) {
         process(req, resp);
-        if (next_middleware)
-            next_middleware->call(req, resp);
+        if (nextMiddleware)
+            nextMiddleware->call(req, resp);
     }
 
     void Route::process(const Request &req, Response &resp) {
-        resp.set_status_code(Response::StatusCode::HTTP_OK);
+        resp.setStatusCode(Response::StatusCode::HTTP_OK);
         resp.headers.insert({"Content-Type", "text/html"});
         std::string resp_str = "<!DOCTYPE HTML>\n<title>Hello</title>\n<meta charset=\"UTF-8\">\n<h1>Hello world!</h1>\n";
         resp.body.insert(resp.body.end(), resp_str.begin(), resp_str.end());
     }
 
     Route::~Route() {
-        if (next_middleware)
-            delete next_middleware;
+        if (nextMiddleware)
+            delete nextMiddleware;
     }
 }

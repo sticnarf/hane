@@ -14,7 +14,7 @@ public:
     virtual ~Middleware() {}
 
 protected:
-    Middleware *next_middleware;
+    Middleware *nextMiddleware;
 };
 
 #endif

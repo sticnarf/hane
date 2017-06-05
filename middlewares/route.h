@@ -1,12 +1,12 @@
 #ifndef RACKCPP_ROUTE_MIDDLEWARE_H
 #define RACKCPP_ROUTE_MIDDLEWARE_H
 
-#include "../middleware.h"
+#include "middleware.h"
 
 namespace middleware {
     class Route : public Middleware {
     public:
-        Route(Middleware *next_middleware);
+        Route(Middleware *nextMiddleware);
 
         void call(const Request &req, Response &resp) override;
 
