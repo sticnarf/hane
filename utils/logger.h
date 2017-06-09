@@ -8,7 +8,7 @@ class Logger
 {
 private:
     std::string infoPath, errorPath;
-    uv_loop_t* logLoop;
+    uv_loop_t logLoop;
     uv_fs_t infoLogReq, errorLogReq;
     uv_buf_t infoLogBuf, errorLogBuf;
     uv_file infoLogFd = -1;
