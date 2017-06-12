@@ -37,7 +37,7 @@ static void readCallback(uv_stream_t* clientTcp, ssize_t nread, const uv_buf_t* 
     Client* client = (Client*) clientTcp->data;
     if (nread > 0)
     {
-        client->push_buf(buf->base, nread);
+        client->pushBuf(buf->base, nread);
         delete[] buf->base;
     }
     if (nread < 0)

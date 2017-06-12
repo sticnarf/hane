@@ -9,7 +9,8 @@ set(SOURCE_FILES
         http/http.cpp http/request.cpp http/response.cpp http/header.cpp http/method.cpp http/client.cpp
         http/parser/parser.cpp
         middlewares/middleware.cpp middlewares/route.cpp
-        utils/logger.cpp utils/buffer.cpp)
+        utils/logger.cpp utils/buffer.cpp
+        http/request/request.cpp http/request/headers.cpp utils/string.cpp utils/string.h)
 include_directories(${LIBUV_INCLUDE_DIRS})
 add_library(rackcpp STATIC ${SOURCE_FILES})
 target_link_libraries(rackcpp ${LIBUV_LIBRARIES})

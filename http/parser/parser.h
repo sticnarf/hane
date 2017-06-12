@@ -1,10 +1,15 @@
 #ifndef RACKCPP_PARSER_H
 #define RACKCPP_PARSER_H
 
+#include "http/request.h"
+#include "utils/buffer.h"
+
 class Parser
 {
 private:
+    Buffer buffer;
 
+    void process();
 public:
     enum class Stage
     {
@@ -15,6 +20,8 @@ public:
         PARSING_FINISHED
     } stage = Stage::REQUEST_LINE;
 
+    void pushBuf(const char* buf, size_t len);
+    Request yieldRequest();
 };
 
 #endif

@@ -50,13 +50,13 @@ int main()
     std::cout << "Time difference = "
               << std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count() << std::endl;
     begin = std::chrono::steady_clock::now();
-    fs = std::fstream("/tmp/test2");
+    std::fstream fs2("/tmp/test2");
     auto end_iterator = buffer.end();
     for (auto it = buffer.begin(); it != end_iterator; it++)
     {
-        fs << *it;
+        fs2 << *it;
     }
-    fs.close();
+    fs2.close();
     end = std::chrono::steady_clock::now();
     std::cout << "Time difference = "
               << std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count() << std::endl;
