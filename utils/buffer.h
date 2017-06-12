@@ -29,8 +29,29 @@ public:
     void push(const char* bytes, size_t len);
     Buffer split(size_t pos);
     size_t len();
-    char operator[](size_t index) const;
+    char& operator[](size_t index);
     ~Buffer();
+
+    class iterator
+    {
+    public:
+        friend class Buffer;
+        iterator operator++();
+        iterator operator++(int);
+        char& operator*();
+        char* operator->();
+        bool operator==(const iterator& rhs);
+        bool operator!=(const iterator& rhs);
+    private:
+        Buffer* buffer;
+        char* ptr;
+        size_t pos;
+
+        iterator(Buffer* buffer, size_t pos);
+    };
+
+    iterator begin();
+    iterator end();
 };
 
 #endif

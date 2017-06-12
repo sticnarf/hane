@@ -4,7 +4,7 @@
 #include <stdexcept>
 
 Buffer::Buffer()
-    :length(0), head(0)
+        :length(0), head(0)
 {
     blocks.push_back(new BufferBlock);
 }
@@ -29,7 +29,7 @@ void Buffer::push(const char* bytes, size_t len)
     }
 }
 
-char Buffer::operator[](size_t index) const
+char& Buffer::operator[](size_t index)
 {
     if (index > length)
     {
@@ -78,6 +78,21 @@ size_t Buffer::len()
     return length;
 }
 
+Buffer::iterator::iterator(Buffer* buffer, size_t pos)
+        :buffer(buffer), pos(pos)
+{
+    ptr = &(*buffer)[pos];
+}
+
+Buffer::iterator Buffer::begin()
+{
+    return Buffer::iterator(this, 0);
+}
+Buffer::iterator Buffer::end()
+{
+    return Buffer::iterator(this, length - 1);
+}
+
 BufferBlock::BufferBlock()
 {
     this->length = 0;
@@ -87,4 +102,37 @@ BufferBlock::BufferBlock()
 BufferBlock::~BufferBlock()
 {
     delete[] this->block;
+}
+
+char& Buffer::iterator::operator*()
+{
+    return *ptr;
+}
+
+Buffer::iterator Buffer::iterator::operator++()
+{
+    iterator it = *this;
+    pos++;
+    ptr = &(*buffer)[pos];
+    return it;
+}
+
+Buffer::iterator Buffer::iterator::operator++(int)
+{
+    pos++;
+    ptr = &(*buffer)[pos];
+    return *this;
+}
+
+char* Buffer::iterator::operator->()
+{
+    return ptr;
+}
+bool Buffer::iterator::operator==(const Buffer::iterator& rhs)
+{
+    return ptr == rhs.ptr;
+}
+bool Buffer::iterator::operator!=(const Buffer::iterator& rhs)
+{
+    return ptr != rhs.ptr;
 }

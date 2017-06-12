@@ -1,6 +1,7 @@
 #include <iostream>
 #include <chrono>
 #include <string>
+#include <fstream>
 #include <utils/buffer.h>
 
 int main()
@@ -18,10 +19,12 @@ int main()
     std::cout << "Time difference = "
               << std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count() << std::endl;
     begin = std::chrono::steady_clock::now();
+    std::fstream fs("/tmp/test1");
     for (int i = 0; i < s.length(); i++)
     {
-        char c = s[i];
+        fs << s[i];
     }
+    fs.close();
     end = std::chrono::steady_clock::now();
     std::cout << "Time difference = "
               << std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count() << std::endl;
@@ -47,10 +50,13 @@ int main()
     std::cout << "Time difference = "
               << std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count() << std::endl;
     begin = std::chrono::steady_clock::now();
-    for (int i = 0; i < buffer.len(); i++)
+    fs = std::fstream("/tmp/test2");
+    auto end_iterator = buffer.end();
+    for (auto it = buffer.begin(); it != end_iterator; it++)
     {
-        char c = buffer[i];
+        fs << *it;
     }
+    fs.close();
     end = std::chrono::steady_clock::now();
     std::cout << "Time difference = "
               << std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count() << std::endl;
