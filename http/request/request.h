@@ -5,8 +5,12 @@
 class Request
 {
 private:
-    HttpVersion version;
-    HttpMethod method;
+    HttpVersion httpVersion;
+    HttpMethod httpMethod;
     std::string target;
+
+    // Set all parser classes as friends
+    friend class AbstractParser;
+    friend class StartLineParser;
 };
 #endif

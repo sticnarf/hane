@@ -136,9 +136,9 @@ void HttpServer::start()
 
 void HttpServer::process(const Request& req)
 {
-    Response* resp = new Response(req.getHttpVersion());
-    middleware->call(req, *resp);
-    uv_tcp_t* client = req.client;
+//    Response* resp = new Response(req.getHttpVersion());
+//    middleware->call(req, *resp);
+//    uv_tcp_t* client = req.client;
     delete &req;
-    writeResponse((uv_stream_t*) client, *resp);
+//    writeResponse((uv_stream_t*) client, *resp);
 }

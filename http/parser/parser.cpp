@@ -8,8 +8,16 @@ void Parser::pushBuf(const char* buf, size_t len)
 
 Request Parser::yieldRequest()
 {
-    return Request(nullptr, nullptr);
+    Request req = completeRequests.front();
+    completeRequests.pop();
+    return req; // Possible optimization using std::move?
 }
+
+bool Parser::hasCompleteRequest()
+{
+    return !completeRequests.empty();
+}
+
 void Parser::process()
 {
 
