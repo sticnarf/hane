@@ -2,11 +2,11 @@
 #define RACKCPP_START_LINE_PARSER_H
 #include "abstract_parser.h"
 
-class StartLineParser : AbstractParser
+class StartLineParser: public AbstractParser
 {
 public:
     StartLineParser(Request&& req, Buffer& buffer);
-    AbstractParser process();
+    std::unique_ptr<AbstractParser> process();
 };
 
 #endif

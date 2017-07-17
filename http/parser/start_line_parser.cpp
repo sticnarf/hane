@@ -1,15 +1,16 @@
 #include <stdexcept>
 #include "utils/protocol_helper.h"
 #include "start_line_parser.h"
+#include "header_parser.h"
 
 StartLineParser::StartLineParser(Request&& req, Buffer& buffer)
     :AbstractParser(std::move(req), buffer) { }
 
-AbstractParser StartLineParser::process()
+std::unique_ptr<AbstractParser> StartLineParser::process()
 {
     size_t lineSep = buffer.find("\r\n", 2);
     if (lineSep >= buffer.len())
-        return *this;
+        return std::unique_ptr<AbstractParser>(this);
     std::string startLine = buffer.split(lineSep + 2).toString(0, lineSep);
 
     size_t sp1 = startLine.find(' ');
@@ -28,6 +29,5 @@ AbstractParser StartLineParser::process()
     partialRequest.target = target;
     partialRequest.httpVersion = version;
 
-    // TODO: Should return a HeaderParser
-    return *this;
+    return HeaderParser(std::move(partialRequest), buffer).process();
 }

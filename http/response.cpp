@@ -53,11 +53,3 @@ Response::Response(const std::string& httpVersion)
     :httpVersion(httpVersion) { }
 
 Response::~Response() { }
-
-//const std::map<std::string, std::string> &Response::get_headers() const {
-//    return headers;
-//}
-//
-//const std::vector<char> &Response::getBody() const {
-//    return body;
-//}

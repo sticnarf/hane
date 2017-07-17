@@ -3,13 +3,14 @@
 
 #include "http/request/request.h"
 #include "utils/buffer.h"
+#include "abstract_parser.h"
 #include <queue>
 
 class Parser
 {
 private:
     Buffer buffer;
-    Request partialRequest;
+    std::unique_ptr<AbstractParser> currentParser;
     std::queue<Request> completeRequests;
 
     void process();
@@ -23,6 +24,7 @@ public:
         PARSING_FINISHED
     } stage = Stage::REQUEST_LINE;
 
+    Parser();
     void pushBuf(const char* buf, size_t len);
     bool hasCompleteRequest();
     Request yieldRequest();

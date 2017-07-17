@@ -6,11 +6,12 @@ set(CMAKE_CXX_STANDARD 11)
 
 find_package(LibUV)
 set(SOURCE_FILES
-        http/http.cpp http/response.cpp http/header.cpp http/client.cpp
+        http/http.cpp http/response.cpp http/client.cpp
         http/parser/parser.cpp http/parser/start_line_parser.cpp http/parser/abstract_parser.cpp
+        http/parser/header_parser.cpp http/parser/body_parser.cpp
         middlewares/middleware.cpp middlewares/route.cpp
         utils/logger.cpp utils/buffer.cpp utils/string.cpp utils/protocol_helper.cpp
-        http/request/request.cpp http/request/headers.cpp)
+        http/request/request.cpp http/request/header.cpp)
 include_directories(${LIBUV_INCLUDE_DIRS})
 add_library(rackcpp STATIC ${SOURCE_FILES})
 target_link_libraries(rackcpp ${LIBUV_LIBRARIES})

@@ -37,8 +37,8 @@ static void readCallback(uv_stream_t* clientTcp, ssize_t nread, const uv_buf_t* 
     Client* client = (Client*) clientTcp->data;
     if (nread > 0)
     {
+        Logger::getInstance().info(std::string("Read ") + std::to_string(nread) + "bytes.\n");
         client->pushBuf(buf->base, nread);
-        delete[] buf->base;
     }
     if (nread < 0)
     {

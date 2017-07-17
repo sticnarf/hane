@@ -1,4 +1,5 @@
 #include "parser.h"
+#include "start_line_parser.h"
 
 void Parser::pushBuf(const char* buf, size_t len)
 {
@@ -20,5 +21,16 @@ bool Parser::hasCompleteRequest()
 
 void Parser::process()
 {
+    currentParser = currentParser->process();
 
+    if (currentParser->isFinished())
+    {
+        completeRequests.push(currentParser->getRequest());
+        currentParser = std::unique_ptr<AbstractParser>(new StartLineParser(Request(), buffer));
+    }
+}
+
+Parser::Parser()
+{
+    currentParser = std::unique_ptr<AbstractParser>(new StartLineParser(Request(), buffer));
 }
