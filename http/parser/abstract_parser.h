@@ -16,7 +16,7 @@ protected:
 
 public:
     // Throws std::invalid_argument if it is a bad request
-    virtual std::unique_ptr<AbstractParser> process();
+    virtual std::shared_ptr<AbstractParser> process();
 
     bool isFinished() const;
     Request getRequest() const;

@@ -6,11 +6,11 @@
 StartLineParser::StartLineParser(Request&& req, Buffer& buffer)
     :AbstractParser(std::move(req), buffer) { }
 
-std::unique_ptr<AbstractParser> StartLineParser::process()
+std::shared_ptr<AbstractParser> StartLineParser::process()
 {
     size_t lineSep = buffer.find("\r\n", 2);
     if (lineSep >= buffer.len())
-        return std::unique_ptr<AbstractParser>(this);
+        return std::shared_ptr<AbstractParser>(this);
     std::string startLine = buffer.split(lineSep + 2).toString(0, lineSep);
 
     size_t sp1 = startLine.find(' ');

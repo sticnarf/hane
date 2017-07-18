@@ -10,7 +10,7 @@ class Parser
 {
 private:
     Buffer buffer;
-    std::unique_ptr<AbstractParser> currentParser;
+    std::shared_ptr<AbstractParser> currentParser;
     std::queue<Request> completeRequests;
 
     void process();

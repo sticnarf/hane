@@ -1,5 +1,5 @@
 #include "header_parser.h"
-#include "body_parser.h"
+#include "sized_body_parser.h"
 #include <cctype>
 #include <cstring>
 
@@ -47,11 +47,11 @@ static bool validateContent(const std::string& content)
 HeaderParser::HeaderParser(Request&& req, Buffer& buffer)
         :AbstractParser(std::move(req), buffer) { }
 
-std::unique_ptr<AbstractParser> HeaderParser::process()
+std::shared_ptr<AbstractParser> HeaderParser::process()
 {
     size_t lineSep = buffer.find("\r\n", 2);
     if (lineSep >= buffer.len())
-        return std::unique_ptr<AbstractParser>(this);
+        return std::shared_ptr<AbstractParser>(this);
 
     auto fieldBuf = buffer.split(lineSep + 2);
     if (lineSep == 0)
@@ -83,8 +83,8 @@ std::unique_ptr<AbstractParser> HeaderParser::process()
     return this->process();
 }
 
-std::unique_ptr<AbstractParser> HeaderParser::buildBodyParser()
+std::shared_ptr<AbstractParser> HeaderParser::buildBodyParser()
 {
     // TODO Build different BodyParser according to Transfer-Encoding
-    return std::unique_ptr<AbstractParser>(new RawBodyParser(std::move(partialRequest), buffer));
+    return std::shared_ptr<AbstractParser>(new SizedBodyParser(std::move(partialRequest), buffer));
 }

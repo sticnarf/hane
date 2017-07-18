@@ -26,11 +26,11 @@ void Parser::process()
     if (currentParser->isFinished())
     {
         completeRequests.push(currentParser->getRequest());
-        currentParser = std::unique_ptr<AbstractParser>(new StartLineParser(Request(), buffer));
+        currentParser = std::shared_ptr<AbstractParser>(new StartLineParser(Request(), buffer));
     }
 }
 
 Parser::Parser()
 {
-    currentParser = std::unique_ptr<AbstractParser>(new StartLineParser(Request(), buffer));
+    currentParser = std::shared_ptr<AbstractParser>(new StartLineParser(Request(), buffer));
 }

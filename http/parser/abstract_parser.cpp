@@ -4,7 +4,7 @@
 AbstractParser::AbstractParser(Request&& req, Buffer& buffer)
     :partialRequest(req), buffer(buffer), finished(false) { }
 
-std::unique_ptr<AbstractParser> AbstractParser::process()
+std::shared_ptr<AbstractParser> AbstractParser::process()
 {
     throw std::logic_error("Invoke process() of AbstractParser");
 }

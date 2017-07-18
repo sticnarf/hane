@@ -3,6 +3,9 @@
 #include <string>
 #include "constants.h"
 #include "header.h"
+#include "utils/buffer.h"
+
+typedef Buffer Body;
 
 class Request
 {
@@ -12,11 +15,14 @@ private:
     std::string target;
 
     Header header;
+    Body body;
+
 
     // Set all parser classes as friends
     friend class AbstractParser;
     friend class StartLineParser;
     friend class HeaderParser;
-    friend class RawBodyParser;
+    friend class SizedBodyParser;
+    friend class FinalParser;
 };
 #endif
