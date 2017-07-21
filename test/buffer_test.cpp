@@ -69,4 +69,6 @@ int main()
     pushTest();
 
     splitTest();
+
+    for(;;);
 }

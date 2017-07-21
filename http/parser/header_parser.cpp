@@ -86,5 +86,5 @@ std::shared_ptr<AbstractParser> HeaderParser::process()
 std::shared_ptr<AbstractParser> HeaderParser::buildBodyParser()
 {
     // TODO Build different BodyParser according to Transfer-Encoding
-    return std::shared_ptr<AbstractParser>(new SizedBodyParser(std::move(partialRequest), buffer));
+    return std::make_shared<SizedBodyParser>(std::move(partialRequest), buffer);
 }

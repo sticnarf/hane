@@ -20,5 +20,5 @@ std::shared_ptr<AbstractParser> SizedBodyParser::process()
 
         partialRequest.body = buffer->split((size_t) contentLength);
     }
-    return std::shared_ptr<AbstractParser>(new FinalParser(std::move(partialRequest), buffer));
+    return std::make_shared<FinalParser>(std::move(partialRequest), buffer);
 }

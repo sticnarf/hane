@@ -3,10 +3,8 @@
 
 namespace middleware
 {
-Route::Route(Middleware* nextMiddleware)
-{
-    this->nextMiddleware = nextMiddleware;
-}
+Route::Route(std::shared_ptr<Middleware> nextMiddleware)
+        :Middleware(nextMiddleware) { }
 
 void Route::call(const Request& req, std::shared_ptr<Response> resp)
 {
@@ -21,11 +19,5 @@ void Route::process(const Request& req, std::shared_ptr<Response> resp)
     resp->headers.insert({"Content-Type", "text/html"});
     std::string resp_str = "<!DOCTYPE HTML>\n<title>Hello</title>\n<meta charset=\"UTF-8\">\n<h1>Hello world!</h1>\n";
     resp->body.insert(resp->body.end(), resp_str.begin(), resp_str.end());
-}
-
-Route::~Route()
-{
-    if (nextMiddleware)
-        delete nextMiddleware;
 }
 }

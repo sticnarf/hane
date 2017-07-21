@@ -23,8 +23,11 @@ HttpServer::~HttpServer()
 
 static void closeCallback(uv_handle_t* handle)
 {
+    printf("Close callback %p\n", handle);
+    printf("Delete %p\n", handle->data);
     delete (Client*) handle->data;
-    delete (uv_tcp_t*) handle;
+//    printf("Delete handle %p\n", handle);
+//    delete (uv_tcp_t*) handle;
 }
 
 static void allocBuffer(uv_handle_t* handle, size_t suggested_size, uv_buf_t* buf)
@@ -50,27 +53,21 @@ static void readCallback(uv_stream_t* clientTcp, ssize_t nread, const uv_buf_t* 
     delete[] buf->base;
 }
 
-struct write_response_req
-{
-    uv_write_t wt;
-    HttpServer* server;
-};
-
 static void writeCallback(uv_write_t* req, int status)
 {
-    HttpServer* server = ((write_response_req*) req)->server;
+//    HttpServer* server = ((write_response_req*) req)->server;
     if (status < 0)
     {
         Logger::getInstance().error(std::string("Write error: ") + uv_strerror(status) + "\n");
         // error!
     }
+
     printf("Write OK!\n");
-    delete (std::vector<char>*) req->data;
-    delete (write_response_req*) req;
+    delete[] (char*) req->data;
     printf("Clear req ok\n");
 }
 
-static void onNewConnection(uv_stream_t* serverTcp, int status)
+void onNewConnection(uv_stream_t* serverTcp, int status)
 {
     HttpServer* server = (HttpServer*) serverTcp->data;
     if (status < 0)
@@ -78,49 +75,55 @@ static void onNewConnection(uv_stream_t* serverTcp, int status)
         Logger::getInstance().error(std::string("New connection error: ") + uv_strerror(status));
         return;
     }
-    uv_tcp_t* clientTcp = new uv_tcp_t;
-    printf("New connection %p\n", clientTcp);
-    uv_tcp_init(uv_default_loop(), clientTcp);
-    clientTcp->data = new Client(server, clientTcp);
-    if (uv_accept(serverTcp, (uv_stream_t*) clientTcp) == 0)
+
+    Client* client = new Client(server);
+    printf("New connection %p\n", client->tcp);
+    uv_tcp_init(uv_default_loop(), client->tcp);
+
+    if (uv_accept(serverTcp, (uv_stream_t*) client->tcp) == 0)
     {
-        uv_read_start((uv_stream_t*) clientTcp, allocBuffer, readCallback);
+        uv_read_start((uv_stream_t*) client->tcp, allocBuffer, readCallback);
     }
     else
     {
-        uv_close((uv_handle_t*) clientTcp, closeCallback);
+        uv_close((uv_handle_t*) client->tcp, closeCallback);
     }
 }
 
-void HttpServer::writeResponse(uv_stream_t* client, std::shared_ptr<const Response> resp)
+void HttpServer::writeResponse(uv_stream_t* tcp, std::shared_ptr<const Response> resp)
 {
-    auto* buf_vec = new std::vector<char>;
-    std::stringstream status_line;
-    status_line << stringify(resp->httpVersion) << " " << (int) resp->statusCode << " " << resp->reasonPhrase << "\r\n";
-    std::string str = status_line.str();
-    buf_vec->insert(buf_vec->end(), str.begin(), str.end());
+    std::stringstream responseText;
+
+    // Append status line
+    responseText << stringify(resp->httpVersion) << " "
+                 << (int) resp->statusCode << " " << resp->reasonPhrase << "\r\n";
+
+    // Append headers
     for (auto& e : resp->headers)
     {
-        std::stringstream header;
-        header << e.first << ": " << e.second << "\r\n";
-        str = header.str();
-        buf_vec->insert(buf_vec->end(), str.begin(), str.end());
+        responseText << e.first << ": " << e.second << "\r\n";
     }
+
+    // Append Content-Length
     if (resp->headers.find("Content-Length") == resp->headers.end())
     {
-        std::stringstream header;
-        header << "Content-Length: " << resp->body.size() << "\r\n";
-        str = header.str();
-        buf_vec->insert(buf_vec->end(), str.begin(), str.end());
+        responseText << "Content-Length: " << resp->body.size() << "\r\n";
     }
-    buf_vec->insert(buf_vec->end(), {'\r', '\n'});
-    buf_vec->insert(buf_vec->end(), resp->body.begin(), resp->body.end());
-    write_response_req* req = new write_response_req;
-    req->wt.data = buf_vec;
-    req->server = this;
-    uv_buf_t buf = uv_buf_init(buf_vec->data(), buf_vec->size());
-    printf("Write response! %p %p %p\n", req, client, &buf);
-    uv_write((uv_write_t*) req, client, &buf, 1, writeCallback);
+
+    // Append Body
+    responseText << "\r\n" << resp->body;
+
+    std::string str = responseText.str();
+
+    auto data = new char[str.length()];
+    memcpy(data, str.data(), str.length());
+
+    Client* client = static_cast<Client*>(tcp->data);
+    client->write.data = data;
+
+    client->buf = uv_buf_init(data, str.length());
+    printf("Write response! %p %p %p\n", &client->write, client, &client->buf);
+    uv_write(&client->write, tcp, &client->buf, 1, writeCallback);
 }
 
 void HttpServer::start()
@@ -139,7 +142,7 @@ void HttpServer::start()
 
 void HttpServer::process(const Request& req, uv_tcp_t* client)
 {
-    std::shared_ptr<Response> resp = std::shared_ptr<Response>(new Response(req.getHttpVersion()));
+    auto resp = std::make_shared<Response>(req.getHttpVersion());
     middleware->call(req, resp);
     writeResponse((uv_stream_t*) client, resp);
 }

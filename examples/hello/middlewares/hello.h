@@ -5,16 +5,14 @@
 
 namespace middleware
 {
-class Hello : public Middleware
+class Hello: public Middleware
 {
 public:
-    Hello(Middleware* next_middleware);
+    Hello(std::shared_ptr<Middleware> next_middleware);
 
     void call(const Request& req, std::shared_ptr<Response> resp) override;
 
     void process(const Request& req, std::shared_ptr<Response> resp) override;
-
-    ~Hello();
 };
 }
 

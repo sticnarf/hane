@@ -19,7 +19,7 @@ public:
     void setStatusCode(StatusCode statusCode);
 
     std::map<std::string, std::string> headers;
-    std::vector<char> body;
+    std::string body;
 
 private:
     HttpVersion httpVersion;

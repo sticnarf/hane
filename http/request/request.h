@@ -16,6 +16,7 @@ public:
     const Header& getHeader() const;
     const Body& getBody() const;
     const std::map<std::string, std::string>& getQueries() const;
+
 private:
     HttpVersion httpVersion;
     HttpMethod httpMethod;
@@ -24,7 +25,6 @@ private:
 
     Header header;
     Body body;
-
 
     // Set all parser classes as friends
     friend class AbstractParser;

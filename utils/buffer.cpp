@@ -85,10 +85,10 @@ BufferPtr Buffer::split(size_t pos)
 
 Buffer::~Buffer()
 {
-//    printf("Buffer destructor %p\n", this);
+    printf("Buffer destructor %p\n", this);
     while (!blocks.empty())
     {
-//        printf("delete Block %p\n", blocks.back());
+        printf("delete Block %p\n", blocks.back());
         delete blocks.back();
         blocks.pop_back();
     }

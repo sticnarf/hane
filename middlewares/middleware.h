@@ -14,10 +14,11 @@ public:
 
     virtual void process(const Request& req, std::shared_ptr<Response> resp) = 0;
 
-    virtual ~Middleware() { }
+    virtual ~Middleware() = default;
 
 protected:
-    Middleware* nextMiddleware;
+    Middleware(std::shared_ptr<Middleware>);
+    std::shared_ptr<Middleware> nextMiddleware;
 };
 
 #endif
