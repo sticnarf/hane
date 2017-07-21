@@ -5,8 +5,8 @@
 class StartLineParser: public AbstractParser
 {
 public:
-    StartLineParser(Request&& req, std::shared_ptr<Buffer> buffer);
-    std::shared_ptr<AbstractParser> process();
+    StartLineParser(Request&& req, BufferPtr buffer);
+    ParserPtr process();
 };
 
 #endif

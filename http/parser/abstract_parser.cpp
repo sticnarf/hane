@@ -1,10 +1,10 @@
 #include <stdexcept>
 #include "abstract_parser.h"
 
-AbstractParser::AbstractParser(Request&& req, std::shared_ptr<Buffer> buffer)
+AbstractParser::AbstractParser(Request&& req, BufferPtr buffer)
     :partialRequest(req), buffer(buffer), finished(false) { }
 
-std::shared_ptr<AbstractParser> AbstractParser::process()
+ParserPtr AbstractParser::process()
 {
     throw std::logic_error("Invoke process() of AbstractParser");
 }

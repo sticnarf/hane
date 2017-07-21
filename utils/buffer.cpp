@@ -162,7 +162,7 @@ std::string Buffer::toString(size_t from, size_t to)
 
     size_t actualTo = to + head;
     size_t toBlockIndex = actualTo >> BLOCK_SIZE_EXP;
-    size_t toBlockPtr = actualTo - (fromBlockIndex << BLOCK_SIZE_EXP);
+    size_t toBlockPtr = actualTo - (toBlockIndex << BLOCK_SIZE_EXP);
 
     if (fromBlockIndex == toBlockIndex)
     {
@@ -171,7 +171,7 @@ std::string Buffer::toString(size_t from, size_t to)
     else
     {
         s.append(blocks[fromBlockIndex]->block + fromBlockPtr, blocks[fromBlockIndex]->length - fromBlockPtr);
-        for (int i = fromBlockIndex + 1; i < toBlockIndex - 1; i++)
+        for (int i = fromBlockIndex + 1; i < toBlockIndex; i++)
         {
             s.append(blocks[i]->block, blocks[i]->length);
         }

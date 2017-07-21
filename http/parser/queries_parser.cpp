@@ -1,10 +1,10 @@
 #include "queries_parser.h"
 #include "header_parser.h"
 
-QueriesParser::QueriesParser(Request&& req, std::shared_ptr<Buffer> buffer)
+QueriesParser::QueriesParser(Request&& req, BufferPtr buffer)
         :AbstractParser(std::move(req), buffer) { }
 
-std::shared_ptr<AbstractParser> QueriesParser::process()
+ParserPtr QueriesParser::process()
 {
     const std::string& target = partialRequest.target;
     size_t begin = target.find_last_of('?');

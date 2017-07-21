@@ -5,11 +5,11 @@
 
 class HeaderParser : public AbstractParser
 {
-    std::shared_ptr<AbstractParser> buildBodyParser();
+    ParserPtr buildBodyParser();
 
 public:
-    HeaderParser(Request&& req, std::shared_ptr<Buffer> buffer);
-    std::shared_ptr<AbstractParser> process();
+    HeaderParser(Request&& req, BufferPtr buffer);
+    ParserPtr process();
 };
 
 #endif

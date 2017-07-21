@@ -5,7 +5,7 @@
 class FinalParser : public AbstractParser
 {
 public:
-    FinalParser(Request&& req, std::shared_ptr<Buffer> buffer);
+    FinalParser(Request&& req, BufferPtr buffer);
 };
 
 #endif

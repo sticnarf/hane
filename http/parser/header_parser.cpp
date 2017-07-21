@@ -44,10 +44,10 @@ static bool validateContent(const std::string& content)
     return true;
 }
 
-HeaderParser::HeaderParser(Request&& req, std::shared_ptr<Buffer> buffer)
+HeaderParser::HeaderParser(Request&& req, BufferPtr buffer)
         :AbstractParser(std::move(req), buffer) { }
 
-std::shared_ptr<AbstractParser> HeaderParser::process()
+ParserPtr HeaderParser::process()
 {
     size_t lineSep = buffer->find("\r\n", 2);
     if (lineSep >= buffer->len())
@@ -83,7 +83,7 @@ std::shared_ptr<AbstractParser> HeaderParser::process()
     return this->process();
 }
 
-std::shared_ptr<AbstractParser> HeaderParser::buildBodyParser()
+ParserPtr HeaderParser::buildBodyParser()
 {
     // TODO Build different BodyParser according to Transfer-Encoding
     return std::make_shared<SizedBodyParser>(std::move(partialRequest), buffer);

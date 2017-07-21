@@ -1,10 +1,10 @@
 #include "sized_body_parser.h"
 #include "final_parser.h"
 
-SizedBodyParser::SizedBodyParser(Request&& req, std::shared_ptr<Buffer> buffer)
+SizedBodyParser::SizedBodyParser(Request&& req, BufferPtr buffer)
         :AbstractParser(std::move(req), buffer) { }
 
-std::shared_ptr<AbstractParser> SizedBodyParser::process()
+ParserPtr SizedBodyParser::process()
 {
     auto contentLengthEntry = partialRequest.header.getFieldEntry("Content-Length");
     int contentLength;

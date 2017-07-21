@@ -20,6 +20,10 @@ struct BufferBlock
     ~BufferBlock();
 };
 
+class Buffer;
+
+typedef std::shared_ptr<Buffer> BufferPtr;
+
 /**
  * Not optimized! Random access is about 20 times slower than using an array.
  * And, do not use iterator!
@@ -36,7 +40,7 @@ public:
     Buffer();
     explicit Buffer(void*);
     void push(const char* bytes, size_t len);
-    std::shared_ptr<Buffer> split(size_t pos);
+    BufferPtr split(size_t pos);
     size_t len();
     char& operator[](size_t index);
     ~Buffer();
@@ -68,7 +72,5 @@ public:
     std::string toString();
     std::string toString(size_t from, size_t to);
 };
-
-typedef std::shared_ptr<Buffer> BufferPtr;
 
 #endif

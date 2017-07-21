@@ -5,8 +5,8 @@
 class QueriesParser: public AbstractParser
 {
 public:
-    QueriesParser(Request&& req, std::shared_ptr<Buffer> buffer);
-    std::shared_ptr<AbstractParser> process();
+    QueriesParser(Request&& req, BufferPtr buffer);
+    ParserPtr process();
 };
 
 #endif

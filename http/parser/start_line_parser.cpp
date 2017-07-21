@@ -4,10 +4,10 @@
 #include "header_parser.h"
 #include "queries_parser.h"
 
-StartLineParser::StartLineParser(Request&& req, std::shared_ptr<Buffer> buffer)
+StartLineParser::StartLineParser(Request&& req, BufferPtr buffer)
         :AbstractParser(std::move(req), buffer) { }
 
-std::shared_ptr<AbstractParser> StartLineParser::process()
+ParserPtr StartLineParser::process()
 {
     size_t lineSep = buffer->find("\r\n", 2);
     if (lineSep >= buffer->len())

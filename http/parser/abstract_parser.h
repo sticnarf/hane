@@ -4,19 +4,23 @@
 #include "utils/buffer.h"
 #include <memory>
 
+class AbstractParser;
+
+typedef std::shared_ptr<AbstractParser> ParserPtr;
+
 class AbstractParser
 {
 protected:
     Request partialRequest;
-    std::shared_ptr<Buffer> buffer;
+    BufferPtr buffer;
 
     bool finished;
 
-    AbstractParser(Request&& req, std::shared_ptr<Buffer> buffer);
+    AbstractParser(Request&& req, BufferPtr buffer);
 
 public:
     // Throws std::invalid_argument if it is a bad request
-    virtual std::shared_ptr<AbstractParser> process();
+    virtual ParserPtr process();
 
     bool isFinished() const;
     Request getRequest() const;

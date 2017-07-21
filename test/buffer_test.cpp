@@ -39,8 +39,9 @@ void pushTest()
     prepareData();
 
     std::string result = buffer->toString(10000, 20000);
+    std::string expected = rawString.substr(10000, 10000);
 
-    assert(rawString.substr(10000, 10000) == result);
+    assert(expected == result);
     assert(rawString == buffer->toString());
 
     cleanData();
