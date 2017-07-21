@@ -9,13 +9,13 @@
 #include <algorithm>
 #include <utils/buffer.h>
 
-Buffer* buffer;
+BufferPtr buffer;
 
 std::string rawString;
 
 void prepareData()
 {
-    buffer = new Buffer;
+    buffer = std::make_shared<Buffer>();
     rawString = "";
     for (int i = 0; i < 1000 || rawString.length() < 25000; i++)
     {
@@ -32,7 +32,6 @@ void prepareData()
 
 void cleanData()
 {
-    delete buffer;
 }
 
 void pushTest()
@@ -70,5 +69,5 @@ int main()
 
     splitTest();
 
-    for(;;);
+//    for(;;);
 }

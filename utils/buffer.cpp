@@ -6,7 +6,7 @@
 Buffer::Buffer()
         :length(0), head(0)
 {
-//    printf("Buffer constructor %p\n", this);
+    printf("Buffer constructor %p\n", this);
     blocks.push_back(new BufferBlock);
 }
 
@@ -56,7 +56,7 @@ BufferPtr Buffer::split(size_t pos)
     size_t blockIndex = actualPos >> BLOCK_SIZE_EXP;
     size_t blockPtr = actualPos - (blockIndex << BLOCK_SIZE_EXP);
 
-    BufferPtr newBuffer = std::shared_ptr<Buffer>(new Buffer);
+    BufferPtr newBuffer = std::make_shared<Buffer>(nullptr);
 
     for (int i = 0; i < blockIndex; i++)
     {
@@ -66,12 +66,13 @@ BufferPtr Buffer::split(size_t pos)
 
     BufferBlock* lastBlock = new BufferBlock;
 
-    newBuffer->blocks.back()->nextBlock = lastBlock;
+    if (!newBuffer->blocks.empty())
+        newBuffer->blocks.back()->nextBlock = lastBlock;
 
     lastBlock->length = blockPtr;
     memcpy(lastBlock->block, this->blocks[blockIndex]->block, blockPtr);
 
-    newBuffer->blocks[0] = lastBlock;
+    newBuffer->blocks.push_back(lastBlock);
     newBuffer->head = head;
     newBuffer->length = pos;
 
@@ -180,11 +181,15 @@ std::string Buffer::toString(size_t from, size_t to)
     return s;
 }
 
+Buffer::Buffer(void*)
+        :length(0), head(0) { }
+
 BufferBlock::BufferBlock()
 {
     this->length = 0;
     this->block = new char[BLOCK_SIZE];
     this->nextBlock = nullptr;
+    printf("new Block %p\n", this);
 }
 
 BufferBlock::~BufferBlock()

@@ -34,6 +34,7 @@ private:
 
 public:
     Buffer();
+    explicit Buffer(void*);
     void push(const char* bytes, size_t len);
     std::shared_ptr<Buffer> split(size_t pos);
     size_t len();
