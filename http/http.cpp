@@ -3,11 +3,13 @@
 #include <sstream>
 #include <cstring>
 #include <uv.h>
-#include <rackcpp.h>
+#include "utils/logger.h"
+#include "utils/protocol_helper.h"
 #include "client.h"
+#include "middlewares/middleware.h"
 
-HttpServer::HttpServer(Middleware* middleware, const std::string _bindAddr, int port)
-    :middleware(middleware), bindAddr(_bindAddr), port(port)
+HttpServer::HttpServer(std::unique_ptr<Middleware>&& middleware, const std::string& _bindAddr, int port)
+        :middleware(std::move(middleware)), bindAddr(_bindAddr), port(port)
 {
     uv_tcp_init(uv_default_loop(), &server);
     uv_ip4_addr(_bindAddr.c_str(), port, &addr);
@@ -17,12 +19,11 @@ HttpServer::HttpServer(Middleware* middleware, const std::string _bindAddr, int 
 
 HttpServer::~HttpServer()
 {
-    delete middleware;
 }
 
 static void closeCallback(uv_handle_t* handle)
 {
-    delete (Request*) handle->data;
+    delete (Client*) handle->data;
     delete (uv_tcp_t*) handle;
 }
 
@@ -63,8 +64,10 @@ static void writeCallback(uv_write_t* req, int status)
         Logger::getInstance().error(std::string("Write error: ") + uv_strerror(status) + "\n");
         // error!
     }
+    printf("Write OK!\n");
     delete (std::vector<char>*) req->data;
     delete (write_response_req*) req;
+    printf("Clear req ok\n");
 }
 
 static void onNewConnection(uv_stream_t* serverTcp, int status)
@@ -76,8 +79,8 @@ static void onNewConnection(uv_stream_t* serverTcp, int status)
         return;
     }
     uv_tcp_t* clientTcp = new uv_tcp_t;
+    printf("New connection %p\n", clientTcp);
     uv_tcp_init(uv_default_loop(), clientTcp);
-//    clientTcp->data = new Request(server, clientTcp);
     clientTcp->data = new Client(server, clientTcp);
     if (uv_accept(serverTcp, (uv_stream_t*) clientTcp) == 0)
     {
@@ -89,34 +92,34 @@ static void onNewConnection(uv_stream_t* serverTcp, int status)
     }
 }
 
-void HttpServer::writeResponse(uv_stream_t* client, const Response& resp)
+void HttpServer::writeResponse(uv_stream_t* client, std::shared_ptr<const Response> resp)
 {
-    std::vector<char>* buf_vec = new std::vector<char>;
+    auto* buf_vec = new std::vector<char>;
     std::stringstream status_line;
-    status_line << resp.httpVersion << " " << (int) resp.statusCode << " " << resp.reasonPhrase << "\r\n";
+    status_line << stringify(resp->httpVersion) << " " << (int) resp->statusCode << " " << resp->reasonPhrase << "\r\n";
     std::string str = status_line.str();
     buf_vec->insert(buf_vec->end(), str.begin(), str.end());
-    for (auto& e : resp.headers)
+    for (auto& e : resp->headers)
     {
         std::stringstream header;
         header << e.first << ": " << e.second << "\r\n";
         str = header.str();
         buf_vec->insert(buf_vec->end(), str.begin(), str.end());
     }
-    if (resp.headers.find("Content-Length") == resp.headers.end())
+    if (resp->headers.find("Content-Length") == resp->headers.end())
     {
         std::stringstream header;
-        header << "Content-Length: " << resp.body.size() << "\r\n";
+        header << "Content-Length: " << resp->body.size() << "\r\n";
         str = header.str();
         buf_vec->insert(buf_vec->end(), str.begin(), str.end());
     }
     buf_vec->insert(buf_vec->end(), {'\r', '\n'});
-    buf_vec->insert(buf_vec->end(), resp.body.begin(), resp.body.end());
-    delete &resp;
+    buf_vec->insert(buf_vec->end(), resp->body.begin(), resp->body.end());
     write_response_req* req = new write_response_req;
     req->wt.data = buf_vec;
     req->server = this;
     uv_buf_t buf = uv_buf_init(buf_vec->data(), buf_vec->size());
+    printf("Write response! %p %p %p\n", req, client, &buf);
     uv_write((uv_write_t*) req, client, &buf, 1, writeCallback);
 }
 
@@ -134,11 +137,9 @@ void HttpServer::start()
     uv_run(uv_default_loop(), UV_RUN_DEFAULT);
 }
 
-void HttpServer::process(const Request& req)
+void HttpServer::process(const Request& req, uv_tcp_t* client)
 {
-//    Response* resp = new Response(req.getHttpVersion());
-//    middleware->call(req, *resp);
-//    uv_tcp_t* client = req.client;
-    delete &req;
-//    writeResponse((uv_stream_t*) client, *resp);
+    std::shared_ptr<Response> resp = std::shared_ptr<Response>(new Response(req.getHttpVersion()));
+    middleware->call(req, resp);
+    writeResponse((uv_stream_t*) client, resp);
 }

@@ -10,9 +10,9 @@ class Route : public Middleware
 public:
     Route(Middleware* nextMiddleware);
 
-    void call(const Request& req, Response& resp) override;
+    void call(const Request& req, std::shared_ptr<Response> resp) override;
 
-    void process(const Request& req, Response& resp) override;
+    void process(const Request& req, std::shared_ptr<Response> resp) override;
 
     ~Route();
 };

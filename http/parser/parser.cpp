@@ -3,7 +3,7 @@
 
 void Parser::pushBuf(const char* buf, size_t len)
 {
-    buffer.push(buf, len);
+    buffer->push(buf, len);
     process();
 }
 
@@ -32,5 +32,6 @@ void Parser::process()
 
 Parser::Parser()
 {
+    buffer = std::shared_ptr<Buffer>(new Buffer);
     currentParser = std::shared_ptr<AbstractParser>(new StartLineParser(Request(), buffer));
 }

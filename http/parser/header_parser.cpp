@@ -44,22 +44,22 @@ static bool validateContent(const std::string& content)
     return true;
 }
 
-HeaderParser::HeaderParser(Request&& req, Buffer& buffer)
+HeaderParser::HeaderParser(Request&& req, std::shared_ptr<Buffer> buffer)
         :AbstractParser(std::move(req), buffer) { }
 
 std::shared_ptr<AbstractParser> HeaderParser::process()
 {
-    size_t lineSep = buffer.find("\r\n", 2);
-    if (lineSep >= buffer.len())
+    size_t lineSep = buffer->find("\r\n", 2);
+    if (lineSep >= buffer->len())
         return std::shared_ptr<AbstractParser>(this);
 
-    auto fieldBuf = buffer.split(lineSep + 2);
+    auto fieldBuf = buffer->split(lineSep + 2);
     if (lineSep == 0)
     {
         return buildBodyParser()->process();
     }
 
-    std::string headerField = fieldBuf.toString(0, lineSep);
+    std::string headerField = fieldBuf->toString(0, lineSep);
 
     size_t colon = headerField.find(':');
     std::string fieldName = headerField.substr(0, colon);

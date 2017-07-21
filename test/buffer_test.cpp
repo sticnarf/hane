@@ -1,79 +1,72 @@
+
 #include <iostream>
 #include <chrono>
 #include <string>
 #include <fstream>
+#include <cstdlib>
+#include <cassert>
+#include <ctime>
+#include <algorithm>
 #include <utils/buffer.h>
+
+Buffer* buffer;
+
+std::string rawString;
+
+void prepareData()
+{
+    buffer = new Buffer;
+    rawString = "";
+    for (int i = 0; i < 1000 || rawString.length() < 25000; i++)
+    {
+        int len = rand() % 10000;
+        std::string subStr;
+        for (int j = 0; j < len; j++)
+        {
+            subStr.push_back((char) (rand() % 128));
+        }
+        rawString += subStr;
+        buffer->push(subStr.c_str(), len);
+    }
+}
+
+void cleanData()
+{
+    delete buffer;
+}
+
+void pushTest()
+{
+    prepareData();
+
+    std::string result = buffer->toString(10000, 20000);
+
+    assert(rawString.substr(10000, 10000) == result);
+    assert(rawString == buffer->toString());
+
+    cleanData();
+}
+
+void splitTest()
+{
+    prepareData();
+
+    int len;
+    for (int ptr = 0; ptr < rawString.length(); ptr += len)
+    {
+        len = std::min((int)buffer->len(), rand() % 15000);
+        BufferPtr subBuf = buffer->split(len);
+        assert(subBuf->toString() == rawString.substr(ptr, len));
+    }
+
+    cleanData();
+}
 
 int main()
 {
-    std::string s;
-    auto begin = std::chrono::steady_clock::now();
-    for (int i = 0; i < 100000; i++)
-    {
-        s += "Hello, buffer!";
-        s += " Good morning!\n";
-        s += "Hello, buffer!";
-        s += " Good night!\n";
-    }
-    auto end = std::chrono::steady_clock::now();
-    std::cout << "Time difference = "
-              << std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count() << std::endl;
-    begin = std::chrono::steady_clock::now();
-    int x = 1;
-//    std::fstream fs("/tmp/test1");
-    for (int i = 0; i < s.length(); i++)
-    {
-//        fs << s[i];
-        x ^= s[i];
-    }
-//    fs.close();
-    end = std::chrono::steady_clock::now();
-    std::cout << "Time difference = "
-              << std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count() << std::endl;
-    begin = std::chrono::steady_clock::now();
-    for (; s.length() > 10000;)
-    {
-        s = s.substr(10000);
-    }
-    end = std::chrono::steady_clock::now();
-    std::cout << "Time difference = "
-              << std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count() << std::endl;
+    srand(time(NULL));
 
-    Buffer buffer;
-    begin = std::chrono::steady_clock::now();
-    for (int i = 0; i < 100000; i++)
-    {
-        buffer.push("Hello, buffer!", 14);
-        buffer.push(" Good morning!\n What the Fuck!", 15);
-        buffer.push("Hello, buffer!", 14);
-        buffer.push(" Good night!\n What the Fuck!", 13);
-    }
-    end = std::chrono::steady_clock::now();
-    std::cout << "Time difference = "
-              << std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count() << std::endl;
-    begin = std::chrono::steady_clock::now();
-//    std::fstream fs2("/tmp/test2");
-//    auto end_iterator = buffer.cend();
-//    for (auto it = buffer.cbegin(); it != end_iterator; it++)
-//    {
-//        x ^= *it;
-//        fs2 << *it;
-//    }
-//    fs2.close();
-    for (int i = 0; i < buffer.len(); i++)
-    {
-        x ^= buffer[i];
-    }
-    end = std::chrono::steady_clock::now();
-    std::cout << "Time difference = "
-              << std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count() << std::endl;
-    begin = std::chrono::steady_clock::now();
-    for (; buffer.len() > 10000;)
-    {
-        buffer.split(10000);
-    }
-    end = std::chrono::steady_clock::now();
-    std::cout << "Time difference = "
-              << std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count() << std::endl;
-    std::cout << x;
+    pushTest();
+
+    splitTest();
 }

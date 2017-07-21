@@ -1,10 +1,7 @@
 #include "final_parser.h"
 
-FinalParser::FinalParser(Request&& req, Buffer& buffer)
-        :AbstractParser(std::move(req), buffer) { }
-
-std::shared_ptr<AbstractParser> FinalParser::process()
+FinalParser::FinalParser(Request&& req, std::shared_ptr<Buffer> buffer)
+        :AbstractParser(std::move(req), buffer)
 {
-    this->finished = true;
-    return std::shared_ptr<AbstractParser>(this);
+    finished = true;
 }

@@ -2,16 +2,17 @@
 #include "utils/protocol_helper.h"
 #include "start_line_parser.h"
 #include "header_parser.h"
+#include "queries_parser.h"
 
-StartLineParser::StartLineParser(Request&& req, Buffer& buffer)
-    :AbstractParser(std::move(req), buffer) { }
+StartLineParser::StartLineParser(Request&& req, std::shared_ptr<Buffer> buffer)
+        :AbstractParser(std::move(req), buffer) { }
 
 std::shared_ptr<AbstractParser> StartLineParser::process()
 {
-    size_t lineSep = buffer.find("\r\n", 2);
-    if (lineSep >= buffer.len())
+    size_t lineSep = buffer->find("\r\n", 2);
+    if (lineSep >= buffer->len())
         return std::shared_ptr<AbstractParser>(this);
-    std::string startLine = buffer.split(lineSep + 2).toString(0, lineSep);
+    std::string startLine = buffer->split(lineSep + 2)->toString(0, lineSep);
 
     size_t sp1 = startLine.find(' ');
     size_t sp2 = startLine.find(' ', sp1 + 1);
@@ -29,5 +30,5 @@ std::shared_ptr<AbstractParser> StartLineParser::process()
     partialRequest.target = target;
     partialRequest.httpVersion = version;
 
-    return HeaderParser(std::move(partialRequest), buffer).process();
+    return QueriesParser(std::move(partialRequest), buffer).process();
 }

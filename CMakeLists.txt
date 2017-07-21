@@ -9,6 +9,7 @@ set(SOURCE_FILES
         http/http.cpp http/response.cpp http/client.cpp
         http/parser/parser.cpp http/parser/start_line_parser.cpp http/parser/abstract_parser.cpp
         http/parser/header_parser.cpp http/parser/sized_body_parser.cpp http/parser/final_parser.cpp
+        http/parser/queries_parser.cpp
         middlewares/middleware.cpp middlewares/route.cpp
         utils/logger.cpp utils/buffer.cpp utils/string.cpp utils/protocol_helper.cpp
         http/request/request.cpp http/request/header.cpp)

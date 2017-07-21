@@ -1,7 +1,7 @@
 #include <stdexcept>
 #include "abstract_parser.h"
 
-AbstractParser::AbstractParser(Request&& req, Buffer& buffer)
+AbstractParser::AbstractParser(Request&& req, std::shared_ptr<Buffer> buffer)
     :partialRequest(req), buffer(buffer), finished(false) { }
 
 std::shared_ptr<AbstractParser> AbstractParser::process()

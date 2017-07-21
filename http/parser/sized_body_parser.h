@@ -5,7 +5,7 @@
 class SizedBodyParser : public AbstractParser
 {
 public:
-    SizedBodyParser(Request&& req, Buffer& buffer);
+    SizedBodyParser(Request&& req, std::shared_ptr<Buffer> buffer);
     std::shared_ptr<AbstractParser> process();
 };
 

@@ -4,6 +4,7 @@
 #include <cstdlib>
 #include <string>
 #include <vector>
+#include <memory>
 
 static const size_t BLOCK_SIZE_EXP = 12;
 
@@ -34,7 +35,7 @@ private:
 public:
     Buffer();
     void push(const char* bytes, size_t len);
-    Buffer split(size_t pos);
+    std::shared_ptr<Buffer> split(size_t pos);
     size_t len();
     char& operator[](size_t index);
     ~Buffer();
@@ -66,5 +67,7 @@ public:
     std::string toString();
     std::string toString(size_t from, size_t to);
 };
+
+typedef std::shared_ptr<Buffer> BufferPtr;
 
 #endif

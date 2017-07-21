@@ -6,6 +6,7 @@
 Buffer::Buffer()
         :length(0), head(0)
 {
+//    printf("Buffer constructor %p\n", this);
     blocks.push_back(new BufferBlock);
 }
 
@@ -44,7 +45,7 @@ char& Buffer::operator[](size_t index)
     return blocks[blockIndex]->block[blockPtr];
 }
 
-Buffer Buffer::split(size_t pos)
+BufferPtr Buffer::split(size_t pos)
 {
     if (pos > length)
     {
@@ -55,24 +56,24 @@ Buffer Buffer::split(size_t pos)
     size_t blockIndex = actualPos >> BLOCK_SIZE_EXP;
     size_t blockPtr = actualPos - (blockIndex << BLOCK_SIZE_EXP);
 
-    Buffer newBuffer;
+    BufferPtr newBuffer = std::shared_ptr<Buffer>(new Buffer);
 
     for (int i = 0; i < blockIndex; i++)
     {
         BufferBlock* block = this->blocks[i];
-        newBuffer.blocks.push_back(block);
+        newBuffer->blocks.push_back(block);
     }
 
     BufferBlock* lastBlock = new BufferBlock;
 
-    newBuffer.blocks.back()->nextBlock = lastBlock;
+    newBuffer->blocks.back()->nextBlock = lastBlock;
 
     lastBlock->length = blockPtr;
     memcpy(lastBlock->block, this->blocks[blockIndex]->block, blockPtr);
 
-    newBuffer.blocks[0] = lastBlock;
-    newBuffer.head = head;
-    newBuffer.length = pos;
+    newBuffer->blocks[0] = lastBlock;
+    newBuffer->head = head;
+    newBuffer->length = pos;
 
     blocks.erase(blocks.begin(), blocks.begin() + blockIndex);
 
@@ -84,8 +85,10 @@ Buffer Buffer::split(size_t pos)
 
 Buffer::~Buffer()
 {
+//    printf("Buffer destructor %p\n", this);
     while (!blocks.empty())
     {
+//        printf("delete Block %p\n", blocks.back());
         delete blocks.back();
         blocks.pop_back();
     }

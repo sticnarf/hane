@@ -8,11 +8,11 @@ class AbstractParser
 {
 protected:
     Request partialRequest;
-    Buffer& buffer;
+    std::shared_ptr<Buffer> buffer;
 
     bool finished;
 
-    AbstractParser(Request&& req, Buffer& buffer);
+    AbstractParser(Request&& req, std::shared_ptr<Buffer> buffer);
 
 public:
     // Throws std::invalid_argument if it is a bad request
