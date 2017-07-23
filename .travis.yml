@@ -12,6 +12,9 @@ env:
     - MAKEFLAGS="-j 2"
 
 before_install:
+- wget https://github.com/gabime/spdlog/archive/v0.13.0.tar.gz
+- tar zxvf v0.13.0.tar.gz
+- sudo cp -r ./spdlog-0.13.0/include/spdlog /usr/local/include/spdlog
 - wget http://dist.libuv.org/dist/v1.12.0/libuv-v1.12.0.tar.gz
 - tar zxf libuv-v1.12.0.tar.gz
 - cd libuv-v1.12.0

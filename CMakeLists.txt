@@ -4,7 +4,9 @@ list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
 
 set(CMAKE_CXX_STANDARD 11)
 
-find_package(LibUV)
+find_package(LibUV REQUIRED)
+find_package(spdlog REQUIRED)
+
 set(SOURCE_FILES
         http/http.cpp http/response.cpp http/client.cpp
         http/parser/parser.cpp http/parser/start_line_parser.cpp http/parser/abstract_parser.cpp
@@ -13,7 +15,10 @@ set(SOURCE_FILES
         middlewares/middleware.cpp middlewares/route.cpp
         utils/logger.cpp utils/buffer.cpp utils/string.cpp utils/protocol_helper.cpp
         http/request/request.cpp http/request/header.cpp)
+
 include_directories(${LIBUV_INCLUDE_DIRS})
+include_directories(${SPDLOG_INCLUDE_DIRS})
+
 add_library(rackcpp STATIC ${SOURCE_FILES})
 target_link_libraries(rackcpp ${LIBUV_LIBRARIES})
 

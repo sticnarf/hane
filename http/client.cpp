@@ -16,9 +16,6 @@ Client::Client(HttpServer* server)
 {
     tcp = new uv_tcp_t;
     tcp->data = this;
-//    idler.data = this;
-//    uv_idle_init(uv_default_loop(), &idler);
-//    uv_idle_start(&idler, awaitRequest);
 }
 
 void Client::pushBuf(const char* buf, size_t len)

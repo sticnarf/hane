@@ -8,8 +8,8 @@
 #include "client.h"
 #include "middlewares/middleware.h"
 
-HttpServer::HttpServer(std::unique_ptr<Middleware>&& middleware, const std::string& _bindAddr, int port)
-        :middleware(std::move(middleware)), bindAddr(_bindAddr), port(port)
+HttpServer::HttpServer(std::shared_ptr<Middleware> middleware, const std::string& _bindAddr, int port)
+        :middleware(middleware), bindAddr(_bindAddr), port(port)
 {
     uv_tcp_init(uv_default_loop(), &server);
     uv_ip4_addr(_bindAddr.c_str(), port, &addr);
@@ -23,11 +23,7 @@ HttpServer::~HttpServer()
 
 static void closeCallback(uv_handle_t* handle)
 {
-    printf("Close callback %p\n", handle);
-    printf("Delete %p\n", handle->data);
-    delete (Client*) handle->data;
-//    printf("Delete handle %p\n", handle);
-//    delete (uv_tcp_t*) handle;
+    delete reinterpret_cast<Client*>(handle->data);
 }
 
 static void allocBuffer(uv_handle_t* handle, size_t suggested_size, uv_buf_t* buf)
@@ -38,16 +34,16 @@ static void allocBuffer(uv_handle_t* handle, size_t suggested_size, uv_buf_t* bu
 
 static void readCallback(uv_stream_t* clientTcp, ssize_t nread, const uv_buf_t* buf)
 {
-    Client* client = (Client*) clientTcp->data;
+    auto* client = reinterpret_cast<Client*>(clientTcp->data);
     if (nread > 0)
     {
-        Logger::getInstance().info(std::string("Read ") + std::to_string(nread) + "bytes.\n");
+        Logger::getInstance().info("Read {} bytes.", nread);
         client->pushBuf(buf->base, nread);
     }
     if (nread < 0)
     {
         if (nread != UV_EOF)
-            Logger::getInstance().error(std::string("Read error: ") + uv_strerror((int) nread) + "\n");
+            Logger::getInstance().error("Read error: {}", uv_strerror((int) nread));
         uv_close((uv_handle_t*) clientTcp, closeCallback);
     }
     delete[] buf->base;
@@ -55,38 +51,34 @@ static void readCallback(uv_stream_t* clientTcp, ssize_t nread, const uv_buf_t* 
 
 static void writeCallback(uv_write_t* req, int status)
 {
-//    HttpServer* server = ((write_response_req*) req)->server;
     if (status < 0)
     {
-        Logger::getInstance().error(std::string("Write error: ") + uv_strerror(status) + "\n");
+        Logger::getInstance().error("Write error: {}", uv_strerror(status));
         // error!
     }
 
-    printf("Write OK!\n");
-    delete[] (char*) req->data;
-    printf("Clear req ok\n");
+    delete[] reinterpret_cast<char*>(req->data);
 }
 
 void onNewConnection(uv_stream_t* serverTcp, int status)
 {
-    HttpServer* server = (HttpServer*) serverTcp->data;
+    auto* server = reinterpret_cast<HttpServer*>(serverTcp->data);
     if (status < 0)
     {
-        Logger::getInstance().error(std::string("New connection error: ") + uv_strerror(status));
+        Logger::getInstance().error("New connection error: {}", uv_strerror(status));
         return;
     }
 
-    Client* client = new Client(server);
-    printf("New connection %p\n", client->tcp);
+    auto* client = new Client(server);
     uv_tcp_init(uv_default_loop(), client->tcp);
 
-    if (uv_accept(serverTcp, (uv_stream_t*) client->tcp) == 0)
+    if (uv_accept(serverTcp, reinterpret_cast<uv_stream_t*>(client->tcp)) == 0)
     {
-        uv_read_start((uv_stream_t*) client->tcp, allocBuffer, readCallback);
+        uv_read_start(reinterpret_cast<uv_stream_t*>(client->tcp), allocBuffer, readCallback);
     }
     else
     {
-        uv_close((uv_handle_t*) client->tcp, closeCallback);
+        uv_close(reinterpret_cast<uv_handle_t*>(client->tcp), closeCallback);
     }
 }
 
@@ -118,23 +110,20 @@ void HttpServer::writeResponse(uv_stream_t* tcp, std::shared_ptr<const Response>
     auto data = new char[str.length()];
     memcpy(data, str.data(), str.length());
 
-    Client* client = static_cast<Client*>(tcp->data);
+    Client* client = reinterpret_cast<Client*>(tcp->data);
     client->write.data = data;
 
     client->buf = uv_buf_init(data, str.length());
-    printf("Write response! %p %p %p\n", &client->write, client, &client->buf);
-    uv_write(&client->write, tcp, &client->buf, 1, writeCallback);
+    uv_write(&(client->write), tcp, &(client->buf), 1, writeCallback);
 }
 
 void HttpServer::start()
 {
-    std::stringstream ss;
-    ss << "Start listening " << bindAddr << " port " << port << "\n";
-    Logger::getInstance().info(ss.str());
+    Logger::getInstance().info("Start listening {} port {}", bindAddr, port);
     int r = uv_listen((uv_stream_t*) &server, DEFAULT_BACKLOG, onNewConnection);
     if (r)
     {
-        Logger::getInstance().error(std::string("Listen error ") + uv_strerror(r) + "\n");
+        Logger::getInstance().error("Listen error {}", uv_strerror(r));
         exit(1);
     }
     uv_run(uv_default_loop(), UV_RUN_DEFAULT);
@@ -144,5 +133,5 @@ void HttpServer::process(const Request& req, uv_tcp_t* client)
 {
     auto resp = std::make_shared<Response>(req.getHttpVersion());
     middleware->call(req, resp);
-    writeResponse((uv_stream_t*) client, resp);
+    writeResponse(reinterpret_cast<uv_stream_t*>(client), resp);
 }

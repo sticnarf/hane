@@ -12,7 +12,7 @@ class Middleware;
 
 class HttpServer
 {
-    std::unique_ptr<Middleware> middleware;
+    std::shared_ptr<Middleware> middleware;
     std::string bindAddr;
     int port;
     uv_tcp_t server;
@@ -23,7 +23,7 @@ class HttpServer
     void writeResponse(uv_stream_t* client, std::shared_ptr<const Response> resp);
 
 public:
-    HttpServer(std::unique_ptr<Middleware>&& middleware, const std::string& _bindAddr, int port);
+    HttpServer(std::shared_ptr<Middleware> middleware, const std::string& _bindAddr, int port);
 
     ~HttpServer();
 

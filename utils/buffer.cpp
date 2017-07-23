@@ -6,7 +6,6 @@
 Buffer::Buffer()
         :length(0), head(0)
 {
-    printf("Buffer constructor %p\n", this);
     blocks.push_back(new BufferBlock);
 }
 
@@ -86,10 +85,8 @@ BufferPtr Buffer::split(size_t pos)
 
 Buffer::~Buffer()
 {
-    printf("Buffer destructor %p\n", this);
     while (!blocks.empty())
     {
-        printf("delete Block %p\n", blocks.back());
         delete blocks.back();
         blocks.pop_back();
     }
@@ -189,7 +186,6 @@ BufferBlock::BufferBlock()
     this->length = 0;
     this->block = new char[BLOCK_SIZE];
     this->nextBlock = nullptr;
-    printf("new Block %p\n", this);
 }
 
 BufferBlock::~BufferBlock()

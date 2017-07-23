@@ -2,27 +2,59 @@
 #define RACKCPP_LOGGER_H
 
 #include <string>
-#include <uv.h>
+#include <spdlog/spdlog.h>
 
 class Logger
 {
 private:
-    std::string infoPath, errorPath;
-    uv_loop_t logLoop;
-    uv_fs_t infoLogReq, errorLogReq;
-    uv_buf_t infoLogBuf, errorLogBuf;
-    uv_file infoLogFd = -1;
-    uv_file errorLogFd = -1;
+    std::string logPath;
+    std::shared_ptr<spdlog::logger> logger;
+    bool enabled;
+
+    void initLog();
 
     Logger();
-    void openLogFile(int& fd, const std::string& path);
-    static void writeCallback(uv_fs_t* req);
 public:
     static Logger& getInstance();
-    void setInfoPath(const std::string& path);
-    void setErrorPath(const std::string& path);
-    void info(const std::string& msg);
-    void error(const std::string& msg);
+
+    void setLogPath(const std::string& path);
+
+    template<typename T>
+    void info(const T& msg)
+    {
+        if (!enabled)
+            return;
+
+        logger->info(msg);
+    }
+
+    template<typename T>
+    void error(const T& msg){
+        if (!enabled)
+            return;
+
+        logger->error(msg);
+    }
+
+    template<typename Arg1, typename... Args>
+    void info(const char* fmt, const Arg1& arg1, const Args& ... args)
+    {
+        if (!enabled)
+            return;
+
+        logger->info(fmt, arg1, args...);
+    }
+
+    template<typename Arg1, typename... Args>
+    void error(const char* fmt, const Arg1& arg1, const Args& ... args)
+    {
+        if (!enabled)
+            return;
+
+        logger->error(fmt, arg1, args...);
+    }
+
+    ~Logger();
 };
 
 #endif
