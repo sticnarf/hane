@@ -19,6 +19,7 @@ ParserPtr QueriesParser::process()
             if (target[i] == '%')
             {
                 key += (char) std::stoi(target.substr(i + 1, 2), 0, 16);
+                i += 2;
             }
             else
             {
@@ -32,6 +33,7 @@ ParserPtr QueriesParser::process()
             if (target[i] == '%')
             {
                 val += (char) std::stoi(target.substr(i + 1, 2), 0, 16);
+                i += 2;
             }
             else
             {
