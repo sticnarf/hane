@@ -77,6 +77,9 @@ BufferPtr Buffer::split(size_t pos)
 
     blocks.erase(blocks.begin(), blocks.begin() + blockIndex);
 
+    if (blocks.empty())
+        blocks.push_back(new BufferBlock);
+
     head = blockPtr;
     length -= pos;
 

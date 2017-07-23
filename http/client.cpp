@@ -28,7 +28,6 @@ void Client::pushBuf(const char* buf, size_t len)
 Client::~Client()
 {
     delete tcp;
-//     uv_idle_stop(&idler);
 }
 
 void Client::processRequest()
