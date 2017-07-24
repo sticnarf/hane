@@ -14,7 +14,7 @@ set(SOURCE_FILES
         http/parser/queries_parser.cpp
         middlewares/middleware.cpp middlewares/route.cpp
         utils/logger.cpp utils/buffer.cpp utils/string.cpp utils/protocol_helper.cpp
-        http/request/request.cpp http/request/header.cpp)
+        http/request/request.cpp http/request/header.cpp http/parser/body_form_parser.cpp http/parser/parser_helpers.cpp)
 
 include_directories(${LIBUV_INCLUDE_DIRS})
 include_directories(${SPDLOG_INCLUDE_DIRS})

@@ -33,5 +33,6 @@ private:
     friend class HeaderParser;
     friend class SizedBodyParser;
     friend class FinalParser;
+    friend class ParserHelper;
 };
 #endif

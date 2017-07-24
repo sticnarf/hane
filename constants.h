@@ -88,4 +88,6 @@ enum class StatusCode
     HTTP_HTTP_VERSION_NOT_SUPPORTED = 505
 };
 
+const char* const CONTENT_TYPE_URLENCODED_FORM = "application/x-www-form-urlencoded";
+
 #endif
