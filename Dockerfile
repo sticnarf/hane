@@ -13,7 +13,7 @@ RUN mkdir build \
  && cd build \
  && cmake .. \
  && make -j2 \
- && cp ./hello /usr/local/bin/
+ && cp ./hello /usr/local/bin/ \
  && cd /work \
  && rm -rf * \
  && apt-get remove --purge -y build-essential libspdlog-dev libuv1-dev cmake \

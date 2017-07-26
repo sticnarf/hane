@@ -1,7 +1,7 @@
 require 'rspec'
 require 'capybara/rspec'
 require 'capybara/dsl'
-require 'selenium/webdriver'
+require 'capybara/webkit'
 
 RSpec.configure do |config|
   config.include Capybara::DSL
@@ -9,7 +9,7 @@ end
 
 Capybara.configure do |config|
   config.run_server = false
-  config.default_driver = :selenium
+  config.default_driver = :webkit
   config.app_host = ENV['APP_HOST']
 end
 
