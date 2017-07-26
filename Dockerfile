@@ -14,8 +14,8 @@ RUN mkdir build \
  && cmake .. \
  && make -j2 \
  && cp ./hello /usr/local/bin/
-
-RUN rm -rf * \
+ && cd /work \
+ && rm -rf * \
  && apt-get remove --purge -y build-essential libspdlog-dev libuv1-dev cmake \
  && apt-get autoremove --purge -y \
  && rm -rf /var/lib/apt/lists/*
