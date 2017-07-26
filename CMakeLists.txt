@@ -22,8 +22,14 @@ set(SOURCE_FILES
 include_directories(${LIBUV_INCLUDE_DIRS})
 include_directories(${SPDLOG_INCLUDE_DIRS})
 
+set(RACKCPP_LIBRARIES ${LIBUV_LIBRARIES})
+
+if(NOT APPLE AND NOT MSVC)
+    set(RACKCPP_LIBRARIES ${RACKCPP_LIBRARIES} pthread)
+endif()
+
 add_library(rackcpp STATIC ${SOURCE_FILES})
-target_link_libraries(rackcpp ${LIBUV_LIBRARIES})
+target_link_libraries(rackcpp ${RACKCPP_LIBRARIES})
 
 include_directories(${PROJECT_SOURCE_DIR})
 

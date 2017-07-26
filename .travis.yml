@@ -1,30 +1,10 @@
-language: cpp
 sudo: required
-dist: trusty
-compiler:
-- gcc
-- clang
-os:
-- linux
 
-env:
-  global:
-    - MAKEFLAGS="-j 2"
+services:
+  - docker
 
 before_install:
-- wget https://github.com/gabime/spdlog/archive/v0.13.0.tar.gz
-- tar zxvf v0.13.0.tar.gz
-- sudo cp -r ./spdlog-0.13.0/include/spdlog /usr/local/include/spdlog
-- wget http://dist.libuv.org/dist/v1.12.0/libuv-v1.12.0.tar.gz
-- tar zxf libuv-v1.12.0.tar.gz
-- cd libuv-v1.12.0
-- ./autogen.sh
-- ./configure
-- make
-- sudo make install
-- mkdir ../build
-- cd ../build
+- docker build -t rackcpp_hello .
 
 script:
-- cmake ..
-- make
+- docker run -d rackcpp_hello
