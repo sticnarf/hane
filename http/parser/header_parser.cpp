@@ -78,7 +78,9 @@ ParserPtr HeaderParser::process()
     if (!validateContent(fieldContent))
         throw std::invalid_argument("Bad field content");
 
-    partialRequest.header.putField(HeaderField(fieldName, fieldContent));
+    // This is OK for general header fields
+    // TODO Polymorphism for special header fields
+    partialRequest.header.put(fieldName, HeaderField(fieldContent));
 
     return this->process();
 }

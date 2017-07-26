@@ -2,38 +2,27 @@
 #define RACKCPP_HEADERS_H
 #include <map>
 #include <string>
+#include "utils/case_insensitive_map.h"
 
 class HeaderField
 {
 private:
-    std::string name;
     std::string content;
 public:
-    friend class Header;
+    const std::string& getContent() const
+    {
+        return content;
+    }
+
     HeaderField() = default;
-    HeaderField(const std::string& name, const std::string& content);
-    const std::string& getName() const;
-    const std::string& getContent() const;
+
+    HeaderField(const std::string& content)
+            :content(content) { }
 };
 
-class HeaderFieldEntry
+class Header: public CaseInsensitiveMap<HeaderField>
 {
-private:
-    bool valid;
-    const HeaderField header;
-public:
-    bool isValid() const;
-    HeaderFieldEntry(bool valid, const HeaderField& header);
-    HeaderField getHeaderField() const;
-};
 
-class Header
-{
-    std::map<std::string, HeaderField> fields;
-
-public:
-    void putField(const HeaderField& header);
-    HeaderFieldEntry getFieldEntry(std::string key);
 };
 
 #endif

@@ -10,4 +10,6 @@ public:
     static void parseUrlEncodedQueries(const std::string& data, Request& req, size_t begin = 0);
 };
 
+typedef CaseInsensitiveMap<std::string> FieldParameters;
+
 #endif

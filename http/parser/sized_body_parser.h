@@ -4,6 +4,7 @@
 
 class SizedBodyParser : public AbstractParser
 {
+    ParserPtr buildFormParser();
 public:
     SizedBodyParser(Request&& req, BufferPtr buffer);
     ParserPtr process();
