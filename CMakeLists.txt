@@ -33,7 +33,7 @@ target_link_libraries(rackcpp ${RACKCPP_LIBRARIES})
 
 include_directories(${PROJECT_SOURCE_DIR})
 
-set(HELLO_SOURCE_FILES examples/hello/main.cpp examples/hello/middlewares/hello.cpp)
+set(HELLO_SOURCE_FILES examples/hello/main.cpp)
 add_executable(hello ${HELLO_SOURCE_FILES})
 target_link_libraries(hello rackcpp)
 

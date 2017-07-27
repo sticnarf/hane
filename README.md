@@ -10,19 +10,19 @@ You can check `example/hello` and see how it works.
 
 Also, a `Dockerfile` for `hello` is provided. You can build the image using: 
 
-```bash
+```
 # docker build -t rackcpp_hello .
 ```
 
 And run it in a container:
 
-```bash
+```
 # docker run -d -v /tmp:/var/log -p 80:8089 rackcpp_hello
 ```
 
 Now, you can access the website through port `80`:
 
-```bash
+```
 $ curl http://localhost/?name=Alice
 <!DOCTYPE HTML>
 <title>Hello</title>
