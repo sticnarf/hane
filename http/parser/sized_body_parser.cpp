@@ -12,7 +12,7 @@ ParserPtr SizedBodyParser::process()
     if (contentLengthEntry.isValid()
             // Throws std::invalid_argument if conversion fails
             // TODO: Not handle overflow
-            && (contentLength = std::stoi(contentLengthEntry.getValue().getContent())) >= 0)
+            && (contentLength = std::stoi(contentLengthEntry.getValue()->getContent())) >= 0)
     {
         if (buffer->len() < contentLength)
         {
@@ -30,7 +30,7 @@ ParserPtr SizedBodyParser::process()
     // application/x-www-form-urlencoded
     // TODO Not supporting charset parameter
     auto contentType = partialRequest.header.get("Content-Type");
-    if (contentType.isValid() && contentType.getValue().getContent() == CONTENT_TYPE_URLENCODED_FORM)
+    if (contentType.isValid() && contentType.getValue()->getContent() == CONTENT_TYPE_URLENCODED_FORM)
     {
         return BodyFormParser(std::move(partialRequest), buffer).process();
     }
@@ -46,7 +46,7 @@ ParserPtr SizedBodyParser::buildFormParser()
         // Unknown!
         return std::make_shared<FinalParser>(std::move(partialRequest), buffer);
     }
-    auto contentType = contentTypeEntry.getValue().getContent();
+    auto contentType = contentTypeEntry.getValue()->getContent();
 
 
     // application/x-www-form-urlencoded

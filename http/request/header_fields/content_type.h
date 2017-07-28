@@ -4,15 +4,20 @@
 #include "http/request/header.h"
 #include <string>
 #include <map>
-#include "http/parser/parser_helpers.h"
 
-class ContentType: HeaderField
+class ContentType: public HeaderContent
 {
-public:
-    ContentType(const std::string& content);
 private:
+    // Case insensitive!
     std::string mediaType;
+
     FieldParameters parameters;
+public:
+    const std::string& getMediaType() const;
+    const std::string getLowercasedMediaType() const;
+    const FieldParameters& getParameters() const;
+
+    friend HeaderContentPtr parseContentType(const std::string& fieldContent);
 };
 
 #endif

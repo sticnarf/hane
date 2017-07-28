@@ -12,9 +12,9 @@ set(SOURCE_FILES
         http/parser/parser.cpp http/parser/start_line_parser.cpp http/parser/abstract_parser.cpp
         http/parser/header_parser.cpp http/parser/sized_body_parser.cpp http/parser/final_parser.cpp
         http/parser/queries_parser.cpp http/parser/body_form_parser.cpp
-        http/parser/parser_helpers.cpp http/parser/multipart_form_parser.cpp
+        http/parser/parser_helper.cpp http/parser/multipart_form_parser.cpp
         middlewares/middleware.cpp middlewares/route.cpp
-        utils/logger.cpp utils/buffer.cpp utils/string.cpp utils/protocol_helper.cpp
+        utils/logger.cpp utils/buffer.cpp utils/protocol_helper.cpp utils/string_utils.cpp
         utils/case_insensitive_map.h
         http/request/request.cpp http/request/header.h
         http/request/header_fields/content_type.cpp)

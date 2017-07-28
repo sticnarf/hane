@@ -3,7 +3,7 @@
 
 #include <string>
 #include <map>
-#include "./string.h"
+#include "string_utils.h"
 
 template<typename V>
 class CaseInsensitiveMap;
@@ -58,12 +58,12 @@ class CaseInsensitiveMap
 public:
     void put(const std::string& key, const V& value)
     {
-        innerMap[toLowercase(key)] = MapEntry<V>(key, value);
+        innerMap[StringUtils::toLowercase(key)] = MapEntry<V>(key, value);
     }
 
     MapEntry<V> get(const std::string& key)
     {
-        auto entry = innerMap.find(toLowercase(key));
+        auto entry = innerMap.find(StringUtils::toLowercase(key));
 
         if (entry == innerMap.end())
         {
