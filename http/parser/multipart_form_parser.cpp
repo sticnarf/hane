@@ -1,7 +1,7 @@
-#include <http/request/header_fields/content_type.h>
-#include "multipart_form_parser.h"
-#include "final_parser.h"
-#include "parser_helper.h"
+#include "http/request/header_fields/content_type.hpp"
+#include "multipart_form_parser.hpp"
+#include "final_parser.hpp"
+#include "parser_helper.hpp"
 
 MultipartFormParser::MultipartFormParser(Request&& req, BufferPtr buffer)
         :AbstractParser(std::move(req), buffer) { }

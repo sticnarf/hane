@@ -1,5 +1,5 @@
-#include "parser.h"
-#include "start_line_parser.h"
+#include "parser.hpp"
+#include "start_line_parser.hpp"
 
 void Parser::pushBuf(const char* buf, size_t len)
 {

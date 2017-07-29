@@ -1,8 +1,8 @@
 #ifndef RACKCPP_PARSER_HELPERS_H
 #define RACKCPP_PARSER_HELPERS_H
 
-#include "http/request/request.h"
-#include "http/request/header.h"
+#include "http/request/request.hpp"
+#include "http/request/header.hpp"
 #include <string>
 #include <utility>
 

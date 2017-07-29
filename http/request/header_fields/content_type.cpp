@@ -1,4 +1,4 @@
-#include "content_type.h"
+#include "content_type.hpp"
 
 const std::string ContentType::getLowercasedMediaType() const
 {

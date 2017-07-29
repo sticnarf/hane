@@ -1,7 +1,7 @@
 #ifndef RACKCPP_ABSTRACT_PARSER_H
 #define RACKCPP_ABSTRACT_PARSER_H
-#include "http/request/request.h"
-#include "utils/buffer.h"
+#include "http/request/request.hpp"
+#include "utils/buffer.hpp"
 #include <memory>
 
 class AbstractParser;

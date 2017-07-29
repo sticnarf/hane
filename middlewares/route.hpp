@@ -1,7 +1,7 @@
 #ifndef RACKCPP_ROUTE_MIDDLEWARE_H
 #define RACKCPP_ROUTE_MIDDLEWARE_H
 
-#include "middleware.h"
+#include "middleware.hpp"
 
 namespace middleware
 {

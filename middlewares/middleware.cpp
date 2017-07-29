@@ -1,4 +1,4 @@
-#include "middleware.h"
+#include "middleware.hpp"
 
 void Middleware::call(const Request& req, std::shared_ptr<Response> resp)
 {

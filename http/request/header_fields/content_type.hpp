@@ -1,7 +1,7 @@
 #ifndef RACKCPP_CONTENT_TYPE_H
 #define RACKCPP_CONTENT_TYPE_H
 
-#include "http/request/header.h"
+#include "http/request/header.hpp"
 #include <string>
 #include <map>
 

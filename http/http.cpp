@@ -3,10 +3,10 @@
 #include <sstream>
 #include <cstring>
 #include <uv.h>
-#include "utils/logger.h"
-#include "utils/protocol_helper.h"
-#include "client.h"
-#include "middlewares/middleware.h"
+#include "utils/logger.hpp"
+#include "utils/protocol_helper.hpp"
+#include "client.hpp"
+#include "middlewares/middleware.hpp"
 
 HttpServer::HttpServer(std::shared_ptr<Middleware> middleware, const std::string& _bindAddr, int port)
         :middleware(middleware), bindAddr(_bindAddr), port(port)

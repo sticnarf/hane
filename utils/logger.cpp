@@ -1,6 +1,6 @@
 #include <iostream>
 #include <cstring>
-#include "logger.h"
+#include "logger.hpp"
 
 Logger::Logger()
 {

@@ -5,8 +5,8 @@
 #include <map>
 #include <memory>
 #include <uv.h>
-#include "request/request.h"
-#include "response.h"
+#include "http/request/request.hpp"
+#include "response.hpp"
 
 class Middleware;
 

@@ -1,7 +1,7 @@
 #ifndef RACKCPP_MULTIPART_FORM_PARSER_H
 #define RACKCPP_MULTIPART_FORM_PARSER_H
 
-#include "abstract_parser.h"
+#include "abstract_parser.hpp"
 
 class MultipartFormParser: public AbstractParser
 {

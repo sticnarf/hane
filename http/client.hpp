@@ -1,7 +1,7 @@
 #ifndef RACKCPP_CLIENT_H
 #define RACKCPP_CLIENT_H
-#include "http/parser/parser.h"
-#include "http.h"
+#include "http/parser/parser.hpp"
+#include "http.hpp"
 
 class Client
 {

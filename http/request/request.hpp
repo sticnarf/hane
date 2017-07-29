@@ -1,10 +1,10 @@
 #ifndef RACKCPP_REQUEST_H
 #define RACKCPP_REQUEST_H
 #include <string>
-#include "constants.h"
-#include "header.h"
-#include "utils/buffer.h"
-#include "form_data.h"
+#include "constants.hpp"
+#include "header.hpp"
+#include "utils/buffer.hpp"
+#include "form_data.hpp"
 
 typedef BufferPtr Body;
 

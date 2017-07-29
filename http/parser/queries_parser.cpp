@@ -1,6 +1,6 @@
-#include "queries_parser.h"
-#include "header_parser.h"
-#include "parser_helper.h"
+#include "queries_parser.hpp"
+#include "header_parser.hpp"
+#include "parser_helper.hpp"
 
 QueriesParser::QueriesParser(Request&& req, BufferPtr buffer)
         :AbstractParser(std::move(req), buffer) { }

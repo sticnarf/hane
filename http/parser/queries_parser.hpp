@@ -1,6 +1,6 @@
 #ifndef RACKCPP_QUERIES_PARSER_CPP_H
 #define RACKCPP_QUERIES_PARSER_CPP_H
-#include "abstract_parser.h"
+#include "abstract_parser.hpp"
 
 class QueriesParser: public AbstractParser
 {

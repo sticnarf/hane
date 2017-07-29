@@ -1,7 +1,7 @@
 #ifndef RACKCPP_FORM_DATA_H
 #define RACKCPP_FORM_DATA_H
 #include <string>
-#include "header.h"
+#include "header.hpp"
 
 class FormData {
 private:

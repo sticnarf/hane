@@ -7,7 +7,7 @@
 #include <cassert>
 #include <ctime>
 #include <algorithm>
-#include <utils/buffer.h>
+#include <utils/buffer.hpp>
 
 BufferPtr buffer;
 

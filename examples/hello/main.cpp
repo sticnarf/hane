@@ -1,4 +1,4 @@
-#include <rackcpp.h>
+#include <rackcpp.hpp>
 
 class HelloMiddleware: public Middleware
 {

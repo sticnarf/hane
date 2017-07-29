@@ -1,6 +1,6 @@
 #include <stdexcept>
 #include <cstring>
-#include "protocol_helper.h"
+#include "protocol_helper.hpp"
 
 HttpMethod toHttpMethod(const char* str, size_t len)
 {

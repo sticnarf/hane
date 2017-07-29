@@ -1,6 +1,6 @@
 #ifndef RACKCPP_FINAL_PARSER_H
 #define RACKCPP_FINAL_PARSER_H
-#include "abstract_parser.h"
+#include "abstract_parser.hpp"
 
 class FinalParser : public AbstractParser
 {

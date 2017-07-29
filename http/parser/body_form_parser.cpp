@@ -2,9 +2,9 @@
 // Created by Yilin Chen on 2017/7/24.
 //
 
-#include "body_form_parser.h"
-#include "parser_helper.h"
-#include "final_parser.h"
+#include "body_form_parser.hpp"
+#include "parser_helper.hpp"
+#include "final_parser.hpp"
 
 BodyFormParser::BodyFormParser(Request&& req, BufferPtr buffer)
         :AbstractParser(std::move(req), buffer) { }

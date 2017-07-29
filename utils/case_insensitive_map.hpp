@@ -3,7 +3,7 @@
 
 #include <string>
 #include <map>
-#include "string_utils.h"
+#include "string_utils.hpp"
 
 template<typename V>
 class CaseInsensitiveMap;

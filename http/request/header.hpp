@@ -3,7 +3,7 @@
 #include <map>
 #include <string>
 #include <memory>
-#include "utils/case_insensitive_map.h"
+#include "utils/case_insensitive_map.hpp"
 
 class HeaderContent
 {

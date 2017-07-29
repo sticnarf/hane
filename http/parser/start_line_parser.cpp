@@ -1,8 +1,8 @@
 #include <stdexcept>
-#include "utils/protocol_helper.h"
-#include "start_line_parser.h"
-#include "header_parser.h"
-#include "queries_parser.h"
+#include "utils/protocol_helper.hpp"
+#include "start_line_parser.hpp"
+#include "header_parser.hpp"
+#include "queries_parser.hpp"
 
 StartLineParser::StartLineParser(Request&& req, BufferPtr buffer)
         :AbstractParser(std::move(req), buffer) { }

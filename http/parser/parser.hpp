@@ -1,9 +1,9 @@
 #ifndef RACKCPP_PARSER_H
 #define RACKCPP_PARSER_H
 
-#include "http/request/request.h"
-#include "utils/buffer.h"
-#include "abstract_parser.h"
+#include "http/request/request.hpp"
+#include "utils/buffer.hpp"
+#include "abstract_parser.hpp"
 #include <queue>
 
 class Parser

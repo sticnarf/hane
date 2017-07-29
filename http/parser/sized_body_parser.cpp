@@ -1,8 +1,8 @@
-#include <http/request/header_fields/content_type.h>
-#include "sized_body_parser.h"
-#include "final_parser.h"
-#include "body_form_parser.h"
-#include "multipart_form_parser.h"
+#include <http/request/header_fields/content_type.hpp>
+#include "sized_body_parser.hpp"
+#include "final_parser.hpp"
+#include "body_form_parser.hpp"
+#include "multipart_form_parser.hpp"
 
 SizedBodyParser::SizedBodyParser(Request&& req, BufferPtr buffer)
         :AbstractParser(std::move(req), buffer) { }

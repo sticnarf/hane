@@ -1,7 +1,7 @@
 #ifndef RACKCPP_BODY_FORM_PARSER_H
 #define RACKCPP_BODY_FORM_PARSER_H
 
-#include "abstract_parser.h"
+#include "abstract_parser.hpp"
 
 class BodyFormParser : public AbstractParser
 {

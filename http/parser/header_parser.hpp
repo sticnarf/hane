@@ -1,7 +1,7 @@
 #ifndef RACKCPP_HEADER_PARSER_H
 #define RACKCPP_HEADER_PARSER_H
 
-#include "abstract_parser.h"
+#include "abstract_parser.hpp"
 
 class HeaderParser : public AbstractParser
 {

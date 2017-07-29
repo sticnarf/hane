@@ -1,8 +1,8 @@
-#include "header_parser.h"
-#include "sized_body_parser.h"
+#include "header_parser.hpp"
+#include "sized_body_parser.hpp"
 #include <functional>
-#include "http/request/header_fields/content_type.h"
-#include "parser_helper.h"
+#include "http/request/header_fields/content_type.hpp"
+#include "parser_helper.hpp"
 
 HeaderParser::HeaderParser(Request&& req, BufferPtr buffer)
         :AbstractParser(std::move(req), buffer) { }
