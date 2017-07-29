@@ -16,7 +16,7 @@ set(SOURCE_FILES
         middlewares/middleware.cpp middlewares/route.cpp
         utils/logger.cpp utils/buffer.cpp utils/protocol_helper.cpp utils/string_utils.cpp
         utils/case_insensitive_map.h
-        http/request/request.cpp http/request/header.h
+        http/request/request.cpp http/request/header.h http/request/form_data.cpp
         http/request/header_fields/content_type.cpp)
 
 include_directories(${LIBUV_INCLUDE_DIRS})

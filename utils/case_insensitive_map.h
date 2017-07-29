@@ -61,7 +61,7 @@ public:
         innerMap[StringUtils::toLowercase(key)] = MapEntry<V>(key, value);
     }
 
-    MapEntry<V> get(const std::string& key)
+    MapEntry<V> get(const std::string& key) const
     {
         auto entry = innerMap.find(StringUtils::toLowercase(key));
 

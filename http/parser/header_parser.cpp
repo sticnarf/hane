@@ -15,31 +15,14 @@ ParserPtr HeaderParser::process()
 
     auto fieldBuf = buffer->split(lineSep + 2);
     if (lineSep == 0)
-    {
         return buildBodyParser()->process();
-    }
 
     std::string headerField = fieldBuf->toString(0, lineSep);
 
-    size_t colon = headerField.find(':');
-    std::string fieldName = headerField.substr(0, colon);
-    if (!ParserHelper::validateToken(fieldName))
-        throw std::invalid_argument("Bad field name");
+    auto parseResult = ParserHelper::parseHeaderField(headerField);
+    auto fieldName = parseResult.first;
+    auto fieldContent = parseResult.second;
 
-    size_t firstNotSpace = colon + 1;
-    while (isspace(headerField[firstNotSpace]))
-        firstNotSpace++;
-
-    size_t lastNotSpace = headerField.length() - 1;
-    while (isspace(headerField[lastNotSpace]))
-        lastNotSpace--;
-
-    std::string fieldContent = headerField.substr(firstNotSpace, lastNotSpace - firstNotSpace + 1);
-    if (!ParserHelper::validateHeaderFieldContent(fieldContent))
-        throw std::invalid_argument("Bad field content");
-
-    // This is OK for general header fields
-    // TODO Polymorphism for special header fields
     partialRequest.header.put(fieldName, parseField(fieldName, fieldContent));
 
     return this->process();
@@ -55,19 +38,7 @@ HeaderContentPtr parseContentType(const std::string& fieldContent)
 {
     auto contentType = std::make_shared<ContentType>();
 
-    auto semicolon = fieldContent.find(';');
-
-    // Feature: if the second argument of substr is npos, it will returns [pos, size())
-    contentType->mediaType = fieldContent.substr(0, semicolon);
-    StringUtils::trim(contentType->mediaType);
-    if (!ParserHelper::validateToken(contentType->mediaType))
-        throw std::invalid_argument("Bad media type");
-
-    // Parse the remaining parameters
-    if (semicolon != std::string::npos)
-    {
-        ParserHelper::parseParameters(fieldContent, contentType->parameters, semicolon + 1);
-    }
+    ParserHelper::parseHeaderFieldWithParameters(contentType, fieldContent);
 
     return contentType;
 }
@@ -79,7 +50,7 @@ HeaderContentPtr HeaderParser::parseField(const std::string& fieldName, const st
             {"content-type", parseContentType}
     };
 
-    auto function = functionMap.find(StringUtils::toLowercase(fieldContent));
+    auto function = functionMap.find(StringUtils::toLowercase(fieldName));
     if (function != functionMap.end())
     {
         return function->second(fieldContent);

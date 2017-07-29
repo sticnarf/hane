@@ -4,6 +4,7 @@
 #include "constants.h"
 #include "header.h"
 #include "utils/buffer.h"
+#include "form_data.h"
 
 typedef BufferPtr Body;
 
@@ -15,13 +16,13 @@ public:
     const std::string& getTarget() const;
     const Header& getHeader() const;
     const Body& getBody() const;
-    const std::map<std::string, std::string>& getQueries() const;
+    const std::map<std::string, FormData>& getQueries() const;
 
 private:
     HttpVersion httpVersion;
     HttpMethod httpMethod;
     std::string target;
-    std::map<std::string, std::string> queries;
+    std::map<std::string, FormData> queries;
 
     Header header;
     Body body;
@@ -34,5 +35,6 @@ private:
     friend class SizedBodyParser;
     friend class FinalParser;
     friend class ParserHelper;
+    friend class MultipartFormParser;
 };
 #endif

@@ -17,8 +17,8 @@ public:
         auto name = queries.find("name");
         if (name != queries.end())
         {
-            Logger::getInstance().info("Get name: {}", queries["name"]);
-            resp_str += "Hello, " + name->second + "!";
+            Logger::getInstance().info("Get name: {}", queries["name"].getData());
+            resp_str += "Hello, " + name->second.getData() + "!";
         }
         else
         {

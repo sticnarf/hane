@@ -5,19 +5,12 @@
 #include <string>
 #include <map>
 
-class ContentType: public HeaderContent
+class ContentType: public HeaderContentWithParameters
 {
-private:
-    // Case insensitive!
-    std::string mediaType;
-
-    FieldParameters parameters;
 public:
-    const std::string& getMediaType() const;
     const std::string getLowercasedMediaType() const;
-    const FieldParameters& getParameters() const;
-
-    friend HeaderContentPtr parseContentType(const std::string& fieldContent);
 };
+
+typedef std::shared_ptr<ContentType> ContentTypePtr;
 
 #endif

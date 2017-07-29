@@ -1,6 +1,8 @@
+#include <http/request/header_fields/content_type.h>
 #include "sized_body_parser.h"
 #include "final_parser.h"
 #include "body_form_parser.h"
+#include "multipart_form_parser.h"
 
 SizedBodyParser::SizedBodyParser(Request&& req, BufferPtr buffer)
         :AbstractParser(std::move(req), buffer) { }
@@ -46,19 +48,22 @@ ParserPtr SizedBodyParser::buildFormParser()
         // Unknown!
         return std::make_shared<FinalParser>(std::move(partialRequest), buffer);
     }
-    auto contentType = contentTypeEntry.getValue()->getContent();
-
+    auto contentType = std::dynamic_pointer_cast<ContentType>(contentTypeEntry.getValue());
+    auto mediaType = contentType->getLowercasedMediaType();
 
     // application/x-www-form-urlencoded
     // TODO Not supporting charset parameter
-    if (contentType == CONTENT_TYPE_URLENCODED_FORM)
+    if (mediaType == CONTENT_TYPE_URLENCODED_FORM)
     {
         return std::make_shared<BodyFormParser>(std::move(partialRequest), buffer);
     }
 
     // multipart/form-data
     // TODO
-//    if (contentType == )
+    if (mediaType == CONTENT_TYPE_FORM_MULTIPART)
+    {
+        return std::make_shared<MultipartFormParser>(std::move(partialRequest), buffer);
+    }
 
     // Unknown!
     return std::make_shared<FinalParser>(std::move(partialRequest), buffer);

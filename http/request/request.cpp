@@ -25,7 +25,7 @@ const Body& Request::getBody() const
     return body;
 }
 
-const std::map<std::string, std::string>& Request::getQueries() const
+const std::map<std::string, FormData>& Request::getQueries() const
 {
     return queries;
 }
