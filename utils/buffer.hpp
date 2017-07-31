@@ -62,9 +62,9 @@ public:
 
         char *operator->();
 
-        bool operator==(const iterator rhs);
+        bool operator==(iterator rhs);
 
-        bool operator!=(const iterator rhs);
+        bool operator!=(iterator rhs);
 
     private:
         Buffer *buffer;

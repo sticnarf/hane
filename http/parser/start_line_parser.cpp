@@ -6,7 +6,7 @@
 #include "queries_parser.hpp"
 
 StartLineParser::StartLineParser(Request &&req, BufferPtr buffer)
-        : AbstractParser(std::move(req), buffer) {}
+        : AbstractParser(std::move(req), std::move(buffer)) {}
 
 ParserPtr StartLineParser::process() {
     size_t lineSep = buffer->find("\r\n", 2);

@@ -5,10 +5,10 @@
  * Only use the main event loop for transfer
  */
 
-static void awaitRequest(uv_idle_t *handle) {
-    Client *client = (Client *) handle->data;
-    client->processRequest();
-}
+//static void awaitRequest(uv_idle_t *handle) {
+//    auto *client = static_cast<Client *>(handle->data);
+//    client->processRequest();
+//}
 
 Client::Client(HttpServer *server)
         : server(server) {

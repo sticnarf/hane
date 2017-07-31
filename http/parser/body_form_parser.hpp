@@ -8,7 +8,7 @@ class BodyFormParser : public AbstractParser {
 public:
     BodyFormParser(Request &&req, BufferPtr buffer);
 
-    ParserPtr process();
+    ParserPtr process() override;
 };
 
 #endif

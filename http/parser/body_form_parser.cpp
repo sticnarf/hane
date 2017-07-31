@@ -3,11 +3,13 @@
 //
 
 #include "body_form_parser.hpp"
+
+#include <utility>
 #include "parser_helper.hpp"
 #include "final_parser.hpp"
 
 BodyFormParser::BodyFormParser(Request &&req, BufferPtr buffer)
-        : AbstractParser(std::move(req), buffer) {}
+        : AbstractParser(std::move(req), std::move(buffer)) {}
 
 ParserPtr BodyFormParser::process() {
     auto body = partialRequest.getBody();

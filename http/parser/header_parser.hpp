@@ -11,7 +11,7 @@ class HeaderParser : public AbstractParser {
 public:
     HeaderParser(Request &&req, BufferPtr buffer);
 
-    ParserPtr process();
+    ParserPtr process() override;
 };
 
 #endif

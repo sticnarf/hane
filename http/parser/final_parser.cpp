@@ -1,7 +1,9 @@
 #include "final_parser.hpp"
 
+#include <utility>
+
 FinalParser::FinalParser(Request &&req, BufferPtr buffer)
-        : AbstractParser(std::move(req), buffer) {
+        : AbstractParser(std::move(req), std::move(buffer)) {
     finished = true;
 }
 

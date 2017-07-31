@@ -49,6 +49,6 @@ void Response::setStatusCode(StatusCode statusCode) {
 }
 
 Response::Response(HttpVersion version)
-        : httpVersion(version) {}
+        : httpVersion(version), statusCode(StatusCode::HTTP_ACCEPTED) {}
 
-Response::~Response() {}
+Response::~Response() = default;

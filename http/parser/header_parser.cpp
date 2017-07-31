@@ -1,11 +1,12 @@
 #include "header_parser.hpp"
 #include "sized_body_parser.hpp"
 #include <functional>
+#include <utility>
 #include "http/request/header_fields/content_type.hpp"
 #include "parser_helper.hpp"
 
 HeaderParser::HeaderParser(Request &&req, BufferPtr buffer)
-        : AbstractParser(std::move(req), buffer) {}
+        : AbstractParser(std::move(req), std::move(buffer)) {}
 
 ParserPtr HeaderParser::process() {
     size_t lineSep = buffer->find("\r\n", 2);

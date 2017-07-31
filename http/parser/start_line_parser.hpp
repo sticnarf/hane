@@ -7,7 +7,7 @@ class StartLineParser : public AbstractParser {
 public:
     StartLineParser(Request &&req, BufferPtr buffer);
 
-    ParserPtr process();
+    ParserPtr process() override;
 };
 
 #endif

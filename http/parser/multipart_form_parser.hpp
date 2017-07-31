@@ -7,7 +7,7 @@ class MultipartFormParser : public AbstractParser {
 public:
     MultipartFormParser(Request &&req, BufferPtr buffer);
 
-    ParserPtr process();
+    ParserPtr process() override;
 };
 
 #endif

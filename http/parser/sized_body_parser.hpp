@@ -9,7 +9,7 @@ class SizedBodyParser : public AbstractParser {
 public:
     SizedBodyParser(Request &&req, BufferPtr buffer);
 
-    ParserPtr process();
+    ParserPtr process() override;
 };
 
 #endif

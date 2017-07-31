@@ -11,7 +11,7 @@ class Response {
     friend class HttpServer;
 
 public:
-    Response(HttpVersion version);
+    explicit Response(HttpVersion version);
 
     ~Response();
 

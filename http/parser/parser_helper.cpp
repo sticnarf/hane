@@ -92,7 +92,7 @@ bool ParserHelper::validateToken(const std::string &name) {
             continue;
 
         bool ok = false;
-        for (int i = 0; i < listLen; i++) {
+        for (size_t i = 0; i < listLen; i++) {
             if (c == list[i]) {
                 ok = true;
                 break;

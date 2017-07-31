@@ -1,4 +1,5 @@
 #include <http/http.hpp>
+#include <utility>
 #include <utils/logger.hpp>
 #include <middlewares/simple_middleware.hpp>
 #include <middlewares/route.hpp>
@@ -6,10 +7,10 @@
 
 class HelloMiddleware : public SimpleMiddleware {
 public:
-    HelloMiddleware(std::shared_ptr<Middleware> next_middleware)
-            : SimpleMiddleware(next_middleware) {}
+    explicit HelloMiddleware(std::shared_ptr<Middleware> next_middleware)
+            : SimpleMiddleware(std::move(next_middleware)) {}
 
-    void process(const Request &req, std::shared_ptr<Response> resp) {
+    void process(const Request &req, std::shared_ptr<Response> resp) override {
         resp->setStatusCode(StatusCode::HTTP_OK);
         resp->headers.insert({"Content-Type", "text/html"});
 

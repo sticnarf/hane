@@ -12,7 +12,7 @@ public:
     virtual ~SimpleMiddleware() = default;
 
 protected:
-    SimpleMiddleware(std::shared_ptr<Middleware> nextMiddleware);
+    explicit SimpleMiddleware(std::shared_ptr<Middleware> nextMiddleware);
 
     std::shared_ptr<Middleware> nextMiddleware;
 };

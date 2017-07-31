@@ -3,6 +3,7 @@
 
 #include <string>
 #include <map>
+#include <utility>
 #include "string_utils.hpp"
 
 template<typename V>
@@ -23,8 +24,8 @@ private:
 public:
     MapEntry<V>() = default;
 
-    MapEntry<V>(const std::string &key, const V &value)
-            : valid(true), key(key), value(value) {}
+    MapEntry<V>(std::string key, const V &value)
+            : valid(true), key(std::move(key)), value(value) {}
 
     bool isValid() const {
         return valid;

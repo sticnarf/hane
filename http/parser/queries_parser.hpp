@@ -7,7 +7,7 @@ class QueriesParser : public AbstractParser {
 public:
     QueriesParser(Request &&req, BufferPtr buffer);
 
-    ParserPtr process();
+    ParserPtr process() override;
 };
 
 #endif

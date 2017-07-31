@@ -1,9 +1,11 @@
 #include "queries_parser.hpp"
+
+#include <utility>
 #include "header_parser.hpp"
 #include "parser_helper.hpp"
 
 QueriesParser::QueriesParser(Request &&req, BufferPtr buffer)
-        : AbstractParser(std::move(req), buffer) {}
+        : AbstractParser(std::move(req), std::move(buffer)) {}
 
 ParserPtr QueriesParser::process() {
     const std::string &target = partialRequest.target;

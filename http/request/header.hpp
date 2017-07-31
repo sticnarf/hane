@@ -4,6 +4,7 @@
 #include <map>
 #include <string>
 #include <memory>
+#include <utility>
 #include "utils/case_insensitive_map.hpp"
 
 class HeaderContent {
@@ -16,8 +17,8 @@ public:
 
     HeaderContent() = default;
 
-    HeaderContent(const std::string &content)
-            : content(content) {}
+    HeaderContent(std::string content)
+            : content(std::move(content)) {}
 
     virtual ~HeaderContent() = default;
 
@@ -51,7 +52,7 @@ public:
         return parameters;
     }
 
-    virtual ~HeaderContentWithParameters() = default;
+    virtual ~HeaderContentWithParameters() override = default;
 
     friend class ParserHelper;
 };

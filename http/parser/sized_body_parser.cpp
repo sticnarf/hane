@@ -1,19 +1,20 @@
 #include <http/request/header_fields/content_type.hpp>
+#include <utility>
 #include "sized_body_parser.hpp"
 #include "final_parser.hpp"
 #include "body_form_parser.hpp"
 #include "multipart_form_parser.hpp"
 
 SizedBodyParser::SizedBodyParser(Request &&req, BufferPtr buffer)
-        : AbstractParser(std::move(req), buffer) {}
+        : AbstractParser(std::move(req), std::move(buffer)) {}
 
 ParserPtr SizedBodyParser::process() {
     auto contentLengthEntry = partialRequest.header.get("Content-Length");
-    int contentLength;
+    size_t contentLength;
     if (contentLengthEntry.isValid()
         // Throws std::invalid_argument if conversion fails
         // TODO: Not handle overflow
-        && (contentLength = std::stoi(contentLengthEntry.getValue()->getContent())) >= 0) {
+        && (contentLength = std::stoul(contentLengthEntry.getValue()->getContent())) >= 0) {
         if (buffer->len() < contentLength) {
             return std::shared_ptr<AbstractParser>(this);
         }

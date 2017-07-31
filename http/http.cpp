@@ -2,6 +2,7 @@
 #include <iostream>
 #include <sstream>
 #include <cstring>
+#include <utility>
 #include <uv.h>
 #include "utils/logger.hpp"
 #include "utils/protocol_helper.hpp"
@@ -9,15 +10,14 @@
 #include "middlewares/middleware.hpp"
 
 HttpServer::HttpServer(std::shared_ptr<Middleware> middleware, const std::string &_bindAddr, int port)
-        : middleware(middleware), bindAddr(_bindAddr), port(port) {
+        : middleware(std::move(middleware)), bindAddr(_bindAddr), port(port) {
     uv_tcp_init(uv_default_loop(), &server);
     uv_ip4_addr(_bindAddr.c_str(), port, &addr);
     uv_tcp_bind(&server, reinterpret_cast<const sockaddr *>(&addr), 0);
     server.data = this;
 }
 
-HttpServer::~HttpServer() {
-}
+HttpServer::~HttpServer() = default;
 
 static void closeCallback(uv_handle_t *handle) {
     delete static_cast<Client *>(handle->data);
@@ -95,7 +95,7 @@ void HttpServer::writeResponse(uv_stream_t *tcp, std::shared_ptr<const Response>
     auto data = new char[str.length()];
     memcpy(data, str.data(), str.length());
 
-    Client *client = static_cast<Client *>(tcp->data);
+    auto *client = static_cast<Client *>(tcp->data);
     client->write.data = data;
 
     client->buf = uv_buf_init(data, static_cast<unsigned int>(str.length()));
@@ -105,7 +105,7 @@ void HttpServer::writeResponse(uv_stream_t *tcp, std::shared_ptr<const Response>
 void HttpServer::start() {
     Logger::getInstance().info("Start listening {} port {}", bindAddr, port);
     int r = uv_listen((uv_stream_t *) &server, DEFAULT_BACKLOG, onNewConnection);
-    if (r) {
+    if (r > 0) {
         Logger::getInstance().error("Listen error {}", uv_strerror(r));
         exit(1);
     }

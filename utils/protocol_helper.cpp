@@ -34,9 +34,8 @@ HttpMethod toHttpMethod(const char *str, size_t len) {
     const char *validation = stringify(method);
     if (strlen(validation) == len && strncmp(str, validation, len) == 0) {
         return method;
-    } else {
-        throw std::invalid_argument("Unknown httpMethod");
     }
+    throw std::invalid_argument("Unknown httpMethod");
 }
 
 const char *stringify(HttpMethod method) {
@@ -77,9 +76,8 @@ HttpVersion toHttpVersion(const char *str, size_t len) {
     const char *validation = stringify(version);
     if (strncmp(validation, str, len) == 0) {
         return version;
-    } else {
-        throw std::invalid_argument("Unknown HTTP httpVersion");
     }
+    throw std::invalid_argument("Unknown HTTP httpVersion");
 }
 
 const char *stringify(HttpVersion version) {

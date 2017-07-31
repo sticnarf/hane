@@ -49,12 +49,12 @@ BufferPtr Buffer::split(size_t pos) {
 
     BufferPtr newBuffer = std::make_shared<Buffer>(nullptr);
 
-    for (int i = 0; i < blockIndex; i++) {
+    for (size_t i = 0; i < blockIndex; i++) {
         BufferBlock *block = this->blocks[i];
         newBuffer->blocks.push_back(block);
     }
 
-    BufferBlock *lastBlock = new BufferBlock;
+    auto *lastBlock = new BufferBlock;
 
     if (!newBuffer->blocks.empty())
         newBuffer->blocks.back()->nextBlock = lastBlock;
@@ -92,11 +92,11 @@ Buffer::iterator::iterator(Buffer *buffer, size_t pos)
         : buffer(buffer), pos(pos) {}
 
 Buffer::iterator Buffer::begin() {
-    return Buffer::iterator(this, 0);
+    return {this, 0};
 }
 
 Buffer::iterator Buffer::end() {
-    return Buffer::iterator(this, length - 1);
+    return {this, length - 1};
 }
 
 size_t Buffer::find(const char *pattern, size_t len) {
@@ -105,7 +105,8 @@ size_t Buffer::find(const char *pattern, size_t len) {
         for (size_t j = 0; j < len; j++) {
             if ((*this)[i + j] != pattern[j]) {
                 break;
-            } else if (j == (len - 1)) {
+            }
+            if (j == (len - 1)) {
                 return i;
             }
         }
@@ -143,7 +144,7 @@ std::string Buffer::toString(size_t from, size_t to) {
         s.append(blocks[fromBlockIndex]->block + fromBlockPtr, toBlockPtr - fromBlockPtr);
     } else {
         s.append(blocks[fromBlockIndex]->block + fromBlockPtr, blocks[fromBlockIndex]->length - fromBlockPtr);
-        for (int i = fromBlockIndex + 1; i < toBlockIndex; i++) {
+        for (size_t i = fromBlockIndex + 1; i < toBlockIndex; i++) {
             s.append(blocks[i]->block, blocks[i]->length);
         }
         s.append(blocks[toBlockIndex]->block, toBlockPtr);
@@ -152,7 +153,7 @@ std::string Buffer::toString(size_t from, size_t to) {
     return s;
 }
 
-Buffer::Buffer(void *)
+Buffer::Buffer(void *_)
         : length(0), head(0) {}
 
 BufferBlock::BufferBlock() {
