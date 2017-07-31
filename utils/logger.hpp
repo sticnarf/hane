@@ -1,11 +1,10 @@
-#ifndef RACKCPP_LOGGER_H
-#define RACKCPP_LOGGER_H
+#ifndef RACKCPP_LOGGER_HPP
+#define RACKCPP_LOGGER_HPP
 
 #include <string>
 #include <spdlog/spdlog.h>
 
-class Logger
-{
+class Logger {
 private:
     std::string logPath;
     std::shared_ptr<spdlog::logger> logger;
@@ -14,14 +13,14 @@ private:
     void initLog();
 
     Logger();
-public:
-    static Logger& getInstance();
 
-    void setLogPath(const std::string& path);
+public:
+    static Logger &getInstance();
+
+    void setLogPath(const std::string &path);
 
     template<typename T>
-    void info(const T& msg)
-    {
+    void info(const T &msg) {
         if (!enabled)
             return;
 
@@ -29,7 +28,7 @@ public:
     }
 
     template<typename T>
-    void error(const T& msg){
+    void error(const T &msg) {
         if (!enabled)
             return;
 
@@ -37,8 +36,7 @@ public:
     }
 
     template<typename Arg1, typename... Args>
-    void info(const char* fmt, const Arg1& arg1, const Args& ... args)
-    {
+    void info(const char *fmt, const Arg1 &arg1, const Args &... args) {
         if (!enabled)
             return;
 
@@ -46,8 +44,7 @@ public:
     }
 
     template<typename Arg1, typename... Args>
-    void error(const char* fmt, const Arg1& arg1, const Args& ... args)
-    {
+    void error(const char *fmt, const Arg1 &arg1, const Args &... args) {
         if (!enabled)
             return;
 

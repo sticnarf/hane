@@ -1,12 +1,11 @@
-#ifndef RACKCPP_CONTENT_TYPE_H
-#define RACKCPP_CONTENT_TYPE_H
+#ifndef RACKCPP_CONTENT_TYPE_HPP
+#define RACKCPP_CONTENT_TYPE_HPP
 
 #include "http/request/header.hpp"
 #include <string>
 #include <map>
 
-class ContentType: public HeaderContentWithParameters
-{
+class ContentType : public HeaderContentWithParameters {
 public:
     const std::string getLowercasedMediaType() const;
 };

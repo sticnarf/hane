@@ -4,24 +4,20 @@
 #include <stdexcept>
 
 Buffer::Buffer()
-        :length(0), head(0)
-{
+        : length(0), head(0) {
     blocks.push_back(new BufferBlock);
 }
 
-void Buffer::push(const char* bytes, size_t len)
-{
+void Buffer::push(const char *bytes, size_t len) {
     size_t bytesPtr = 0;
-    while (bytesPtr < len)
-    {
-        BufferBlock* block = blocks.back();
-        if (block->length == BLOCK_SIZE)
-        {
+    while (bytesPtr < len) {
+        BufferBlock *block = blocks.back();
+        if (block->length == BLOCK_SIZE) {
             block->nextBlock = new BufferBlock;
             block = block->nextBlock;
             blocks.push_back(block);
         }
-        size_t& blockPtr = block->length;
+        size_t &blockPtr = block->length;
         size_t copySize = std::min(len - bytesPtr, BLOCK_SIZE - blockPtr);
         memcpy(block->block + blockPtr, bytes + bytesPtr, copySize);
         this->length += copySize;
@@ -30,10 +26,8 @@ void Buffer::push(const char* bytes, size_t len)
     }
 }
 
-char& Buffer::operator[](size_t index)
-{
-    if (index > length)
-    {
+char &Buffer::operator[](size_t index) {
+    if (index > length) {
         throw std::out_of_range("Buffer access out of range");
     }
 
@@ -44,10 +38,8 @@ char& Buffer::operator[](size_t index)
     return blocks[blockIndex]->block[blockPtr];
 }
 
-BufferPtr Buffer::split(size_t pos)
-{
-    if (pos > length)
-    {
+BufferPtr Buffer::split(size_t pos) {
+    if (pos > length) {
         throw std::out_of_range("Buffer access out of range");
     }
 
@@ -57,13 +49,12 @@ BufferPtr Buffer::split(size_t pos)
 
     BufferPtr newBuffer = std::make_shared<Buffer>(nullptr);
 
-    for (int i = 0; i < blockIndex; i++)
-    {
-        BufferBlock* block = this->blocks[i];
+    for (int i = 0; i < blockIndex; i++) {
+        BufferBlock *block = this->blocks[i];
         newBuffer->blocks.push_back(block);
     }
 
-    BufferBlock* lastBlock = new BufferBlock;
+    BufferBlock *lastBlock = new BufferBlock;
 
     if (!newBuffer->blocks.empty())
         newBuffer->blocks.back()->nextBlock = lastBlock;
@@ -86,46 +77,35 @@ BufferPtr Buffer::split(size_t pos)
     return newBuffer;
 }
 
-Buffer::~Buffer()
-{
-    while (!blocks.empty())
-    {
+Buffer::~Buffer() {
+    while (!blocks.empty()) {
         delete blocks.back();
         blocks.pop_back();
     }
 }
 
-size_t Buffer::len()
-{
+size_t Buffer::len() {
     return length;
 }
 
-Buffer::iterator::iterator(Buffer* buffer, size_t pos)
-        :buffer(buffer), pos(pos) { }
+Buffer::iterator::iterator(Buffer *buffer, size_t pos)
+        : buffer(buffer), pos(pos) {}
 
-Buffer::iterator Buffer::begin()
-{
+Buffer::iterator Buffer::begin() {
     return Buffer::iterator(this, 0);
 }
 
-Buffer::iterator Buffer::end()
-{
+Buffer::iterator Buffer::end() {
     return Buffer::iterator(this, length - 1);
 }
 
-size_t Buffer::find(const char* pattern, size_t len)
-{
+size_t Buffer::find(const char *pattern, size_t len) {
     size_t i = 0;
-    for (; i < this->len(); i++)
-    {
-        for (size_t j = 0; j < len; j++)
-        {
-            if ((*this)[i + j] != pattern[j])
-            {
+    for (; i < this->len(); i++) {
+        for (size_t j = 0; j < len; j++) {
+            if ((*this)[i + j] != pattern[j]) {
                 break;
-            }
-            else if (j == (len - 1))
-            {
+            } else if (j == (len - 1)) {
                 return i;
             }
         }
@@ -133,26 +113,21 @@ size_t Buffer::find(const char* pattern, size_t len)
     return i;
 }
 
-size_t Buffer::find(char c)
-{
+size_t Buffer::find(char c) {
     size_t i = 0;
-    for (; i < this->len(); i++)
-    {
-        if ((*this)[i] == c)
-        {
+    for (; i < this->len(); i++) {
+        if ((*this)[i] == c) {
             break;
         }
     }
     return i;
 }
 
-std::string Buffer::toString()
-{
+std::string Buffer::toString() {
     return toString(0, len());
 }
 
-std::string Buffer::toString(size_t from, size_t to)
-{
+std::string Buffer::toString(size_t from, size_t to) {
     std::string s;
     s.reserve(to - from);
 
@@ -164,15 +139,11 @@ std::string Buffer::toString(size_t from, size_t to)
     size_t toBlockIndex = actualTo >> BLOCK_SIZE_EXP;
     size_t toBlockPtr = actualTo - (toBlockIndex << BLOCK_SIZE_EXP);
 
-    if (fromBlockIndex == toBlockIndex)
-    {
+    if (fromBlockIndex == toBlockIndex) {
         s.append(blocks[fromBlockIndex]->block + fromBlockPtr, toBlockPtr - fromBlockPtr);
-    }
-    else
-    {
+    } else {
         s.append(blocks[fromBlockIndex]->block + fromBlockPtr, blocks[fromBlockIndex]->length - fromBlockPtr);
-        for (int i = fromBlockIndex + 1; i < toBlockIndex; i++)
-        {
+        for (int i = fromBlockIndex + 1; i < toBlockIndex; i++) {
             s.append(blocks[i]->block, blocks[i]->length);
         }
         s.append(blocks[toBlockIndex]->block, toBlockPtr);
@@ -181,50 +152,42 @@ std::string Buffer::toString(size_t from, size_t to)
     return s;
 }
 
-Buffer::Buffer(void*)
-        :length(0), head(0) { }
+Buffer::Buffer(void *)
+        : length(0), head(0) {}
 
-BufferBlock::BufferBlock()
-{
+BufferBlock::BufferBlock() {
     this->length = 0;
     this->block = new char[BLOCK_SIZE];
     this->nextBlock = nullptr;
 }
 
-BufferBlock::~BufferBlock()
-{
+BufferBlock::~BufferBlock() {
     delete[] this->block;
 }
 
-char& Buffer::iterator::operator*()
-{
+char &Buffer::iterator::operator*() {
     return (*buffer)[pos];
 }
 
-Buffer::iterator Buffer::iterator::operator++()
-{
+Buffer::iterator Buffer::iterator::operator++() {
     iterator it = *this;
     pos++;
     return it;
 }
 
-Buffer::iterator Buffer::iterator::operator++(int)
-{
+Buffer::iterator Buffer::iterator::operator++(int) {
     pos++;
     return *this;
 }
 
-char* Buffer::iterator::operator->()
-{
+char *Buffer::iterator::operator->() {
     return &(*buffer)[pos];
 }
 
-bool Buffer::iterator::operator==(const Buffer::iterator rhs)
-{
+bool Buffer::iterator::operator==(const Buffer::iterator rhs) {
     return buffer == rhs.buffer && pos == rhs.pos;
 }
 
-bool Buffer::iterator::operator!=(const Buffer::iterator rhs)
-{
+bool Buffer::iterator::operator!=(const Buffer::iterator rhs) {
     return buffer != rhs.buffer || pos != rhs.pos;
 }

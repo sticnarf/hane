@@ -4,27 +4,22 @@
 #include "body_form_parser.hpp"
 #include "multipart_form_parser.hpp"
 
-SizedBodyParser::SizedBodyParser(Request&& req, BufferPtr buffer)
-        :AbstractParser(std::move(req), buffer) { }
+SizedBodyParser::SizedBodyParser(Request &&req, BufferPtr buffer)
+        : AbstractParser(std::move(req), buffer) {}
 
-ParserPtr SizedBodyParser::process()
-{
+ParserPtr SizedBodyParser::process() {
     auto contentLengthEntry = partialRequest.header.get("Content-Length");
     int contentLength;
     if (contentLengthEntry.isValid()
-            // Throws std::invalid_argument if conversion fails
-            // TODO: Not handle overflow
-            && (contentLength = std::stoi(contentLengthEntry.getValue()->getContent())) >= 0)
-    {
-        if (buffer->len() < contentLength)
-        {
+        // Throws std::invalid_argument if conversion fails
+        // TODO: Not handle overflow
+        && (contentLength = std::stoi(contentLengthEntry.getValue()->getContent())) >= 0) {
+        if (buffer->len() < contentLength) {
             return std::shared_ptr<AbstractParser>(this);
         }
 
         partialRequest.body = buffer->split((size_t) contentLength);
-    }
-    else
-    {
+    } else {
         // Empty body
         partialRequest.body = std::make_shared<Buffer>();
     }
@@ -32,19 +27,16 @@ ParserPtr SizedBodyParser::process()
     // application/x-www-form-urlencoded
     // TODO Not supporting charset parameter
     auto contentType = partialRequest.header.get("Content-Type");
-    if (contentType.isValid() && contentType.getValue()->getContent() == CONTENT_TYPE_URLENCODED_FORM)
-    {
+    if (contentType.isValid() && contentType.getValue()->getContent() == CONTENT_TYPE_URLENCODED_FORM) {
         return BodyFormParser(std::move(partialRequest), buffer).process();
     }
 
     return buildFormParser()->process();
 }
 
-ParserPtr SizedBodyParser::buildFormParser()
-{
+ParserPtr SizedBodyParser::buildFormParser() {
     auto contentTypeEntry = partialRequest.header.get("Content-Type");
-    if (!contentTypeEntry.isValid())
-    {
+    if (!contentTypeEntry.isValid()) {
         // Unknown!
         return std::make_shared<FinalParser>(std::move(partialRequest), buffer);
     }
@@ -53,15 +45,13 @@ ParserPtr SizedBodyParser::buildFormParser()
 
     // application/x-www-form-urlencoded
     // TODO Not supporting charset parameter
-    if (mediaType == CONTENT_TYPE_URLENCODED_FORM)
-    {
+    if (mediaType == CONTENT_TYPE_URLENCODED_FORM) {
         return std::make_shared<BodyFormParser>(std::move(partialRequest), buffer);
     }
 
     // multipart/form-data
     // TODO
-    if (mediaType == CONTENT_TYPE_FORM_MULTIPART)
-    {
+    if (mediaType == CONTENT_TYPE_FORM_MULTIPART) {
         return std::make_shared<MultipartFormParser>(std::move(partialRequest), buffer);
     }
 

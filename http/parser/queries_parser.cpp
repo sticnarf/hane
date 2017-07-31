@@ -2,12 +2,11 @@
 #include "header_parser.hpp"
 #include "parser_helper.hpp"
 
-QueriesParser::QueriesParser(Request&& req, BufferPtr buffer)
-        :AbstractParser(std::move(req), buffer) { }
+QueriesParser::QueriesParser(Request &&req, BufferPtr buffer)
+        : AbstractParser(std::move(req), buffer) {}
 
-ParserPtr QueriesParser::process()
-{
-    const std::string& target = partialRequest.target;
+ParserPtr QueriesParser::process() {
+    const std::string &target = partialRequest.target;
     size_t begin = target.find_last_of('?');
 
     if (begin != std::string::npos && begin != target.length() - 1)

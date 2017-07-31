@@ -1,24 +1,23 @@
-#ifndef RACKCPP_HEADERS_H
-#define RACKCPP_HEADERS_H
+#ifndef RACKCPP_HEADERS_HPP
+#define RACKCPP_HEADERS_HPP
+
 #include <map>
 #include <string>
 #include <memory>
 #include "utils/case_insensitive_map.hpp"
 
-class HeaderContent
-{
+class HeaderContent {
 protected:
     std::string content;
 public:
-    const std::string& getContent() const
-    {
+    const std::string &getContent() const {
         return content;
     }
 
     HeaderContent() = default;
 
-    HeaderContent(const std::string& content)
-            :content(content) { }
+    HeaderContent(const std::string &content)
+            : content(content) {}
 
     virtual ~HeaderContent() = default;
 
@@ -27,8 +26,7 @@ public:
 
 typedef std::shared_ptr<HeaderContent> HeaderContentPtr;
 
-class Header: public CaseInsensitiveMap<HeaderContentPtr>
-{
+class Header : public CaseInsensitiveMap<HeaderContentPtr> {
 
 };
 
@@ -38,21 +36,18 @@ class HeaderContentWithParameters;
 
 typedef std::shared_ptr<HeaderContentWithParameters> HeaderContentWithParametersPtr;
 
-class HeaderContentWithParameters: public HeaderContent
-{
+class HeaderContentWithParameters : public HeaderContent {
 protected:
     // Case insensitive!
     std::string mainContent;
 
     FieldParameters parameters;
 public:
-    const std::string& getMainContent() const
-    {
+    const std::string &getMainContent() const {
         return mainContent;
     }
 
-    const FieldParameters& getParameters() const
-    {
+    const FieldParameters &getParameters() const {
         return parameters;
     }
 

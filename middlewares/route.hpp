@@ -1,19 +1,13 @@
-#ifndef RACKCPP_ROUTE_MIDDLEWARE_H
-#define RACKCPP_ROUTE_MIDDLEWARE_H
+#ifndef RACKCPP_ROUTE_MIDDLEWARE_HPP
+#define RACKCPP_ROUTE_MIDDLEWARE_HPP
 
 #include "middleware.hpp"
 
-namespace middleware
-{
-class Route : public Middleware
-{
+class RouteMiddleware : public Middleware {
 public:
-    Route(std::shared_ptr<Middleware> nextMiddleware);
+    void call(const Request &req, std::shared_ptr<Response> resp) override;
 
-    void call(const Request& req, std::shared_ptr<Response> resp) override;
 
-    void process(const Request& req, std::shared_ptr<Response> resp) override;
 };
-}
 
 #endif

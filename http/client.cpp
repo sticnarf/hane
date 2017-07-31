@@ -5,33 +5,28 @@
  * Only use the main event loop for transfer
  */
 
-static void awaitRequest(uv_idle_t* handle)
-{
-    Client* client = (Client*) handle->data;
+static void awaitRequest(uv_idle_t *handle) {
+    Client *client = (Client *) handle->data;
     client->processRequest();
 }
 
-Client::Client(HttpServer* server)
-        :server(server)
-{
+Client::Client(HttpServer *server)
+        : server(server) {
     tcp = new uv_tcp_t;
     tcp->data = this;
 }
 
-void Client::pushBuf(const char* buf, size_t len)
-{
+void Client::pushBuf(const char *buf, size_t len) {
     parser.pushBuf(buf, len);
 
     processRequest();
 }
 
-Client::~Client()
-{
+Client::~Client() {
     delete tcp;
 }
 
-void Client::processRequest()
-{
+void Client::processRequest() {
     if (!parser.hasCompleteRequest())
         return;
 

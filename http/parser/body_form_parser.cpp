@@ -6,11 +6,10 @@
 #include "parser_helper.hpp"
 #include "final_parser.hpp"
 
-BodyFormParser::BodyFormParser(Request&& req, BufferPtr buffer)
-        :AbstractParser(std::move(req), buffer) { }
+BodyFormParser::BodyFormParser(Request &&req, BufferPtr buffer)
+        : AbstractParser(std::move(req), buffer) {}
 
-ParserPtr BodyFormParser::process()
-{
+ParserPtr BodyFormParser::process() {
     auto body = partialRequest.getBody();
     ParserHelper::parseUrlEncodedQueries(body->toString(), partialRequest);
 

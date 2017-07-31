@@ -1,5 +1,6 @@
-#ifndef RACKCPP_FORM_DATA_H
-#define RACKCPP_FORM_DATA_H
+#ifndef RACKCPP_FORM_DATA_HPP
+#define RACKCPP_FORM_DATA_HPP
+
 #include <string>
 #include "header.hpp"
 
@@ -9,9 +10,12 @@ private:
     FieldParameters parameters;
 public:
     FormData() = default;
-    FormData(const std::string& data);
-    const std::string& getData() const;
-    const FieldParameters& getParameters() const;
+
+    FormData(const std::string &data);
+
+    const std::string &getData() const;
+
+    const FieldParameters &getParameters() const;
 
     friend class MultipartFormParser;
 };

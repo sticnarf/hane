@@ -1,12 +1,12 @@
-#ifndef RACKCPP_MULTIPART_FORM_PARSER_H
-#define RACKCPP_MULTIPART_FORM_PARSER_H
+#ifndef RACKCPP_MULTIPART_FORM_PARSER_HPP
+#define RACKCPP_MULTIPART_FORM_PARSER_HPP
 
 #include "abstract_parser.hpp"
 
-class MultipartFormParser: public AbstractParser
-{
+class MultipartFormParser : public AbstractParser {
 public:
-    MultipartFormParser(Request&& req, BufferPtr buffer);
+    MultipartFormParser(Request &&req, BufferPtr buffer);
+
     ParserPtr process();
 };
 

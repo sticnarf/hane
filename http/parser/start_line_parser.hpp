@@ -1,11 +1,12 @@
-#ifndef RACKCPP_START_LINE_PARSER_H
-#define RACKCPP_START_LINE_PARSER_H
+#ifndef RACKCPP_START_LINE_PARSER_HPP
+#define RACKCPP_START_LINE_PARSER_HPP
+
 #include "abstract_parser.hpp"
 
-class StartLineParser: public AbstractParser
-{
+class StartLineParser : public AbstractParser {
 public:
-    StartLineParser(Request&& req, BufferPtr buffer);
+    StartLineParser(Request &&req, BufferPtr buffer);
+
     ParserPtr process();
 };
 

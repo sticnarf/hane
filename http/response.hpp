@@ -1,5 +1,5 @@
-#ifndef RACKCPP_RESPONSE_H
-#define RACKCPP_RESPONSE_H
+#ifndef RACKCPP_RESPONSE_HPP
+#define RACKCPP_RESPONSE_HPP
 
 #include <string>
 #include <map>
@@ -7,8 +7,7 @@
 #include <uv.h>
 #include "constants.hpp"
 
-class Response
-{
+class Response {
     friend class HttpServer;
 
 public:

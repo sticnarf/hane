@@ -2,11 +2,9 @@
 #include <algorithm>
 #include <cctype>
 
-std::string StringUtils::toLowercase(const std::string& str)
-{
+std::string StringUtils::toLowercase(const std::string &str) {
     std::string result;
-    for (char c : str)
-    {
+    for (char c : str) {
         result.push_back((char) tolower(c));
     }
     return result;

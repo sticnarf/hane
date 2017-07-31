@@ -1,21 +1,19 @@
-#ifndef RACKCPP_CONSTANTS_H
-#define RACKCPP_CONSTANTS_H
+#ifndef RACKCPP_CONSTANTS_HPP
+#define RACKCPP_CONSTANTS_HPP
 
-enum class HttpVersion
-{
+enum class HttpVersion {
     HTTP_1_0,
     HTTP_1_1,
     HTTP_2
 };
 
-const char* const HTTP_1_0_STRING = "HTTP/1.0";
+const char *const HTTP_1_0_STRING = "HTTP/1.0";
 
-const char* const HTTP_1_1_STRING = "HTTP/1.1";
+const char *const HTTP_1_1_STRING = "HTTP/1.1";
 
-const char* const HTTP_2_STRING = "HTTP/2";
+const char *const HTTP_2_STRING = "HTTP/2";
 
-enum class HttpMethod
-{
+enum class HttpMethod {
     METHOD_GET,
     METHOD_HEAD,
     METHOD_POST,
@@ -26,25 +24,24 @@ enum class HttpMethod
     METHOD_TRACE
 };
 
-const char* const HTTP_METHOD_GET_STRING = "GET";
+const char *const HTTP_METHOD_GET_STRING = "GET";
 
-const char* const HTTP_METHOD_HEAD_STRING = "HEAD";
+const char *const HTTP_METHOD_HEAD_STRING = "HEAD";
 
-const char* const HTTP_METHOD_POST_STRING = "POST";
+const char *const HTTP_METHOD_POST_STRING = "POST";
 
-const char* const HTTP_METHOD_PUT_STRING = "PUT";
+const char *const HTTP_METHOD_PUT_STRING = "PUT";
 
-const char* const HTTP_METHOD_DELETE_STRING = "DELETE";
+const char *const HTTP_METHOD_DELETE_STRING = "DELETE";
 
-const char* const HTTP_METHOD_CONNECT_STRING = "CONNECT";
+const char *const HTTP_METHOD_CONNECT_STRING = "CONNECT";
 
-const char* const HTTP_METHOD_OPTIONS_STRING = "OPTIONS";
+const char *const HTTP_METHOD_OPTIONS_STRING = "OPTIONS";
 
-const char* const HTTP_METHOD_TRACE_STRING = "TRACE";
+const char *const HTTP_METHOD_TRACE_STRING = "TRACE";
 
 // See also: https://tools.ietf.org/html/rfc7231#section-6.1
-enum class StatusCode
-{
+enum class StatusCode {
     HTTP_CONTINUE = 100,
     HTTP_SWITCHING_PROTOCOLS_CODE = 101,
     HTTP_OK = 200,
@@ -88,7 +85,7 @@ enum class StatusCode
     HTTP_HTTP_VERSION_NOT_SUPPORTED = 505
 };
 
-const char* const CONTENT_TYPE_URLENCODED_FORM = "application/x-www-form-urlencoded";
-const char* const CONTENT_TYPE_FORM_MULTIPART = "multipart/form-data";
+const char *const CONTENT_TYPE_URLENCODED_FORM = "application/x-www-form-urlencoded";
+const char *const CONTENT_TYPE_FORM_MULTIPART = "multipart/form-data";
 
 #endif

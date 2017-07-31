@@ -4,11 +4,10 @@
 #include "http/request/header_fields/content_type.hpp"
 #include "parser_helper.hpp"
 
-HeaderParser::HeaderParser(Request&& req, BufferPtr buffer)
-        :AbstractParser(std::move(req), buffer) { }
+HeaderParser::HeaderParser(Request &&req, BufferPtr buffer)
+        : AbstractParser(std::move(req), buffer) {}
 
-ParserPtr HeaderParser::process()
-{
+ParserPtr HeaderParser::process() {
     size_t lineSep = buffer->find("\r\n", 2);
     if (lineSep >= buffer->len())
         return std::shared_ptr<AbstractParser>(this);
@@ -28,14 +27,12 @@ ParserPtr HeaderParser::process()
     return this->process();
 }
 
-ParserPtr HeaderParser::buildBodyParser()
-{
+ParserPtr HeaderParser::buildBodyParser() {
     // TODO Build different BodyParser according to Transfer-Encoding
     return std::make_shared<SizedBodyParser>(std::move(partialRequest), buffer);
 }
 
-HeaderContentPtr parseContentType(const std::string& fieldContent)
-{
+HeaderContentPtr parseContentType(const std::string &fieldContent) {
     auto contentType = std::make_shared<ContentType>();
 
     ParserHelper::parseHeaderFieldWithParameters(contentType, fieldContent);
@@ -43,16 +40,14 @@ HeaderContentPtr parseContentType(const std::string& fieldContent)
     return contentType;
 }
 
-HeaderContentPtr HeaderParser::parseField(const std::string& fieldName, const std::string& fieldContent)
-{
+HeaderContentPtr HeaderParser::parseField(const std::string &fieldName, const std::string &fieldContent) {
     // TODO Add other header fields
-    static std::map<std::string, std::function<HeaderContentPtr(const std::string&)>> functionMap = {
+    static std::map<std::string, std::function<HeaderContentPtr(const std::string &)>> functionMap = {
             {"content-type", parseContentType}
     };
 
     auto function = functionMap.find(StringUtils::toLowercase(fieldName));
-    if (function != functionMap.end())
-    {
+    if (function != functionMap.end()) {
         return function->second(fieldContent);
     }
 

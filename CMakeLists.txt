@@ -13,20 +13,21 @@ set(SOURCE_FILES
         http/parser/header_parser.cpp http/parser/sized_body_parser.cpp http/parser/final_parser.cpp
         http/parser/queries_parser.cpp http/parser/body_form_parser.cpp
         http/parser/parser_helper.cpp http/parser/multipart_form_parser.cpp
-        middlewares/middleware.cpp middlewares/route.cpp
+        middlewares/middleware.hpp middlewares/simple_middleware.cpp middlewares/route.cpp
         utils/logger.cpp utils/buffer.cpp utils/protocol_helper.cpp utils/string_utils.cpp
         utils/case_insensitive_map.hpp
         http/request/request.cpp http/request/header.hpp http/request/form_data.cpp
-        http/request/header_fields/content_type.cpp)
+        http/request/header_fields/content_type.cpp http/errors.hpp
+        constants.hpp)
 
 include_directories(${LIBUV_INCLUDE_DIRS})
 include_directories(${SPDLOG_INCLUDE_DIRS})
 
 set(RACKCPP_LIBRARIES ${LIBUV_LIBRARIES})
 
-if(NOT APPLE AND NOT MSVC)
+if (NOT APPLE AND NOT MSVC)
     set(RACKCPP_LIBRARIES ${RACKCPP_LIBRARIES} pthread)
-endif()
+endif ()
 
 add_library(rackcpp STATIC ${SOURCE_FILES})
 target_link_libraries(rackcpp ${RACKCPP_LIBRARIES})

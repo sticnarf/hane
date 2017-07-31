@@ -1,11 +1,11 @@
 # - Try to find catch framework
-if(spdlog_FOUND)
+if (spdlog_FOUND)
     return()
-endif()
+endif ()
 
 find_path(SPDLOG_INCLUDE_DIR spdlog/spdlog.h HINT ${EXTERNAL_ROOT}/include)
 
-set(SPDLOG_INCLUDE_DIRS ${SPDLOG_INCLUDE_DIR} )
+set(SPDLOG_INCLUDE_DIRS ${SPDLOG_INCLUDE_DIR})
 
 include(FindPackageHandleStandardArgs)
 # handle the QUIETLY and REQUIRED arguments and set LIBXML2_FOUND to TRUE

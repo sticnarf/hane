@@ -1,25 +1,20 @@
 #include "parser_helper.hpp"
 #include <cctype>
 #include <cstring>
+#include "http/errors.hpp"
 
-void ParserHelper::parseUrlEncodedQueries(const std::string& data, Request& req, size_t begin)
-{
+void ParserHelper::parseUrlEncodedQueries(const std::string &data, Request &req, size_t begin) {
     bool eof = false;
-    while (!eof)
-    {
+    while (!eof) {
         size_t equalSign = data.find('=', begin);
         if (equalSign == std::string::npos)
             break;
         std::string key, val;
-        for (size_t i = begin; i < equalSign; i++)
-        {
-            if (data[i] == '%')
-            {
+        for (size_t i = begin; i < equalSign; i++) {
+            if (data[i] == '%') {
                 key += (char) std::stoi(data.substr(i + 1, 2), 0, 16);
                 i += 2;
-            }
-            else
-            {
+            } else {
                 key += data[i];
             }
         }
@@ -27,15 +22,11 @@ void ParserHelper::parseUrlEncodedQueries(const std::string& data, Request& req,
         size_t ampersand = data.find('&', equalSign);
         eof = ampersand == std::string::npos;
         size_t end = eof ? data.size() : ampersand;
-        for (size_t i = equalSign + 1; i < end; i++)
-        {
-            if (data[i] == '%')
-            {
+        for (size_t i = equalSign + 1; i < end; i++) {
+            if (data[i] == '%') {
                 val += (char) std::stoi(data.substr(i + 1, 2), 0, 16);
                 i += 2;
-            }
-            else
-            {
+            } else {
                 val += data[i];
             }
         }
@@ -44,11 +35,9 @@ void ParserHelper::parseUrlEncodedQueries(const std::string& data, Request& req,
     }
 }
 
-void ParserHelper::parseParameters(const std::string& data, FieldParameters& parameters, size_t begin)
-{
+void ParserHelper::parseParameters(const std::string &data, FieldParameters &parameters, size_t begin) {
     bool eof = false;
-    while (!eof)
-    {
+    while (!eof) {
         size_t equalSign = data.find('=', begin);
         if (equalSign == std::string::npos)
             break;
@@ -57,14 +46,13 @@ void ParserHelper::parseParameters(const std::string& data, FieldParameters& par
         key = data.substr(begin, equalSign - begin);
         StringUtils::trim(key);
         if (!validateToken(key))
-            throw std::invalid_argument("invalid header parameter");
+            throw HttpError(StatusCode::HTTP_BAD_REQUEST, "invalid header parameter");
 
         size_t valueBegin = equalSign + 1;
         while (isspace(data[valueBegin]))
             valueBegin++;
 
-        if (data[valueBegin] == '"' && ++valueBegin < data.length())
-        {
+        if (data[valueBegin] == '"' && ++valueBegin < data.length()) {
             // Quoted string
             size_t rightQuote = data.find('"', valueBegin);
             if (rightQuote == std::string::npos)
@@ -75,9 +63,7 @@ void ParserHelper::parseParameters(const std::string& data, FieldParameters& par
             size_t semicolon = data.find(';', rightQuote);
             eof = semicolon == std::string::npos;
             begin = semicolon + 1;
-        }
-        else
-        {
+        } else {
             // token
             size_t semicolon = data.find(';', equalSign);
             eof = semicolon == std::string::npos;
@@ -87,31 +73,27 @@ void ParserHelper::parseParameters(const std::string& data, FieldParameters& par
             val = data.substr(equalSign + 1, end - equalSign - 1);
             StringUtils::trim(val);
             if (!validateToken(val))
-                throw std::invalid_argument("invalid header value");
+                throw HttpError(StatusCode::HTTP_BAD_REQUEST, "invalid header value");
         }
 
         parameters.put(key, val);
     }
 }
 
-bool ParserHelper::validateToken(const std::string& name)
-{
-    static const char* list = "!#$%&'*+-.^_`|~";
+bool ParserHelper::validateToken(const std::string &name) {
+    static const char *list = "!#$%&'*+-.^_`|~";
     static const size_t listLen = strlen(list);
 
     if (name.length() == 0)
         return false;
 
-    for (char c : name)
-    {
+    for (char c : name) {
         if (isalnum(c))
             continue;
 
         bool ok = false;
-        for (int i = 0; i < listLen; i++)
-        {
-            if (c == list[i])
-            {
+        for (int i = 0; i < listLen; i++) {
+            if (c == list[i]) {
                 ok = true;
                 break;
             }
@@ -124,10 +106,8 @@ bool ParserHelper::validateToken(const std::string& name)
     return true;
 }
 
-bool ParserHelper::validateHeaderFieldContent(const std::string& content)
-{
-    for (char c : content)
-    {
+bool ParserHelper::validateHeaderFieldContent(const std::string &content) {
+    for (char c : content) {
         if (!isprint(c))
             return false;
     }
@@ -135,8 +115,7 @@ bool ParserHelper::validateHeaderFieldContent(const std::string& content)
     return true;
 }
 
-std::pair<std::string, std::string> ParserHelper::parseHeaderField(const std::string& data, size_t begin)
-{
+std::pair<std::string, std::string> ParserHelper::parseHeaderField(const std::string &data, size_t begin) {
     size_t colon = data.find(':', begin);
     std::string fieldName = data.substr(begin, colon);
     if (!ParserHelper::validateToken(fieldName))
@@ -152,14 +131,13 @@ std::pair<std::string, std::string> ParserHelper::parseHeaderField(const std::st
 
     std::string fieldContent = data.substr(firstNotSpace, lastNotSpace - firstNotSpace + 1);
     if (!ParserHelper::validateHeaderFieldContent(fieldContent))
-        throw std::invalid_argument("Bad field content");
+        throw HttpError(StatusCode::HTTP_BAD_REQUEST, "Bad field content");
 
     return std::make_pair(fieldName, fieldContent);
 }
 
 void ParserHelper::parseHeaderFieldWithParameters(HeaderContentWithParametersPtr content,
-        const std::string& fieldContent)
-{
+                                                  const std::string &fieldContent) {
     content->content = fieldContent;
     auto semicolon = fieldContent.find(';');
 

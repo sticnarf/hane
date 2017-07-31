@@ -13,16 +13,13 @@ BufferPtr buffer;
 
 std::string rawString;
 
-void prepareData()
-{
+void prepareData() {
     buffer = std::make_shared<Buffer>();
     rawString = "";
-    for (int i = 0; i < 1000 || rawString.length() < 25000; i++)
-    {
+    for (int i = 0; i < 1000 || rawString.length() < 25000; i++) {
         int len = rand() % 10000;
         std::string subStr;
-        for (int j = 0; j < len; j++)
-        {
+        for (int j = 0; j < len; j++) {
             subStr.push_back((char) (rand() % 128));
         }
         rawString += subStr;
@@ -30,12 +27,10 @@ void prepareData()
     }
 }
 
-void cleanData()
-{
+void cleanData() {
 }
 
-void pushTest()
-{
+void pushTest() {
     prepareData();
 
     std::string result = buffer->toString(10000, 20000);
@@ -47,14 +42,12 @@ void pushTest()
     cleanData();
 }
 
-void splitTest()
-{
+void splitTest() {
     prepareData();
 
     int len;
-    for (int ptr = 0; ptr < rawString.length(); ptr += len)
-    {
-        len = std::min((int)buffer->len(), rand() % 15000);
+    for (int ptr = 0; ptr < rawString.length(); ptr += len) {
+        len = std::min((int) buffer->len(), rand() % 15000);
         BufferPtr subBuf = buffer->split(len);
         assert(subBuf->toString() == rawString.substr(ptr, len));
     }
@@ -62,8 +55,7 @@ void splitTest()
     cleanData();
 }
 
-int main()
-{
+int main() {
     srand(time(NULL));
 
     pushTest();

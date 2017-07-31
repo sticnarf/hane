@@ -1,13 +1,13 @@
-#include <rackcpp.hpp>
+#include <http/http.hpp>
+#include <utils/logger.hpp>
+#include <middlewares/simple_middleware.hpp>
 
-class HelloMiddleware: public Middleware
-{
+class HelloMiddleware : public SimpleMiddleware {
 public:
     HelloMiddleware(std::shared_ptr<Middleware> next_middleware)
-            :Middleware(next_middleware) { }
+            : SimpleMiddleware(next_middleware) {}
 
-    void process(const Request& req, std::shared_ptr<Response> resp)
-    {
+    void process(const Request &req, std::shared_ptr<Response> resp) {
         resp->setStatusCode(StatusCode::HTTP_OK);
         resp->headers.insert({"Content-Type", "text/html"});
 
@@ -15,13 +15,10 @@ public:
 
         auto queries = req.getQueries();
         auto name = queries.find("name");
-        if (name != queries.end())
-        {
+        if (name != queries.end()) {
             Logger::getInstance().info("Get name: {}", queries["name"].getData());
             resp_str += "Hello, " + name->second.getData() + "!";
-        }
-        else
-        {
+        } else {
             resp_str += "Hello!";
         }
 
@@ -31,8 +28,7 @@ public:
     }
 };
 
-int main(int argc, char* argv[])
-{
+int main(int argc, char *argv[]) {
     Logger::getInstance().setLogPath("/var/log/hello.log");
     auto hello = std::make_shared<HelloMiddleware>(nullptr);
     HttpServer server(hello, "0.0.0.0", 8089);

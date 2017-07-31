@@ -1,22 +1,21 @@
-#ifndef RACKCPP_PARSER_H
-#define RACKCPP_PARSER_H
+#ifndef RACKCPP_PARSER_HPP
+#define RACKCPP_PARSER_HPP
 
 #include "http/request/request.hpp"
 #include "utils/buffer.hpp"
 #include "abstract_parser.hpp"
 #include <queue>
 
-class Parser
-{
+class Parser {
 private:
     BufferPtr buffer;
     ParserPtr currentParser;
     std::queue<Request> completeRequests;
 
     void process();
+
 public:
-    enum class Stage
-    {
+    enum class Stage {
         REQUEST_LINE,
         HEADER_FIELDS,
         MESSAGE_BODY,
@@ -25,8 +24,11 @@ public:
     } stage = Stage::REQUEST_LINE;
 
     Parser();
-    void pushBuf(const char* buf, size_t len);
+
+    void pushBuf(const char *buf, size_t len);
+
     bool hasCompleteRequest();
+
     Request yieldRequest();
 };
 

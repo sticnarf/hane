@@ -1,5 +1,5 @@
-#ifndef RACKCPP_CASE_INSENSITIVE_MAP_H
-#define RACKCPP_CASE_INSENSITIVE_MAP_H
+#ifndef RACKCPP_CASE_INSENSITIVE_MAP_HPP
+#define RACKCPP_CASE_INSENSITIVE_MAP_HPP
 
 #include <string>
 #include <map>
@@ -9,39 +9,35 @@ template<typename V>
 class CaseInsensitiveMap;
 
 template<typename V>
-class MapEntry
-{
+class MapEntry {
 private:
     bool valid;
     std::string key;
     V value;
 
     explicit MapEntry<V>(bool valid)
-            :valid(valid) { }
+            : valid(valid) {}
 
     friend class CaseInsensitiveMap<V>;
 
 public:
     MapEntry<V>() = default;
 
-    MapEntry<V>(const std::string& key, const V& value)
-            :valid(true), key(key), value(value) { }
+    MapEntry<V>(const std::string &key, const V &value)
+            : valid(true), key(key), value(value) {}
 
-    bool isValid() const
-    {
+    bool isValid() const {
         return valid;
     }
 
-    const std::string& getKey() const
-    {
+    const std::string &getKey() const {
         if (!valid)
             throw std::logic_error("MapEntry is not valid");
 
         return key;
     }
 
-    V getValue() const
-    {
+    V getValue() const {
         if (!valid)
             throw std::logic_error("MapEntry is not valid");
 
@@ -51,26 +47,23 @@ public:
 };
 
 template<typename V>
-class CaseInsensitiveMap
-{
+class CaseInsensitiveMap {
     std::map<std::string, MapEntry<V> > innerMap;
 
 public:
-    void put(const std::string& key, const V& value)
-    {
+    void put(const std::string &key, const V &value) {
         innerMap[StringUtils::toLowercase(key)] = MapEntry<V>(key, value);
     }
 
-    MapEntry<V> get(const std::string& key) const
-    {
+    MapEntry<V> get(const std::string &key) const {
         auto entry = innerMap.find(StringUtils::toLowercase(key));
 
-        if (entry == innerMap.end())
-        {
+        if (entry == innerMap.end()) {
             return MapEntry<V>(false);
         }
 
         return entry->second;
     }
 };
+
 #endif

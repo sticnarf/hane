@@ -1,13 +1,13 @@
-#ifndef RACKCPP_BODY_FORM_PARSER_H
-#define RACKCPP_BODY_FORM_PARSER_H
+#ifndef RACKCPP_BODY_FORM_PARSER_HPP
+#define RACKCPP_BODY_FORM_PARSER_HPP
 
 #include "abstract_parser.hpp"
 
-class BodyFormParser : public AbstractParser
-{
+class BodyFormParser : public AbstractParser {
 
 public:
-    BodyFormParser(Request&& req, BufferPtr buffer);
+    BodyFormParser(Request &&req, BufferPtr buffer);
+
     ParserPtr process();
 };
 

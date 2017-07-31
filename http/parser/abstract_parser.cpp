@@ -1,20 +1,17 @@
 #include <stdexcept>
 #include "abstract_parser.hpp"
 
-AbstractParser::AbstractParser(Request&& req, BufferPtr buffer)
-    :partialRequest(req), buffer(buffer), finished(false) { }
+AbstractParser::AbstractParser(Request &&req, BufferPtr buffer)
+        : partialRequest(req), buffer(buffer), finished(false) {}
 
-ParserPtr AbstractParser::process()
-{
+ParserPtr AbstractParser::process() {
     throw std::logic_error("Invoke process() of AbstractParser");
 }
 
-bool AbstractParser::isFinished() const
-{
+bool AbstractParser::isFinished() const {
     return finished;
 }
 
-Request AbstractParser::getRequest() const
-{
+Request AbstractParser::getRequest() const {
     return partialRequest;
 }
