@@ -11,6 +11,7 @@ ParserPtr QueriesParser::process() {
 
     if (begin != std::string::npos && begin != target.length() - 1)
         ParserHelper::parseUrlEncodedQueries(target, partialRequest, begin + 1);
+    partialRequest.absPath = target.substr(0, begin);
 
     return HeaderParser(std::move(partialRequest), buffer).process();
 }

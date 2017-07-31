@@ -1,6 +1,8 @@
 #include <http/http.hpp>
 #include <utils/logger.hpp>
 #include <middlewares/simple_middleware.hpp>
+#include <middlewares/route.hpp>
+#include <regex>
 
 class HelloMiddleware : public SimpleMiddleware {
 public:
@@ -31,7 +33,9 @@ public:
 int main(int argc, char *argv[]) {
     Logger::getInstance().setLogPath("/var/log/hello.log");
     auto hello = std::make_shared<HelloMiddleware>(nullptr);
-    HttpServer server(hello, "0.0.0.0", 8089);
+    auto route = std::make_shared<RouteMiddleware>();
+    route->addRule(std::regex("\\/(hello){0,1}"), hello);
+    HttpServer server(route, "0.0.0.0", 8089);
     server.start();
     return 0;
 }

@@ -1,9 +1,19 @@
+#include "http/errors.hpp"
 #include "route.hpp"
+#include "http/request/request.hpp"
 #include "http/response.hpp"
 
 void RouteMiddleware::call(const Request &req, std::shared_ptr<Response> resp) {
-    resp->setStatusCode(StatusCode::HTTP_OK);
-    resp->headers.insert({"Content-Type", "text/html"});
-    std::string resp_str = "<!DOCTYPE HTML>\n<title>Hello</title>\n<meta charset=\"UTF-8\">\n<h1>Hello world!</h1>\n";
-    resp->body.insert(resp->body.end(), resp_str.begin(), resp_str.end());
+    for (auto rule:rules) {
+        auto regex = rule.first;
+        if (std::regex_match(req.getAbsPath(), regex)) {
+            rule.second->call(req, resp);
+            return;
+        }
+    }
+    throw HttpError(StatusCode::HTTP_NOT_FOUND, "No rule found");
+}
+
+void RouteMiddleware::addRule(std::regex regex, std::shared_ptr<Middleware> middleware) {
+    rules.emplace_back(regex, middleware);
 }

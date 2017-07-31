@@ -23,3 +23,7 @@ const Body &Request::getBody() const {
 const std::map<std::string, FormData> &Request::getQueries() const {
     return queries;
 }
+
+const std::string &Request::getAbsPath() const {
+    return absPath;
+}

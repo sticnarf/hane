@@ -26,7 +26,12 @@ public:
 private:
     HttpVersion httpVersion;
     HttpMethod httpMethod;
+public:
+    const std::string &getAbsPath() const;
+
+private:
     std::string target;
+    std::string absPath;
     std::map<std::string, FormData> queries;
 
     Header header;
