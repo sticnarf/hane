@@ -1,5 +1,5 @@
-#ifndef RACKCPP_LOGGER_HPP
-#define RACKCPP_LOGGER_HPP
+#ifndef HANE_LOGGER_HPP
+#define HANE_LOGGER_HPP
 
 #include <string>
 #include <spdlog/spdlog.h>

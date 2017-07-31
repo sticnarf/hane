@@ -1,5 +1,5 @@
-#ifndef RACKCPP_PROTOCOL_HELPER_HPP
-#define RACKCPP_PROTOCOL_HELPER_HPP
+#ifndef HANE_PROTOCOL_HELPER_HPP
+#define HANE_PROTOCOL_HELPER_HPP
 
 #include <cstdlib>
 #include "constants.hpp"

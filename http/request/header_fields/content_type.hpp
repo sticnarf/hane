@@ -1,5 +1,5 @@
-#ifndef RACKCPP_CONTENT_TYPE_HPP
-#define RACKCPP_CONTENT_TYPE_HPP
+#ifndef HANE_CONTENT_TYPE_HPP
+#define HANE_CONTENT_TYPE_HPP
 
 #include "http/request/header.hpp"
 #include <string>

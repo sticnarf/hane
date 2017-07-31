@@ -1,5 +1,5 @@
-#ifndef RACKCPP_START_LINE_PARSER_HPP
-#define RACKCPP_START_LINE_PARSER_HPP
+#ifndef HANE_START_LINE_PARSER_HPP
+#define HANE_START_LINE_PARSER_HPP
 
 #include "abstract_parser.hpp"
 

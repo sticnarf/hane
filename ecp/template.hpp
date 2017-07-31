@@ -1,5 +1,5 @@
-#ifndef RACKCPP_TEMPLATE_HPP
-#define RACKCPP_TEMPLATE_HPP
+#ifndef HANE_TEMPLATE_HPP
+#define HANE_TEMPLATE_HPP
 #include <string>
 
 class Template {

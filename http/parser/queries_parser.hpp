@@ -1,5 +1,5 @@
-#ifndef RACKCPP_QUERIES_PARSER_CPP_HPP
-#define RACKCPP_QUERIES_PARSER_CPP_HPP
+#ifndef HANE_QUERIES_PARSER_CPP_HPP
+#define HANE_QUERIES_PARSER_CPP_HPP
 
 #include "abstract_parser.hpp"
 

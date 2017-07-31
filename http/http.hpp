@@ -1,5 +1,5 @@
-#ifndef RACKCPP_HTTP_HPP
-#define RACKCPP_HTTP_HPP
+#ifndef HANE_HTTP_HPP
+#define HANE_HTTP_HPP
 
 #include <string>
 #include <map>

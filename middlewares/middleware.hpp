@@ -1,5 +1,5 @@
-﻿#ifndef RACKCPP_MIDDLEWARE_HPP
-#define RACKCPP_MIDDLEWARE_HPP
+﻿#ifndef HANE_MIDDLEWARE_HPP
+#define HANE_MIDDLEWARE_HPP
 
 #include <memory>
 

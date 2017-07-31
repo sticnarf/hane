@@ -1,5 +1,5 @@
-#ifndef RACKCPP_BUFFER_HPP
-#define RACKCPP_BUFFER_HPP
+#ifndef HANE_BUFFER_HPP
+#define HANE_BUFFER_HPP
 
 #include <cstdlib>
 #include <string>

@@ -1,5 +1,5 @@
-#ifndef RACKCPP_ERRORS_HPP
-#define RACKCPP_ERRORS_HPP
+#ifndef HANE_ERRORS_HPP
+#define HANE_ERRORS_HPP
 
 #include <exception>
 #include <string>

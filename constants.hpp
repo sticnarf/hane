@@ -1,5 +1,5 @@
-#ifndef RACKCPP_CONSTANTS_HPP
-#define RACKCPP_CONSTANTS_HPP
+#ifndef HANE_CONSTANTS_HPP
+#define HANE_CONSTANTS_HPP
 
 enum class HttpVersion {
     HTTP_1_0,

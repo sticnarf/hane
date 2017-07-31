@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.2)
-project(rackcpp)
+project(hane)
 list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
 
 set(CMAKE_CXX_STANDARD 11)
@@ -25,14 +25,14 @@ set(SOURCE_FILES
 include_directories(${LIBUV_INCLUDE_DIRS})
 include_directories(${SPDLOG_INCLUDE_DIRS})
 
-set(RACKCPP_LIBRARIES ${LIBUV_LIBRARIES})
+set(HANE_LIBRARIES ${LIBUV_LIBRARIES})
 
 if (NOT APPLE AND NOT MSVC)
-    set(RACKCPP_LIBRARIES ${RACKCPP_LIBRARIES} pthread)
+    set(HANE_LIBRARIES ${HANE_LIBRARIES} pthread)
 endif ()
 
-add_library(rackcpp STATIC ${SOURCE_FILES})
-target_link_libraries(rackcpp ${RACKCPP_LIBRARIES})
+add_library(hane STATIC ${SOURCE_FILES})
+target_link_libraries(hane ${HANE_LIBRARIES})
 
 add_executable(ecpc ecp/compiler.cpp)
 
@@ -40,7 +40,7 @@ include_directories(${PROJECT_SOURCE_DIR})
 
 set(HELLO_SOURCE_FILES examples/hello/main.cpp)
 add_executable(hello ${HELLO_SOURCE_FILES})
-target_link_libraries(hello rackcpp)
+target_link_libraries(hello hane)
 
 add_executable(buffer_test test/buffer_test.cpp)
-target_link_libraries(buffer_test rackcpp)
+target_link_libraries(buffer_test hane)

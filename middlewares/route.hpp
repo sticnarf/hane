@@ -1,5 +1,5 @@
-#ifndef RACKCPP_ROUTE_MIDDLEWARE_HPP
-#define RACKCPP_ROUTE_MIDDLEWARE_HPP
+#ifndef HANE_ROUTE_MIDDLEWARE_HPP
+#define HANE_ROUTE_MIDDLEWARE_HPP
 
 #include "middleware.hpp"
 #include <regex>

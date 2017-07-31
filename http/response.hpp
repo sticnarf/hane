@@ -1,5 +1,5 @@
-#ifndef RACKCPP_RESPONSE_HPP
-#define RACKCPP_RESPONSE_HPP
+#ifndef HANE_RESPONSE_HPP
+#define HANE_RESPONSE_HPP
 
 #include <string>
 #include <map>

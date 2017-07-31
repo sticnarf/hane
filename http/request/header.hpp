@@ -1,5 +1,5 @@
-#ifndef RACKCPP_HEADERS_HPP
-#define RACKCPP_HEADERS_HPP
+#ifndef HANE_HEADERS_HPP
+#define HANE_HEADERS_HPP
 
 #include <map>
 #include <string>

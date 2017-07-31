@@ -11,9 +11,9 @@ env:
 before_install:
 - sudo apt-get install xvfb qt5-default libqt5webkit5-dev gstreamer1.0-plugins-base gstreamer1.0-tools gstreamer1.0-x
 - bundle install
-- sudo docker build -t rackcpp_hello .
+- sudo docker build -t hane_hello .
 
 script:
-- sudo docker run -d -p 8089:8089 rackcpp_hello
+- sudo docker run -d -p 8089:8089 hane_hello
 - sleep 3
 - xvfb-run -a bundle exec rake

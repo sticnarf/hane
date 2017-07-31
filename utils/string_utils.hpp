@@ -1,5 +1,5 @@
-#ifndef RACKCPP_STRING_UTILS_HPP
-#define RACKCPP_STRING_UTILS_HPP
+#ifndef HANE_STRING_UTILS_HPP
+#define HANE_STRING_UTILS_HPP
 
 #include <string>
 

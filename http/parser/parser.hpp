@@ -1,5 +1,5 @@
-#ifndef RACKCPP_PARSER_HPP
-#define RACKCPP_PARSER_HPP
+#ifndef HANE_PARSER_HPP
+#define HANE_PARSER_HPP
 
 #include "http/request/request.hpp"
 #include "utils/buffer.hpp"

@@ -1,5 +1,5 @@
-#ifndef RACKCPP_REQUEST_HPP
-#define RACKCPP_REQUEST_HPP
+#ifndef HANE_REQUEST_HPP
+#define HANE_REQUEST_HPP
 
 #include <string>
 #include "constants.hpp"
