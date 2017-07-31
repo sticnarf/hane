@@ -19,6 +19,7 @@ set(SOURCE_FILES
         utils/case_insensitive_map.hpp
         http/request/request.cpp http/request/header.hpp http/request/form_data.cpp
         http/request/header_fields/content_type.cpp http/errors.hpp
+        ecp/template.hpp
         constants.hpp)
 
 include_directories(${LIBUV_INCLUDE_DIRS})
@@ -32,6 +33,8 @@ endif ()
 
 add_library(rackcpp STATIC ${SOURCE_FILES})
 target_link_libraries(rackcpp ${RACKCPP_LIBRARIES})
+
+add_executable(ecpc ecp/compiler.cpp)
 
 include_directories(${PROJECT_SOURCE_DIR})
 
