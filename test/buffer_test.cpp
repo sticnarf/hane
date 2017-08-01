@@ -23,7 +23,7 @@ void prepareData() {
     for (int i = 0; i < 1000 || rawString.length() < 25000; i++) {
         auto len = static_cast<size_t>(dis(mt) % 10000);
         std::string subStr;
-        for (int j = 0; j < len; j++) {
+        for (size_t j = 0; j < len; j++) {
             subStr.push_back((char) (dis(mt) % 128));
         }
         rawString += subStr;
@@ -50,7 +50,7 @@ void splitTest() {
     prepareData();
 
     size_t len;
-    for (int ptr = 0; ptr < rawString.length(); ptr += len) {
+    for (size_t ptr = 0; ptr < rawString.length(); ptr += len) {
         len = std::min(buffer->len(), static_cast<size_t>(dis(mt) % 15000));
         BufferPtr subBuf = buffer->split(len);
         assert(subBuf->toString() == rawString.substr(ptr, len));
