@@ -11,10 +11,10 @@ SizedBodyParser::SizedBodyParser(Request &&req, BufferPtr buffer)
 ParserPtr SizedBodyParser::process() {
     auto contentLengthEntry = partialRequest.header.get("Content-Length");
     size_t contentLength;
-    if (contentLengthEntry.isValid()
+    if (contentLengthEntry.isValid()) {
         // Throws std::invalid_argument if conversion fails
         // TODO: Not handle overflow
-        && (contentLength = std::stoul(contentLengthEntry.getValue()->getContent())) >= 0) {
+        contentLength = std::stoul(contentLengthEntry.getValue()->getContent());
         if (buffer->len() < contentLength) {
             return std::shared_ptr<AbstractParser>(this);
         }

@@ -35,10 +35,11 @@ add_library(hane STATIC ${SOURCE_FILES})
 target_link_libraries(hane ${HANE_LIBRARIES})
 
 add_executable(ecpc ecp/compiler.cpp)
+target_link_libraries(ecpc)
 
 include_directories(${PROJECT_SOURCE_DIR})
 
-set(HELLO_SOURCE_FILES examples/hello/main.cpp)
+set(HELLO_SOURCE_FILES examples/hello/main.cpp examples/hello/templates/hello.html.hpp)
 add_executable(hello ${HELLO_SOURCE_FILES})
 target_link_libraries(hello hane)
 

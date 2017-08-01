@@ -35,6 +35,7 @@ void ParserHelper::parseUrlEncodedQueries(const std::string &data, Request &req,
     }
 }
 
+// TODO Not supporting escape characters between quotes
 void ParserHelper::parseParameters(const std::string &data, FieldParameters &parameters, size_t begin) {
     bool eof = false;
     while (!eof) {
