@@ -4,6 +4,7 @@
 #include <ecp/template.hpp>
 
 class HelloHtml : public Template {
+    std::string name;
 protected:
     std::string render() override;
 };

@@ -9,18 +9,18 @@ find_package(LibUV REQUIRED)
 find_package(spdlog REQUIRED)
 
 set(SOURCE_FILES
-        http/http.cpp http/response.cpp http/client.cpp
-        http/parser/parser.cpp http/parser/start_line_parser.cpp http/parser/abstract_parser.cpp
-        http/parser/header_parser.cpp http/parser/sized_body_parser.cpp http/parser/final_parser.cpp
-        http/parser/queries_parser.cpp http/parser/body_form_parser.cpp
-        http/parser/parser_helper.cpp http/parser/multipart_form_parser.cpp
-        middlewares/middleware.hpp middlewares/simple_middleware.cpp middlewares/route.cpp
-        utils/logger.cpp utils/buffer.cpp utils/protocol_helper.cpp utils/string_utils.cpp
-        utils/case_insensitive_map.hpp
-        http/request/request.cpp http/request/header.hpp http/request/form_data.cpp
-        http/request/header_fields/content_type.cpp http/errors.hpp
-        ecp/template.hpp
-        constants.hpp)
+        src/http/http.cpp src/http/response.cpp src/http/client.cpp
+        src/http/parser/parser.cpp src/http/parser/start_line_parser.cpp src/http/parser/abstract_parser.cpp
+        src/http/parser/header_parser.cpp src/http/parser/sized_body_parser.cpp src/http/parser/final_parser.cpp
+        src/http/parser/queries_parser.cpp src/http/parser/body_form_parser.cpp
+        src/http/parser/parser_helper.cpp src/http/parser/multipart_form_parser.cpp
+        src/middlewares/middleware.hpp src/middlewares/simple_middleware.cpp src/middlewares/route.cpp
+        src/utils/logger.cpp src/utils/buffer.cpp src/utils/protocol_helper.cpp src/utils/string_utils.cpp
+        src/utils/case_insensitive_map.hpp
+        src/http/request/request.cpp src/http/request/header.hpp src/http/request/form_data.cpp
+        src/http/request/header_fields/content_type.cpp src/http/errors.hpp
+        src/ecp/template.hpp
+        src/constants.hpp)
 
 include_directories(${LIBUV_INCLUDE_DIRS})
 include_directories(${SPDLOG_INCLUDE_DIRS})
@@ -34,14 +34,20 @@ endif ()
 add_library(hane STATIC ${SOURCE_FILES})
 target_link_libraries(hane ${HANE_LIBRARIES})
 
-add_executable(ecpc ecp/compiler.cpp)
+add_executable(ecpc src/ecp/compiler.cpp)
 target_link_libraries(ecpc)
 
-include_directories(${PROJECT_SOURCE_DIR})
+include_directories(${PROJECT_SOURCE_DIR}/src)
 
-set(HELLO_SOURCE_FILES examples/hello/main.cpp examples/hello/templates/hello.html.hpp)
-add_executable(hello ${HELLO_SOURCE_FILES})
+set(HELLO_SOURCE_FILES examples/hello/main.cpp)
+file(GLOB HELLO_TEMPLATE_FILES "examples/hello/templates/*.cpp")
+add_executable(hello ${HELLO_SOURCE_FILES} ${HELLO_TEMPLATE_FILES})
 target_link_libraries(hello hane)
 
 add_executable(buffer_test test/buffer_test.cpp)
 target_link_libraries(buffer_test hane)
+
+install(TARGETS hane DESTINATION lib)
+install(TARGETS ecpc DESTINATION bin)
+install(DIRECTORY src/ DESTINATION include/hane
+        FILES_MATCHING PATTERN "*.hpp")

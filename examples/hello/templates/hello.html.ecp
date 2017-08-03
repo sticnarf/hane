@@ -1,4 +1,8 @@
 <!DOCTYPE HTML>
 <title>Hello</title>
 <meta charset="UTF-8">
+<% if (name.empty()) { %>
 <h1>Hello!</h1>
+<% } else { %>
+<h1>Hello, <%= name %>!</h1>
+<% } %>

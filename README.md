@@ -14,7 +14,24 @@ Hane（羽根）is a simple web development framework.
 
 ## Usage
 
-A example project called `hello` that simply greets is provided.
+The project is compiled into a static library by default.
+
+```
+$ mkdir build && cd build
+$ cmake -DCMAKE_BUILD_TYPE=RELEASE ..
+$ make
+$ (sudo) make install
+```
+
+This will install the static library and the header files, plus an executable `ecpc` (the template compiler).
+
+You shall link the library to your application.
+
+As the only dependency is `libuv`, you can easily deploy your application.
+
+## Example
+
+An example project called `hello` that simply greets is provided.
 
 You can check `example/hello` and see how it works.
 

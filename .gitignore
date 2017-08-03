@@ -4,3 +4,4 @@ cmake-build-*
 build
 CMakeSettings.json
 Debug/
+examples/hello/templates/*.cpp
