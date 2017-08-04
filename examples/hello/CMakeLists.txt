@@ -6,7 +6,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall")
 
 find_library(LIBUV_LIBRARY NAMES uv)
 find_library(HANE_LIBRARY NAMES hane)
-find_path(HANE_INCLUDE_DIRS hane.hpp)
+find_path(HANE_INCLUDE_DIRS hane/hane.hpp)
 include_directories(${HANE_INCLUDE_DIRS})
 
 execute_process(COMMAND ${PROJECT_SOURCE_DIR}/ecpgen WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
