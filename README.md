@@ -16,6 +16,9 @@ Hane（羽根）is a simple web development framework.
 
 The project is compiled into a static library by default.
 
+You need to install [libuv](https://github.com/libuv/libuv) and [spdlog](https://github.com/gabime/spdlog)
+before compiling this project.
+
 ```
 $ mkdir build && cd build
 $ cmake -DCMAKE_BUILD_TYPE=RELEASE ..
@@ -26,8 +29,6 @@ $ (sudo) make install
 This will install the static library and the header files, plus an executable `ecpc` (the template compiler).
 
 You shall link the library to your application.
-
-As the only dependency is `libuv`, you can easily deploy your application.
 
 ## Example
 
@@ -56,6 +57,10 @@ $ curl http://localhost/?name=Alice
 <meta charset="UTF-8">
 <h1>Hello, Alice!</h1>
 ```
+
+## Todo
+
+Check [Issues](https://github.com/sticnarf/hane/issues).
 
 ## Acknowledges
 
