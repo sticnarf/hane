@@ -44,6 +44,10 @@ set(HELLO_SOURCE_FILES examples/hello/main.cpp)
 file(GLOB HELLO_TEMPLATE_FILES "examples/hello/templates/*.cpp")
 add_executable(hello ${HELLO_SOURCE_FILES} ${HELLO_TEMPLATE_FILES})
 target_link_libraries(hello hane)
+add_custom_command(TARGET hello
+        PRE_BUILD
+        COMMAND ecpc hello.html.hpp HelloHtml < hello.html.ecp > hello.html.cpp
+        WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/examples/hello/templates)
 
 add_executable(buffer_test test/buffer_test.cpp)
 target_link_libraries(buffer_test hane)
