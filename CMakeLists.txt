@@ -15,6 +15,7 @@ set(SOURCE_FILES
         src/http/parser/queries_parser.cpp src/http/parser/body_form_parser.cpp
         src/http/parser/parser_helper.cpp src/http/parser/multipart_form_parser.cpp
         src/middlewares/middleware.hpp src/middlewares/simple_middleware.cpp src/middlewares/route.cpp
+        src/middlewares/static_middleware.cpp
         src/utils/logger.cpp src/utils/buffer.cpp src/utils/protocol_helper.cpp src/utils/string_utils.cpp
         src/utils/case_insensitive_map.hpp
         src/http/request/request.cpp src/http/request/header.hpp src/http/request/form_data.cpp

@@ -7,6 +7,7 @@ class HelloHtml : public Template {
     std::string name;
 protected:
     std::string render() override;
+    friend class HelloMiddleware;
 };
 
 #endif
