@@ -51,7 +51,6 @@ ParserPtr SizedBodyParser::buildFormParser() {
     }
 
     // multipart/form-data
-    // TODO
     if (mediaType == CONTENT_TYPE_FORM_MULTIPART) {
         return std::make_shared<MultipartFormParser>(std::move(partialRequest), buffer);
     }
