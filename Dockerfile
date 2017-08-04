@@ -13,14 +13,14 @@ RUN mkdir build \
  && cd build \
  && cmake -DCMAKE_BUILD_TYPE=RELEASE .. \
  && make -j2 \
- && sudo make install
+ && make install
 
 RUN cd examples/hello \
  && mkdir build \
  && cd build \
  && cmake -DCMAKE_BUILD_TYPE=RELEASE .. \
  && make -j2 \
- && sudo make install
+ && make install
 # && cd / \
 # && rm -rf work \
 # && apt-get remove --purge -y build-essential libspdlog-dev libuv1-dev cmake \
