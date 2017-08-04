@@ -8,6 +8,12 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall")
 find_package(LibUV REQUIRED)
 find_package(spdlog REQUIRED)
 
+include_directories(${LIBUV_INCLUDE_DIRS})
+include_directories(${SPDLOG_INCLUDE_DIRS})
+
+add_executable(ecpc src/ecp/compiler.cpp)
+target_link_libraries(ecpc)
+
 set(SOURCE_FILES
         src/http/http.cpp src/http/response.cpp src/http/client.cpp
         src/http/parser/parser.cpp src/http/parser/start_line_parser.cpp src/http/parser/abstract_parser.cpp
@@ -21,10 +27,7 @@ set(SOURCE_FILES
         src/http/request/request.cpp src/http/request/header.hpp src/http/request/form_data.cpp
         src/http/request/header_fields/content_type.cpp src/http/errors.hpp
         src/ecp/template.hpp
-        src/constants.hpp)
-
-include_directories(${LIBUV_INCLUDE_DIRS})
-include_directories(${SPDLOG_INCLUDE_DIRS})
+        src/constants.hpp src/hane.hpp)
 
 set(HANE_LIBRARIES ${LIBUV_LIBRARIES})
 
@@ -35,19 +38,7 @@ endif ()
 add_library(hane STATIC ${SOURCE_FILES})
 target_link_libraries(hane ${HANE_LIBRARIES})
 
-add_executable(ecpc src/ecp/compiler.cpp)
-target_link_libraries(ecpc)
-
 include_directories(${PROJECT_SOURCE_DIR}/src)
-
-set(HELLO_SOURCE_FILES examples/hello/main.cpp)
-file(GLOB HELLO_TEMPLATE_FILES "examples/hello/templates/*.cpp")
-add_executable(hello ${HELLO_SOURCE_FILES} ${HELLO_TEMPLATE_FILES})
-target_link_libraries(hello hane)
-add_custom_command(TARGET hello
-        PRE_BUILD
-        COMMAND ecpc hello.html.hpp HelloHtml < hello.html.ecp > hello.html.cpp
-        WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/examples/hello/templates)
 
 add_executable(buffer_test test/buffer_test.cpp)
 target_link_libraries(buffer_test hane)

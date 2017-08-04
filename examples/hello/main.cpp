@@ -1,10 +1,6 @@
-#include <http/http.hpp>
+#include <hane.hpp>
 #include <utility>
-#include <utils/logger.hpp>
-#include <middlewares/simple_middleware.hpp>
-#include <middlewares/route.hpp>
 #include <regex>
-#include <middlewares/static_middleware.hpp>
 #include "templates/hello.html.hpp"
 
 class HelloMiddleware : public SimpleMiddleware {
