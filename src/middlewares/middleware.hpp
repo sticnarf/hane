@@ -2,10 +2,8 @@
 #define HANE_MIDDLEWARE_HPP
 
 #include <memory>
-
-class Request;
-
-class Response;
+#include "../http/request/request.hpp"
+#include "../http/response.hpp"
 
 class Middleware {
 public:

@@ -9,7 +9,6 @@ env:
 
 before_install:
 - sudo apt-get install xvfb qt5-default libqt5webkit5-dev gstreamer1.0-plugins-base gstreamer1.0-tools gstreamer1.0-x
-- bundle install
 - sudo docker build -t hane_hello .
 
 script:

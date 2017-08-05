@@ -14,7 +14,7 @@ Hane（羽根）is a simple web development framework.
 
 ## Usage
 
-The project is compiled into a static library by default.
+The project is compiled into a shared library by default.
 
 You need to install [libuv](https://github.com/libuv/libuv) and [spdlog](https://github.com/gabime/spdlog)
 before compiling this project.
@@ -26,7 +26,7 @@ $ make
 $ (sudo) make install
 ```
 
-This will install the static library and the header files, plus an executable `ecpc` (the template compiler).
+This will install the shared library and the header files, plus an executable `ecpc` (the template compiler).
 
 You shall link the library to your application.
 
