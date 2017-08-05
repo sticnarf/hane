@@ -24,6 +24,7 @@ public:
     friend class HttpServer;
 
     friend void onNewConnection(uv_stream_t *serverTcp, int status);
+    friend void readCallback(uv_stream_t *clientTcp, ssize_t nread, const uv_buf_t *buf);
 };
 
 #endif

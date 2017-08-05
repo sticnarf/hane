@@ -4,6 +4,7 @@
 #include <string>
 #include <map>
 #include <vector>
+#include <memory>
 #include <uv.h>
 #include "../constants.hpp"
 
@@ -25,5 +26,7 @@ private:
     StatusCode statusCode;
     std::string reasonPhrase;
 };
+
+typedef std::shared_ptr<Response> ResponsePtr;
 
 #endif

@@ -1,4 +1,5 @@
 #include "client.hpp"
+#include "errors.hpp"
 
 /* TODO
  * Process (or even parse) requests in a separate thread.

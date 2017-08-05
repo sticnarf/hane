@@ -18,8 +18,6 @@ class HttpServer {
 
     const int DEFAULT_BACKLOG = 128;
 
-    void writeResponse(uv_stream_t *client, std::shared_ptr<const Response> resp);
-
 public:
     HttpServer(std::shared_ptr<Middleware> middleware, const std::string &_bindAddr, int port);
 
@@ -28,6 +26,8 @@ public:
     void start();
 
     void process(const Request &req, uv_tcp_t *client);
+
+    void writeResponse(uv_stream_t *client, std::shared_ptr<const Response> resp);
 };
 
 #endif

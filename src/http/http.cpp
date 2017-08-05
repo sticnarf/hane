@@ -8,6 +8,7 @@
 #include "../utils/protocol_helper.hpp"
 #include "client.hpp"
 #include "../middlewares/middleware.hpp"
+#include "errors.hpp"
 
 HttpServer::HttpServer(std::shared_ptr<Middleware> middleware, const std::string &_bindAddr, int port)
         : middleware(std::move(middleware)), bindAddr(_bindAddr), port(port) {
@@ -28,11 +29,29 @@ static void allocBuffer(uv_handle_t *handle, size_t suggested_size, uv_buf_t *bu
     buf->len = suggested_size;
 }
 
-static void readCallback(uv_stream_t *clientTcp, ssize_t nread, const uv_buf_t *buf) {
+static std::shared_ptr<Response> buildErrorResponse(const HttpError &e) {
+    // TODO Now use HTTP/1.1 arbitrarily
+    auto resp = std::make_shared<Response>(HttpVersion::HTTP_1_1);
+
+    resp->setStatusCode(e.getCode());
+    resp->body = e.getReason();
+
+    return resp;
+}
+
+void readCallback(uv_stream_t *clientTcp, ssize_t nread, const uv_buf_t *buf) {
     auto *client = static_cast<Client *>(clientTcp->data);
     if (nread > 0) {
         Logger::getInstance().info("Read {} bytes.", nread);
-        client->pushBuf(buf->base, nread);
+        try {
+            client->pushBuf(buf->base, nread);
+        } catch (const HttpError &e) {
+            Logger::getInstance().error("Error code {}: {}", static_cast<int>(e.getCode()), e.getReason());
+            auto errorResp = buildErrorResponse(e);
+            client->server->writeResponse(clientTcp, errorResp);
+            uv_close(reinterpret_cast<uv_handle_t *>(clientTcp), closeCallback);
+        }
+
     }
     if (nread < 0) {
         if (nread != UV_EOF)
