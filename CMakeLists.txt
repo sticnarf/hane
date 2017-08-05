@@ -31,11 +31,7 @@ set(SOURCE_FILES
 
 set(HANE_LIBRARIES ${LIBUV_LIBRARIES})
 
-if (NOT APPLE AND NOT MSVC)
-    set(HANE_LIBRARIES ${HANE_LIBRARIES} pthread)
-endif ()
-
-add_library(hane STATIC ${SOURCE_FILES})
+add_library(hane SHARED ${SOURCE_FILES})
 target_link_libraries(hane ${HANE_LIBRARIES})
 
 include_directories(${PROJECT_SOURCE_DIR}/src)

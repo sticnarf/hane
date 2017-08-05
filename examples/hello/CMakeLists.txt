@@ -14,5 +14,5 @@ execute_process(COMMAND ${PROJECT_SOURCE_DIR}/ecpgen WORKING_DIRECTORY ${PROJECT
 set(HELLO_SOURCE_FILES main.cpp)
 file(GLOB HELLO_TEMPLATE_FILES "templates/*.cpp")
 add_executable(hello ${HELLO_SOURCE_FILES} ${HELLO_TEMPLATE_FILES})
-target_link_libraries(hello hane uv)
+target_link_libraries(hello hane uv pthread)
 install(TARGETS hello DESTINATION bin)
