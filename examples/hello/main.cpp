@@ -3,12 +3,9 @@
 #include <regex>
 #include "templates/hello.html.hpp"
 
-class HelloMiddleware : public SimpleMiddleware {
+class HelloMiddleware : public Middleware {
 public:
-    explicit HelloMiddleware(std::shared_ptr<Middleware> next_middleware)
-            : SimpleMiddleware(std::move(next_middleware)) {}
-
-    void process(const Request &req, std::shared_ptr<Response> resp) override {
+    void call(const Request &req, std::shared_ptr<Response> resp) override {
         resp->headers.insert({"Content-Type", "text/html"});
 
         HelloHtml t;
@@ -34,7 +31,7 @@ public:
 int main(int argc, char *argv[]) {
     Logger::getInstance().setLogPath("/var/log/hello.log");
 
-    auto hello = std::make_shared<HelloMiddleware>(nullptr);
+    auto hello = std::make_shared<HelloMiddleware>();
     auto route = std::make_shared<RouteMiddleware>();
     auto assets = std::make_shared<AssetsMiddleware>();
 
