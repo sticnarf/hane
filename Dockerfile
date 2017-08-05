@@ -15,12 +15,14 @@ RUN mkdir build \
  && make -j2 \
  && make install
 
-RUN cd examples/hello \
- && mkdir build \
+WORKDIR /work/examples/hello
+
+RUN mkdir build \
  && cd build \
  && cmake -DCMAKE_BUILD_TYPE=RELEASE .. \
  && make -j2 \
- && make install
+ && make install \
+ && ldconfig
 # && cd / \
 # && rm -rf work \
 # && apt-get remove --purge -y build-essential libspdlog-dev libuv1-dev cmake \
