@@ -51,11 +51,20 @@ And run it in a container:
 Now, you can access the website through port `80`:
 
 ```
-$ curl http://localhost/?name=Alice
+$ curl http://localhost/hello?name=Alice
 <!DOCTYPE HTML>
-<title>Hello</title>
-<meta charset="UTF-8">
-<h1>Hello, Alice!</h1>
+<html>
+<head>
+    <title>Hello</title>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" type="text/css" href="assets/style.css">
+</head>
+<body>
+    
+    <h1>Hello!</h1>
+    
+</body>
+</html>
 ```
 
 ## Todo
