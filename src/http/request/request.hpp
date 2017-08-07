@@ -30,6 +30,10 @@ public:
     const std::string &getAbsPath() const;
 
 private:
+public:
+    Request();
+
+private:
     std::string target;
     std::string absPath;
     std::map<std::string, FormData> queries;
@@ -42,7 +46,7 @@ private:
 
     friend class StartLineParser;
 
-    friend class QueriesParser;
+    friend class UrlQueriesParser;
 
     friend class HeaderParser;
 
@@ -53,6 +57,8 @@ private:
     friend class ParserHelper;
 
     friend class MultipartFormParser;
+
+    friend class TrunkedBodyParser;
 };
 
 #endif

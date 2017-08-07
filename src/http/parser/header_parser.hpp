@@ -4,8 +4,6 @@
 #include "./abstract_parser.hpp"
 
 class HeaderParser : public AbstractParser {
-    ParserPtr buildBodyParser();
-
     HeaderContentPtr parseField(const std::string &fieldName, const std::string &fieldContent);
 
 public:

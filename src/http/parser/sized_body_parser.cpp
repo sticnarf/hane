@@ -4,6 +4,7 @@
 #include "final_parser.hpp"
 #include "body_form_parser.hpp"
 #include "multipart_form_parser.hpp"
+#include "parser_helper.hpp"
 
 SizedBodyParser::SizedBodyParser(Request &&req, BufferPtr buffer)
         : AbstractParser(std::move(req), std::move(buffer)) {}
@@ -32,29 +33,5 @@ ParserPtr SizedBodyParser::process() {
         return BodyFormParser(std::move(partialRequest), buffer).process();
     }
 
-    return buildFormParser()->process();
-}
-
-ParserPtr SizedBodyParser::buildFormParser() {
-    auto contentTypeEntry = partialRequest.header.get("Content-Type");
-    if (!contentTypeEntry.isValid()) {
-        // Unknown!
-        return std::make_shared<FinalParser>(std::move(partialRequest), buffer);
-    }
-    auto contentType = std::dynamic_pointer_cast<ContentType>(contentTypeEntry.getValue());
-    auto mediaType = contentType->getLowercasedMediaType();
-
-    // application/x-www-form-urlencoded
-    // TODO Not supporting charset parameter
-    if (mediaType == CONTENT_TYPE_URLENCODED_FORM) {
-        return std::make_shared<BodyFormParser>(std::move(partialRequest), buffer);
-    }
-
-    // multipart/form-data
-    if (mediaType == CONTENT_TYPE_FORM_MULTIPART) {
-        return std::make_shared<MultipartFormParser>(std::move(partialRequest), buffer);
-    }
-
-    // Unknown!
-    return std::make_shared<FinalParser>(std::move(partialRequest), buffer);
+    return ParserHelper::buildFormParser(std::move(partialRequest), buffer)->process();
 }

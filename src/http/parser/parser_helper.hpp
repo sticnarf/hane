@@ -3,6 +3,7 @@
 
 #include "../request/request.hpp"
 #include "../request/header.hpp"
+#include "abstract_parser.hpp"
 #include <string>
 #include <utility>
 
@@ -19,6 +20,10 @@ public:
     static bool validateToken(const std::string &name);
 
     static void parseHeaderFieldWithParameters(HeaderContentWithParametersPtr content, const std::string &fieldContent);
+
+    static ParserPtr buildFormParser(Request &&partialRequest, BufferPtr buffer);
+
+    static ParserPtr buildBodyParser(Request &&partialRequest, BufferPtr buffer);
 };
 
 #endif
