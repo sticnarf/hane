@@ -28,13 +28,10 @@ public:
     }
 };
 
-#include <iostream>
-
 class PrintBodyMiddleware : public Middleware {
 public:
     void call(const Request &req, std::shared_ptr<Response> resp) override {
         resp->body = req.getBody()->toString();
-        std::cout << resp->body << std::endl;
     }
 };
 
