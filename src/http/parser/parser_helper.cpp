@@ -1,7 +1,14 @@
 #include "parser_helper.hpp"
 #include <cctype>
 #include <cstring>
+#include "../request/header_fields/content_type.hpp"
 #include "../errors.hpp"
+#include "abstract_parser.hpp"
+#include "final_parser.hpp"
+#include "body_form_parser.hpp"
+#include "multipart_form_parser.hpp"
+#include "sized_body_parser.hpp"
+#include "trunked_body_parser.hpp"
 
 void ParserHelper::parseUrlEncodedQueries(const std::string &data, Request &req, size_t begin) {
     bool eof = false;
@@ -120,7 +127,7 @@ std::pair<std::string, std::string> ParserHelper::parseHeaderField(const std::st
     size_t colon = data.find(':', begin);
     std::string fieldName = data.substr(begin, colon);
     if (!ParserHelper::validateToken(fieldName))
-        throw std::invalid_argument("Bad field name");
+        throw HttpError(StatusCode::HTTP_BAD_REQUEST, "Bad field name");
 
     size_t firstNotSpace = colon + 1;
     while (isspace(data[firstNotSpace]))
@@ -149,4 +156,44 @@ void ParserHelper::parseHeaderFieldWithParameters(HeaderContentWithParametersPtr
     // Parse the remaining parameters
     if (semicolon != std::string::npos)
         ParserHelper::parseParameters(fieldContent, content->parameters, semicolon + 1);
+}
+
+ParserPtr ParserHelper::buildFormParser(Request &&partialRequest, BufferPtr buffer) {
+    auto contentTypeEntry = partialRequest.header.get("Content-Type");
+    if (!contentTypeEntry.isValid()) {
+        // Unknown!
+        return std::make_shared<FinalParser>(std::move(partialRequest), buffer);
+    }
+    auto contentType = std::dynamic_pointer_cast<ContentType>(contentTypeEntry.getValue());
+    auto mediaType = contentType->getLowercasedMediaType();
+
+    // application/x-www-form-urlencoded
+    // TODO Not supporting charset parameter
+    if (mediaType == CONTENT_TYPE_URLENCODED_FORM) {
+        return std::make_shared<BodyFormParser>(std::move(partialRequest), buffer);
+    }
+
+    // multipart/form-data
+    if (mediaType == CONTENT_TYPE_FORM_MULTIPART) {
+        return std::make_shared<MultipartFormParser>(std::move(partialRequest), buffer);
+    }
+
+    // Unknown!
+    return std::make_shared<FinalParser>(std::move(partialRequest), buffer);
+}
+
+ParserPtr ParserHelper::buildBodyParser(Request &&partialRequest, BufferPtr buffer) {
+    // TODO Build different BodyParser according to Transfer-Encoding
+    auto transferEncoding = partialRequest.header.get("Transfer-Encoding");
+    if (transferEncoding.isValid()) {
+        if (transferEncoding.getValue()->getContent() == TRANSFER_ENCODING_TRUNKED) {
+            // trunked encoding
+            return std::make_shared<TrunkedBodyParser>(std::move(partialRequest), buffer);
+        } else {
+            throw HttpError(StatusCode::HTTP_BAD_REQUEST, "Unsupported Transfer-Encoding");
+        }
+    } else {
+        // With Content-Length
+        return std::make_shared<SizedBodyParser>(std::move(partialRequest), buffer);
+    }
 }

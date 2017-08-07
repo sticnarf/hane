@@ -28,15 +28,24 @@ public:
     }
 };
 
+class PrintBodyMiddleware : public Middleware {
+public:
+    void call(const Request &req, std::shared_ptr<Response> resp) override {
+        resp->body = req.getBody()->toString();
+    }
+};
+
 int main(int argc, char *argv[]) {
     Logger::getInstance().setLogPath("/var/log/hello.log");
 
     auto hello = std::make_shared<HelloMiddleware>();
     auto route = std::make_shared<RouteMiddleware>();
     auto assets = std::make_shared<AssetsMiddleware>();
+    auto print = std::make_shared<PrintBodyMiddleware>();
 
     route->addRule(std::regex("\\/(hello){0,1}"), hello);
     route->addRule(std::regex("\\/assets/.+"), assets);
+    route->addRule(std::regex("\\/print"), print);
 
     HttpServer server(route, "0.0.0.0", 8089);
     server.start();

@@ -3,7 +3,7 @@
 #include "../../utils/protocol_helper.hpp"
 #include "start_line_parser.hpp"
 #include "header_parser.hpp"
-#include "queries_parser.hpp"
+#include "url_queries_parser.hpp"
 
 StartLineParser::StartLineParser(Request &&req, BufferPtr buffer)
         : AbstractParser(std::move(req), std::move(buffer)) {}
@@ -11,7 +11,7 @@ StartLineParser::StartLineParser(Request &&req, BufferPtr buffer)
 ParserPtr StartLineParser::process() {
     size_t lineSep = buffer->find("\r\n", 2);
     if (lineSep >= buffer->len())
-        return std::shared_ptr<AbstractParser>(this);
+        return std::make_shared<StartLineParser>(std::move(partialRequest), buffer);
     std::string startLine = buffer->split(lineSep + 2)->toString(0, lineSep);
 
     size_t sp1 = startLine.find(' ');
@@ -30,5 +30,5 @@ ParserPtr StartLineParser::process() {
     partialRequest.target = target;
     partialRequest.httpVersion = version;
 
-    return QueriesParser(std::move(partialRequest), buffer).process();
+    return UrlQueriesParser(std::move(partialRequest), buffer).process();
 }

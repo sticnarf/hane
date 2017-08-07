@@ -27,3 +27,7 @@ const std::map<std::string, FormData> &Request::getQueries() const {
 const std::string &Request::getAbsPath() const {
     return absPath;
 }
+
+Request::Request() {
+    body = std::make_shared<Buffer>();
+}

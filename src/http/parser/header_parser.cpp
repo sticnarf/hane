@@ -2,6 +2,7 @@
 #include "sized_body_parser.hpp"
 #include <functional>
 #include <utility>
+#include <http/errors.hpp>
 #include "../request/header_fields/content_type.hpp"
 #include "parser_helper.hpp"
 
@@ -11,11 +12,11 @@ HeaderParser::HeaderParser(Request &&req, BufferPtr buffer)
 ParserPtr HeaderParser::process() {
     size_t lineSep = buffer->find("\r\n", 2);
     if (lineSep >= buffer->len())
-        return std::shared_ptr<AbstractParser>(this);
+        return std::make_shared<HeaderParser>(std::move(partialRequest), buffer);
 
     auto fieldBuf = buffer->split(lineSep + 2);
     if (lineSep == 0)
-        return buildBodyParser()->process();
+        return ParserHelper::buildBodyParser(std::move(partialRequest), buffer)->process();
 
     std::string headerField = fieldBuf->toString(0, lineSep);
 
@@ -26,11 +27,6 @@ ParserPtr HeaderParser::process() {
     partialRequest.header.put(fieldName, parseField(fieldName, fieldContent));
 
     return this->process();
-}
-
-ParserPtr HeaderParser::buildBodyParser() {
-    // TODO Build different BodyParser according to Transfer-Encoding
-    return std::make_shared<SizedBodyParser>(std::move(partialRequest), buffer);
 }
 
 HeaderContentPtr parseContentType(const std::string &fieldContent) {

@@ -3,9 +3,9 @@
 
 #include "./abstract_parser.hpp"
 
-class QueriesParser : public AbstractParser {
+class UrlQueriesParser : public AbstractParser {
 public:
-    QueriesParser(Request &&req, BufferPtr buffer);
+    UrlQueriesParser(Request &&req, BufferPtr buffer);
 
     ParserPtr process() override;
 };

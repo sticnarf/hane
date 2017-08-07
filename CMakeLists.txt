@@ -18,7 +18,7 @@ set(SOURCE_FILES
         src/http/http.cpp src/http/response.cpp src/http/client.cpp
         src/http/parser/parser.cpp src/http/parser/start_line_parser.cpp src/http/parser/abstract_parser.cpp
         src/http/parser/header_parser.cpp src/http/parser/sized_body_parser.cpp src/http/parser/final_parser.cpp
-        src/http/parser/queries_parser.cpp src/http/parser/body_form_parser.cpp
+        src/http/parser/url_queries_parser.cpp src/http/parser/body_form_parser.cpp src/http/parser/trunked_body_parser.cpp
         src/http/parser/parser_helper.cpp src/http/parser/multipart_form_parser.cpp
         src/middlewares/middleware.hpp src/middlewares/simple_middleware.cpp src/middlewares/route.cpp
         src/middlewares/static_middleware.cpp

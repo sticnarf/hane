@@ -88,4 +88,6 @@ enum class StatusCode {
 const char *const CONTENT_TYPE_URLENCODED_FORM = "application/x-www-form-urlencoded";
 const char *const CONTENT_TYPE_FORM_MULTIPART = "multipart/form-data";
 
+const char *const TRANSFER_ENCODING_TRUNKED = "chunked";
+
 #endif
