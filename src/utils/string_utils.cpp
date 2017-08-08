@@ -1,7 +1,7 @@
 #include "string_utils.hpp"
 #include <algorithm>
 #include <cctype>
-#include <exception>
+#include <stdexcept>
 
 std::string StringUtils::toLowercase(const std::string &str) {
     std::string result;
