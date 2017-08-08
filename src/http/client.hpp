@@ -19,6 +19,8 @@ public:
 
     void processRequest();
 
+    void closeConnection();
+
     ~Client();
 
     friend class HttpServer;

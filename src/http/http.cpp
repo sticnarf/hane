@@ -49,7 +49,7 @@ void readCallback(uv_stream_t *clientTcp, ssize_t nread, const uv_buf_t *buf) {
             Logger::getInstance().error("Error code {}: {}", static_cast<int>(e.getCode()), e.getReason());
             auto errorResp = buildErrorResponse(e);
             client->server->writeResponse(clientTcp, errorResp);
-            uv_close(reinterpret_cast<uv_handle_t *>(clientTcp), closeCallback);
+            client->closeConnection();
         }
 
     }
@@ -87,6 +87,10 @@ void onNewConnection(uv_stream_t *serverTcp, int status) {
     } else {
         uv_close(reinterpret_cast<uv_handle_t *>(client->tcp), closeCallback);
     }
+}
+
+void Client::closeConnection() {
+    uv_close(reinterpret_cast<uv_handle_t *>(this->tcp), closeCallback);
 }
 
 void HttpServer::writeResponse(uv_stream_t *tcp, std::shared_ptr<const Response> resp) {
@@ -135,4 +139,8 @@ void HttpServer::process(const Request &req, uv_tcp_t *client) {
     auto resp = std::make_shared<Response>(req.getHttpVersion());
     middleware->call(req, resp);
     writeResponse(reinterpret_cast<uv_stream_t *>(client), resp);
+
+    auto connectionEntry = req.getHeader().get("Connection");
+    if (connectionEntry.isValid() && connectionEntry.getValue()->getContent() == "close")
+        static_cast<Client *>(client->data)->closeConnection();
 }
