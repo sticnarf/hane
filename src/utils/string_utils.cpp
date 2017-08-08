@@ -1,6 +1,7 @@
 #include "string_utils.hpp"
 #include <algorithm>
 #include <cctype>
+#include <stdexcept>
 
 std::string StringUtils::toLowercase(const std::string &str) {
     std::string result;
@@ -46,4 +47,20 @@ std::string StringUtils::rtrim_copy(std::string s) {
 std::string StringUtils::trim_copy(std::string s) {
     trim(s);
     return s;
+}
+
+std::string StringUtils::processQuotedPair(const std::string &str) {
+    std::string result;
+    for (size_t idx = 0; idx < str.length(); idx++) {
+        if (str[idx] != '\\')
+            result.push_back(str[idx]);
+        else {
+            size_t nextIdx = ++idx;
+            if (nextIdx < str.length())
+                result.push_back(str[idx]);
+            else
+                throw std::invalid_argument("bad string with quoted-pair");
+        }
+    }
+    return result;
 }

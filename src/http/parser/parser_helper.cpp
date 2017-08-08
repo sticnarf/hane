@@ -137,7 +137,13 @@ std::pair<std::string, std::string> ParserHelper::parseHeaderField(const std::st
     while (isspace(data[lastNotSpace]))
         lastNotSpace--;
 
-    std::string fieldContent = data.substr(firstNotSpace, lastNotSpace - firstNotSpace + 1);
+    std::string fieldContent;
+    try {
+        fieldContent = StringUtils::processQuotedPair(
+                data.substr(firstNotSpace, lastNotSpace - firstNotSpace + 1));
+    } catch (const std::invalid_argument &_) {
+        throw HttpError(StatusCode::HTTP_BAD_REQUEST, "Bad field content");
+    }
     if (!ParserHelper::validateHeaderFieldContent(fieldContent))
         throw HttpError(StatusCode::HTTP_BAD_REQUEST, "Bad field content");
 

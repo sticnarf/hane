@@ -7,6 +7,8 @@ class StringUtils {
 public:
     static std::string toLowercase(const std::string &str);
 
+    static std::string processQuotedPair(const std::string &str);
+
     // See: https://stackoverflow.com/questions/216823/whats-the-best-way-to-trim-stdstring
     static void ltrim(std::string &s);
 
