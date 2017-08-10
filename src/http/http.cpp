@@ -98,7 +98,7 @@ void HttpServer::writeResponse(uv_stream_t *tcp, std::shared_ptr<const Response>
 
     // Append status line
     responseText << stringify(resp->httpVersion) << " "
-                 << (int) resp->statusCode << " " << resp->reasonPhrase << "\r\n";
+                 << (int) resp->statusCode << " " << toReasonPhrase(resp->statusCode) << "\r\n";
 
     // Append headers
     for (auto &e : resp->headers) {

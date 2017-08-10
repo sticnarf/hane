@@ -12,4 +12,6 @@ HttpVersion toHttpVersion(const char *str, size_t len);
 
 const char *stringify(HttpVersion version);
 
+const char *toReasonPhrase(StatusCode code);
+
 #endif

@@ -12,6 +12,8 @@ class Response {
     friend class HttpServer;
 
 public:
+    Response(const Response& resp) = default;
+
     explicit Response(HttpVersion version);
 
     ~Response();
@@ -21,10 +23,9 @@ public:
     std::map<std::string, std::string> headers;
     std::string body;
 
-private:
+protected:
     HttpVersion httpVersion;
     StatusCode statusCode;
-    std::string reasonPhrase;
 };
 
 typedef std::shared_ptr<Response> ResponsePtr;

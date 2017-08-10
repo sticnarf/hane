@@ -28,7 +28,7 @@ set(SOURCE_FILES
         src/http/request/header_fields/content_type.cpp src/http/errors.hpp
         src/http/response/response.cpp
         src/ecp/template.hpp
-        src/constants.hpp src/hane.hpp)
+        src/constants.hpp src/hane.hpp src/http/response/chunked_response.cpp src/http/response/chunked_response.hpp)
 
 set(HANE_LIBRARIES ${LIBUV_LIBRARIES})
 
