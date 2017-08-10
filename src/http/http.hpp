@@ -7,7 +7,7 @@
 #include <uv.h>
 #include "../middlewares/middleware.hpp"
 #include "./request/request.hpp"
-#include "./response.hpp"
+#include "./response/response.hpp"
 
 class HttpServer {
     std::shared_ptr<Middleware> middleware;
