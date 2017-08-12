@@ -5,7 +5,7 @@
 #include <string>
 #include <memory>
 #include <utility>
-#include "../../utils/case_insensitive_map.hpp"
+#include "utils/case_insensitive_map.hpp"
 
 class HeaderContent {
 protected:

@@ -6,13 +6,14 @@
 #include <vector>
 #include <memory>
 #include <uv.h>
+#include "../header/header.hpp"
 #include "../../constants.hpp"
 
 class Response {
     friend class HttpServer;
 
 public:
-    Response(const Response& resp) = default;
+    Response(const Response &resp) = default;
 
     explicit Response(HttpVersion version);
 
@@ -20,7 +21,9 @@ public:
 
     void setStatusCode(StatusCode statusCode);
 
-    std::map<std::string, std::string> headers;
+    bool isChunked();
+
+    Header headers;
     std::string body;
 
 protected:

@@ -3,7 +3,7 @@
 #include <functional>
 #include <utility>
 #include <http/errors.hpp>
-#include "../request/header_fields/content_type.hpp"
+#include "http/header/content_type.hpp"
 #include "parser_helper.hpp"
 
 HeaderParser::HeaderParser(Request &&req, BufferPtr buffer)

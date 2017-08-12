@@ -101,12 +101,14 @@ void HttpServer::writeResponse(uv_stream_t *tcp, std::shared_ptr<const Response>
                  << (int) resp->statusCode << " " << toReasonPhrase(resp->statusCode) << "\r\n";
 
     // Append headers
-    for (auto &e : resp->headers) {
-        responseText << e.first << ": " << e.second << "\r\n";
+    for (auto &e : resp->headers.innerMap) {
+        auto pair = e.second;
+        responseText << pair.getKey() << ": " << pair.getValue()->getContent() << "\r\n";
     }
 
     // Append Content-Length
-    if (resp->headers.find("Content-Length") == resp->headers.end()) {
+    auto contentLengthEntry = resp->headers.get("Content-Length");
+    if (!contentLengthEntry.isValid()) {
         responseText << "Content-Length: " << resp->body.size() << "\r\n";
     }
 

@@ -11,3 +11,8 @@ Response::Response(HttpVersion version)
 }
 
 Response::~Response() = default;
+
+
+bool Response::isChunked() {
+    return false;
+}

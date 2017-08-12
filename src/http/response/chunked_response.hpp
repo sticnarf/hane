@@ -4,7 +4,7 @@
 #include "response.hpp"
 #include <queue>
 
-class ChunkedResponse : Response {
+class ChunkedResponse : public Response {
     std::queue<std::string> chunks;
 public:
     explicit ChunkedResponse(HttpVersion version);

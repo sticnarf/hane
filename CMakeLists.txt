@@ -24,11 +24,11 @@ set(SOURCE_FILES
         src/middlewares/static_middleware.cpp
         src/utils/logger.cpp src/utils/buffer.cpp src/utils/protocol_helper.cpp src/utils/string_utils.cpp
         src/utils/case_insensitive_map.hpp
-        src/http/request/request.cpp src/http/request/header.hpp src/http/request/form_data.cpp
-        src/http/request/header_fields/content_type.cpp src/http/errors.hpp
-        src/http/response/response.cpp
+        src/http/request/request.cpp src/http/header/header.hpp src/http/request/form_data.cpp
+        src/http/header/content_type.cpp src/http/errors.hpp
+        src/http/response/response.cpp src/http/response/chunked_response.cpp
         src/ecp/template.hpp
-        src/constants.hpp src/hane.hpp src/http/response/chunked_response.cpp src/http/response/chunked_response.hpp)
+        src/constants.hpp src/hane.hpp)
 
 set(HANE_LIBRARIES ${LIBUV_LIBRARIES})
 
