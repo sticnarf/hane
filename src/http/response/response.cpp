@@ -14,5 +14,6 @@ Response::~Response() = default;
 
 
 bool Response::isChunked() {
-    return false;
+    auto transferEncodingEntry = headers.get("Transfer-Encoding");
+    return (transferEncodingEntry.isValid() && transferEncodingEntry.getValue()->getContent() == "chunked");
 }

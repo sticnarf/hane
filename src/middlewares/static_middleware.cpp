@@ -1,7 +1,7 @@
 #include "static_middleware.hpp"
 #include <fstream>
 
-void StaticMiddleware::call(const Request &req, std::shared_ptr<Response> resp) {
+MiddlewarePtr StaticMiddleware::call(const Request &req, std::shared_ptr<Response> resp) {
     std::fstream fs(path, std::ios::binary | std::ios::in);
     if (!fs.is_open()) {
         resp->setStatusCode(StatusCode::HTTP_NOT_FOUND);
@@ -15,6 +15,7 @@ void StaticMiddleware::call(const Request &req, std::shared_ptr<Response> resp) 
         auto len = fs.gcount();
         resp->body.insert(resp->body.end(), buf, buf + len);
     }
+    return nullptr;
 }
 
 StaticMiddleware::StaticMiddleware(const std::string &path) : path(path) {}

@@ -4,6 +4,7 @@
 #include <cstring>
 #include <utility>
 #include <uv.h>
+#include <http/response/chunked_response.hpp>
 #include "../utils/logger.hpp"
 #include "../utils/protocol_helper.hpp"
 #include "client.hpp"
@@ -137,10 +138,26 @@ void HttpServer::start() {
     uv_run(uv_default_loop(), UV_RUN_DEFAULT);
 }
 
+/**
+ * This function will call the middleware.
+ * After calling the middleware, if the response has "Transfer-Encoding: chunked",
+ * the response should be able to and will be cast to a ChunkedResponse.
+ * Then the middleware returned back will be repeatedly called until the response is finished.
+ * @param req
+ * @param client
+ */
 void HttpServer::process(const Request &req, uv_tcp_t *client) {
     auto resp = std::make_shared<Response>(req.getHttpVersion());
-    middleware->call(req, resp);
+    auto currMiddleware = middleware->call(req, resp);
     writeResponse(reinterpret_cast<uv_stream_t *>(client), resp);
+
+    if (resp->isChunked()) {
+        auto chunkedResp = std::dynamic_pointer_cast<ChunkedResponse>(resp);
+        do {
+            // TODO write the chunks
+            currMiddleware = currMiddleware->call(req, resp);
+        } while (!chunkedResp->finished);
+    }
 
     auto connectionEntry = req.getHeader().get("Connection");
     if (connectionEntry.isValid() && connectionEntry.getValue()->getContent() == "close")

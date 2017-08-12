@@ -4,9 +4,15 @@
 #include "response.hpp"
 #include <queue>
 
+/**
+ * A ChunkedResponse must have header field "Transfer-Encoding: chunked",
+ * and must have an empty body.
+ */
 class ChunkedResponse : public Response {
     std::queue<std::string> chunks;
 public:
+    bool finished;
+
     explicit ChunkedResponse(HttpVersion version);
 
     ChunkedResponse(const ChunkedResponse &) = default;

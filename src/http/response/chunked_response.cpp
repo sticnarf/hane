@@ -6,6 +6,7 @@ ChunkedResponse::ChunkedResponse(HttpVersion version) : Response(version) {
 
 ChunkedResponse::ChunkedResponse(const Response &resp) : Response(resp) {
     chunks.push(resp.body);
+    body.clear();
     headers.put("Transfer-Encoding", std::make_shared<HeaderContent>("chunked"));
 }
 

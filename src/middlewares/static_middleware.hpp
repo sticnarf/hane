@@ -9,7 +9,7 @@ class StaticMiddleware : public Middleware {
 public:
     explicit StaticMiddleware(const std::string &path);
 
-    void call(const Request &req, std::shared_ptr<Response> resp) override;
+    MiddlewarePtr call(const Request &req, std::shared_ptr<Response> resp) override;
 };
 
 #endif

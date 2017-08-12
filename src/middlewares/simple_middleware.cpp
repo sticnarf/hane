@@ -2,11 +2,12 @@
 
 #include <utility>
 
-void SimpleMiddleware::call(const Request &req, std::shared_ptr<Response> resp) {
+MiddlewarePtr SimpleMiddleware::call(const Request &req, std::shared_ptr<Response> resp) {
     process(req, resp);
     if (nextMiddleware)
-        nextMiddleware->call(req, resp);
+        return nextMiddleware->call(req, resp);
+    return nullptr;
 }
 
-SimpleMiddleware::SimpleMiddleware(std::shared_ptr<Middleware> nextMiddleware)
+SimpleMiddleware::SimpleMiddleware(MiddlewarePtr nextMiddleware)
         : nextMiddleware(std::move(nextMiddleware)) {}
