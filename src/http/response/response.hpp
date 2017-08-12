@@ -17,7 +17,7 @@ public:
 
     explicit Response(HttpVersion version);
 
-    ~Response();
+    virtual ~Response();
 
     void setStatusCode(StatusCode statusCode);
 
