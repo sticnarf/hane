@@ -6,25 +6,31 @@
 #include <vector>
 #include <memory>
 #include <uv.h>
+#include "../header/header.hpp"
 #include "../../constants.hpp"
 
 class Response {
     friend class HttpServer;
 
 public:
+    Response(const Response &resp) = default;
+
     explicit Response(HttpVersion version);
 
-    ~Response();
+    virtual ~Response();
 
     void setStatusCode(StatusCode statusCode);
 
-    std::map<std::string, std::string> headers;
+    bool isChunked() const;
+
+    void makeChunked();
+
+    Header headers;
     std::string body;
 
-private:
+protected:
     HttpVersion httpVersion;
     StatusCode statusCode;
-    std::string reasonPhrase;
 };
 
 typedef std::shared_ptr<Response> ResponsePtr;

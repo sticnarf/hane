@@ -11,7 +11,7 @@ typedef std::pair<std::regex, std::shared_ptr<Middleware>> Rule;
 class RouteMiddleware : public Middleware {
     std::vector<Rule> rules;
 public:
-    void call(const Request &req, std::shared_ptr<Response> resp) override;
+    MiddlewarePtr call(const Request &req, std::shared_ptr<Response> &resp) override;
     void addRule(std::regex, std::shared_ptr<Middleware>);
 };
 

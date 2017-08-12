@@ -49,9 +49,9 @@ public:
 
 template<typename V>
 class CaseInsensitiveMap {
+public:
     std::map<std::string, MapEntry<V> > innerMap;
 
-public:
     void put(const std::string &key, const V &value) {
         innerMap[StringUtils::toLowercase(key)] = MapEntry<V>(key, value);
     }

@@ -1,7 +1,7 @@
 #include "parser_helper.hpp"
 #include <cctype>
 #include <cstring>
-#include "../request/header_fields/content_type.hpp"
+#include "http/header/content_type.hpp"
 #include "../errors.hpp"
 #include "abstract_parser.hpp"
 #include "final_parser.hpp"

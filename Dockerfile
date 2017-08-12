@@ -29,6 +29,9 @@ RUN mkdir build \
 # && apt-get autoremove --purge -y \
 # && rm -rf /var/lib/apt/lists/*
 
+RUN cd assets \
+ && dd if=/dev/zero of=./100mb.test bs=1024 count=102400
+
 VOLUME /var/log
 EXPOSE 8089
 

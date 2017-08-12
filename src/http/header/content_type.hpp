@@ -1,7 +1,7 @@
 #ifndef HANE_CONTENT_TYPE_HPP
 #define HANE_CONTENT_TYPE_HPP
 
-#include "../header.hpp"
+#include "header.hpp"
 #include <string>
 #include <map>
 

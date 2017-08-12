@@ -4,6 +4,7 @@
 #include <cstring>
 #include <utility>
 #include <uv.h>
+#include "response/chunked_response.hpp"
 #include "../utils/logger.hpp"
 #include "../utils/protocol_helper.hpp"
 #include "client.hpp"
@@ -68,6 +69,7 @@ static void writeCallback(uv_write_t *req, int status) {
     }
 
     delete[] static_cast<char *>(req->data);
+    delete req;
 }
 
 void onNewConnection(uv_stream_t *serverTcp, int status) {
@@ -98,15 +100,17 @@ void HttpServer::writeResponse(uv_stream_t *tcp, std::shared_ptr<const Response>
 
     // Append status line
     responseText << stringify(resp->httpVersion) << " "
-                 << (int) resp->statusCode << " " << resp->reasonPhrase << "\r\n";
+                 << (int) resp->statusCode << " " << toReasonPhrase(resp->statusCode) << "\r\n";
 
     // Append headers
-    for (auto &e : resp->headers) {
-        responseText << e.first << ": " << e.second << "\r\n";
+    for (auto &e : resp->headers.innerMap) {
+        auto pair = e.second;
+        responseText << pair.getKey() << ": " << pair.getValue()->getContent() << "\r\n";
     }
 
-    // Append Content-Length
-    if (resp->headers.find("Content-Length") == resp->headers.end()) {
+    // Append Content-Length if not chunked
+    auto contentLengthEntry = resp->headers.get("Content-Length");
+    if (!resp->isChunked() && !contentLengthEntry.isValid()) {
         responseText << "Content-Length: " << resp->body.size() << "\r\n";
     }
 
@@ -115,14 +119,20 @@ void HttpServer::writeResponse(uv_stream_t *tcp, std::shared_ptr<const Response>
 
     std::string str = responseText.str();
 
-    auto data = new char[str.length()];
-    memcpy(data, str.data(), str.length());
+    writeData(tcp, str);
+}
 
-    auto *client = static_cast<Client *>(tcp->data);
-    client->write.data = data;
+void HttpServer::writeChunks(uv_stream_t *client, std::shared_ptr<ChunkedResponse> resp) {
+    std::string data;
+    if (resp->finished)
+        data = "0\r\n\r\n";
 
-    client->buf = uv_buf_init(data, static_cast<unsigned int>(str.length()));
-    uv_write(&(client->write), tcp, &(client->buf), 1, writeCallback);
+    while (!resp->empty()) {
+        auto chunk = resp->popChunk();
+        data += fmt::format("{0:x}\r\n{1}\r\n", chunk.length(), chunk);
+    }
+
+    writeData(client, data);
 }
 
 void HttpServer::start() {
@@ -135,12 +145,42 @@ void HttpServer::start() {
     uv_run(uv_default_loop(), UV_RUN_DEFAULT);
 }
 
+/**
+ * This function will call the middleware.
+ * After calling the middleware, if the response has "Transfer-Encoding: chunked",
+ * the response should be able to and will be cast to a ChunkedResponse.
+ * Then the middleware returned back will be repeatedly called until the response is finished.
+ * @param req
+ * @param client
+ */
 void HttpServer::process(const Request &req, uv_tcp_t *client) {
     auto resp = std::make_shared<Response>(req.getHttpVersion());
-    middleware->call(req, resp);
+    auto currMiddleware = middleware->call(req, resp);
     writeResponse(reinterpret_cast<uv_stream_t *>(client), resp);
+
+    if (resp->isChunked()) {
+        auto chunkedResp = std::dynamic_pointer_cast<ChunkedResponse>(resp);
+        while (!chunkedResp->finished) {
+            currMiddleware = currMiddleware->call(req, resp);
+            writeChunks(reinterpret_cast<uv_stream_t *>(client), chunkedResp);
+        }
+    }
 
     auto connectionEntry = req.getHeader().get("Connection");
     if (connectionEntry.isValid() && connectionEntry.getValue()->getContent() == "close")
         static_cast<Client *>(client->data)->closeConnection();
+}
+
+void HttpServer::writeData(uv_stream_t *tcp, const std::string &data) {
+    auto arr = new char[data.length()];
+    memcpy(arr, data.data(), data.length());
+
+//    auto *client = static_cast<Client *>(tcp->data);
+//    client->write.data = arr;
+//    client->buf = uv_buf_init(arr, static_cast<unsigned int>(data.length()));
+    auto write = new uv_write_t;
+    write->data = arr;
+    auto buf = uv_buf_init(arr, static_cast<unsigned int>(data.length()));
+
+    uv_write(write, tcp, &buf, 1, writeCallback);
 }
