@@ -4,7 +4,7 @@
 #include <cstring>
 #include <utility>
 #include <uv.h>
-#include <http/response/chunked_response.hpp>
+#include "response/chunked_response.hpp"
 #include "../utils/logger.hpp"
 #include "../utils/protocol_helper.hpp"
 #include "client.hpp"
@@ -107,9 +107,9 @@ void HttpServer::writeResponse(uv_stream_t *tcp, std::shared_ptr<const Response>
         responseText << pair.getKey() << ": " << pair.getValue()->getContent() << "\r\n";
     }
 
-    // Append Content-Length
+    // Append Content-Length if not chunked
     auto contentLengthEntry = resp->headers.get("Content-Length");
-    if (!contentLengthEntry.isValid()) {
+    if (!resp->isChunked() && !contentLengthEntry.isValid()) {
         responseText << "Content-Length: " << resp->body.size() << "\r\n";
     }
 
@@ -118,14 +118,20 @@ void HttpServer::writeResponse(uv_stream_t *tcp, std::shared_ptr<const Response>
 
     std::string str = responseText.str();
 
-    auto data = new char[str.length()];
-    memcpy(data, str.data(), str.length());
+    writeData(tcp, str);
+}
 
-    auto *client = static_cast<Client *>(tcp->data);
-    client->write.data = data;
+void HttpServer::writeChunks(uv_stream_t *client, std::shared_ptr<ChunkedResponse> resp) {
+    std::string data;
+    if (resp->finished)
+        data = "0\r\n\r\n";
 
-    client->buf = uv_buf_init(data, static_cast<unsigned int>(str.length()));
-    uv_write(&(client->write), tcp, &(client->buf), 1, writeCallback);
+    while (!resp->empty()) {
+        auto chunk = resp->popChunk();
+        data += fmt::format("{x}\r\n{}\r\n", chunk.length(), chunk);
+    }
+
+    writeData(client, data);
 }
 
 void HttpServer::start() {
@@ -154,7 +160,7 @@ void HttpServer::process(const Request &req, uv_tcp_t *client) {
     if (resp->isChunked()) {
         auto chunkedResp = std::dynamic_pointer_cast<ChunkedResponse>(resp);
         do {
-            // TODO write the chunks
+            writeChunks(reinterpret_cast<uv_stream_t *>(client), chunkedResp);
             currMiddleware = currMiddleware->call(req, resp);
         } while (!chunkedResp->finished);
     }
@@ -162,4 +168,15 @@ void HttpServer::process(const Request &req, uv_tcp_t *client) {
     auto connectionEntry = req.getHeader().get("Connection");
     if (connectionEntry.isValid() && connectionEntry.getValue()->getContent() == "close")
         static_cast<Client *>(client->data)->closeConnection();
+}
+
+void HttpServer::writeData(uv_stream_t *tcp, const std::string &data) {
+    auto arr = new char[data.length()];
+    memcpy(arr, data.data(), data.length());
+
+    auto *client = static_cast<Client *>(tcp->data);
+    client->write.data = arr;
+
+    client->buf = uv_buf_init(arr, static_cast<unsigned int>(data.length()));
+    uv_write(&(client->write), tcp, &(client->buf), 1, writeCallback);
 }

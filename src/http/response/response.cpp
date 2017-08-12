@@ -13,7 +13,7 @@ Response::Response(HttpVersion version)
 Response::~Response() = default;
 
 
-bool Response::isChunked() {
+bool Response::isChunked() const {
     auto transferEncodingEntry = headers.get("Transfer-Encoding");
     return (transferEncodingEntry.isValid() && transferEncodingEntry.getValue()->getContent() == "chunked");
 }

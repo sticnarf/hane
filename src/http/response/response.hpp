@@ -21,7 +21,7 @@ public:
 
     void setStatusCode(StatusCode statusCode);
 
-    bool isChunked();
+    bool isChunked() const;
 
     Header headers;
     std::string body;
