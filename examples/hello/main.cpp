@@ -5,7 +5,7 @@
 
 class HelloMiddleware : public Middleware {
 public:
-    MiddlewarePtr call(const Request &req, std::shared_ptr<Response> resp) override {
+    MiddlewarePtr call(const Request &req, std::shared_ptr<Response> &resp) override {
         resp->headers.put("Content-Type", std::make_shared<HeaderContent>("text/html"));
 
         HelloHtml t;
@@ -24,15 +24,15 @@ public:
 
 class AssetsMiddleware : public Middleware {
 public:
-    MiddlewarePtr call(const Request &req, std::shared_ptr<Response> resp) override {
-        StaticMiddleware sm("." + req.getAbsPath());
-        return sm.call(req, resp);
+    MiddlewarePtr call(const Request &req, std::shared_ptr<Response> &resp) override {
+        auto sm = std::make_shared<StaticMiddleware>("." + req.getAbsPath());
+        return sm->call(req, resp);
     }
 };
 
 class PrintBodyMiddleware : public Middleware {
 public:
-    MiddlewarePtr call(const Request &req, std::shared_ptr<Response> resp) override {
+    MiddlewarePtr call(const Request &req, std::shared_ptr<Response> &resp) override {
         resp->body = req.getBody()->toString();
         return nullptr;
     }

@@ -69,6 +69,7 @@ static void writeCallback(uv_write_t *req, int status) {
     }
 
     delete[] static_cast<char *>(req->data);
+    delete req;
 }
 
 void onNewConnection(uv_stream_t *serverTcp, int status) {
@@ -128,7 +129,7 @@ void HttpServer::writeChunks(uv_stream_t *client, std::shared_ptr<ChunkedRespons
 
     while (!resp->empty()) {
         auto chunk = resp->popChunk();
-        data += fmt::format("{x}\r\n{}\r\n", chunk.length(), chunk);
+        data += fmt::format("{0:x}\r\n{1}\r\n", chunk.length(), chunk);
     }
 
     writeData(client, data);
@@ -159,10 +160,10 @@ void HttpServer::process(const Request &req, uv_tcp_t *client) {
 
     if (resp->isChunked()) {
         auto chunkedResp = std::dynamic_pointer_cast<ChunkedResponse>(resp);
-        do {
-            writeChunks(reinterpret_cast<uv_stream_t *>(client), chunkedResp);
+        while (!chunkedResp->finished) {
             currMiddleware = currMiddleware->call(req, resp);
-        } while (!chunkedResp->finished);
+            writeChunks(reinterpret_cast<uv_stream_t *>(client), chunkedResp);
+        }
     }
 
     auto connectionEntry = req.getHeader().get("Connection");
@@ -174,9 +175,12 @@ void HttpServer::writeData(uv_stream_t *tcp, const std::string &data) {
     auto arr = new char[data.length()];
     memcpy(arr, data.data(), data.length());
 
-    auto *client = static_cast<Client *>(tcp->data);
-    client->write.data = arr;
+//    auto *client = static_cast<Client *>(tcp->data);
+//    client->write.data = arr;
+//    client->buf = uv_buf_init(arr, static_cast<unsigned int>(data.length()));
+    auto write = new uv_write_t;
+    write->data = arr;
+    auto buf = uv_buf_init(arr, static_cast<unsigned int>(data.length()));
 
-    client->buf = uv_buf_init(arr, static_cast<unsigned int>(data.length()));
-    uv_write(&(client->write), tcp, &(client->buf), 1, writeCallback);
+    uv_write(write, tcp, &buf, 1, writeCallback);
 }

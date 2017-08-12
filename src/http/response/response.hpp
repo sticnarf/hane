@@ -23,6 +23,8 @@ public:
 
     bool isChunked() const;
 
+    void makeChunked();
+
     Header headers;
     std::string body;
 

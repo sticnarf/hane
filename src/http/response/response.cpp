@@ -17,3 +17,7 @@ bool Response::isChunked() const {
     auto transferEncodingEntry = headers.get("Transfer-Encoding");
     return (transferEncodingEntry.isValid() && transferEncodingEntry.getValue()->getContent() == "chunked");
 }
+
+void Response::makeChunked() {
+    headers.put("Transfer-Encoding", std::make_shared<HeaderContent>("chunked"));
+}

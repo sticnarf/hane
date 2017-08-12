@@ -1,13 +1,14 @@
 #include "chunked_response.hpp"
 
 ChunkedResponse::ChunkedResponse(HttpVersion version) : Response(version) {
-    headers.put("Transfer-Encoding", std::make_shared<HeaderContent>("chunked"));
+    makeChunked();
 }
 
-ChunkedResponse::ChunkedResponse(const Response &resp) : Response(resp) {
-    chunks.push(resp.body);
+ChunkedResponse::ChunkedResponse(const Response &resp) : Response(resp), finished(false) {
+    if(!resp.body.empty())
+        chunks.push(resp.body);
     body.clear();
-    headers.put("Transfer-Encoding", std::make_shared<HeaderContent>("chunked"));
+    makeChunked();
 }
 
 bool ChunkedResponse::empty() {

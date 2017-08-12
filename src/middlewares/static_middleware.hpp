@@ -3,13 +3,15 @@
 
 #include "middleware.hpp"
 #include <string>
+#include <fstream>
 
 class StaticMiddleware : public Middleware {
     std::string path;
+    std::fstream file;
 public:
     explicit StaticMiddleware(const std::string &path);
 
-    MiddlewarePtr call(const Request &req, std::shared_ptr<Response> resp) override;
+    MiddlewarePtr call(const Request &req, std::shared_ptr<Response> &resp) override;
 };
 
 #endif
