@@ -19,7 +19,8 @@ MiddlewarePtr StaticMiddleware::call(const Request &req, std::shared_ptr<Respons
         char buf[4096];
         file.read(buf, sizeof(buf));
         auto len = file.gcount();
-        chunkedResp->pushChunk(std::string(buf, len));
+        std::string data(buf, len);
+        chunkedResp->pushChunk(data);
     }
 
     return shared_from_this();

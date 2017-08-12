@@ -1,3 +1,4 @@
+#include <iostream>
 #include "chunked_response.hpp"
 
 ChunkedResponse::ChunkedResponse(HttpVersion version) : Response(version) {
@@ -16,11 +17,11 @@ bool ChunkedResponse::empty() {
 }
 
 std::string ChunkedResponse::popChunk() {
-    auto &chunk = chunks.front();
+    auto chunk = chunks.front();
     chunks.pop();
     return chunk;
 }
 
-void ChunkedResponse::pushChunk(std::string &&chunk) {
+void ChunkedResponse::pushChunk(const std::string &chunk) {
     chunks.push(chunk);
 }

@@ -19,7 +19,7 @@ public:
 
     ChunkedResponse(const Response &resp);
 
-    void pushChunk(std::string &&chunk);
+    void pushChunk(const std::string &chunk);
 
     std::string popChunk();
 
