@@ -4,11 +4,22 @@
 #include <string>
 #include <map>
 #include <memory>
+#include <utility>
 #include <uv.h>
 #include "../middlewares/middleware.hpp"
 #include "./request/request.hpp"
 #include "./response/response.hpp"
 #include "./response/chunked_response.hpp"
+
+struct AsyncChunkedResponseHandler {
+    MiddlewarePtr currMiddleware;
+    const Request &req;
+    std::shared_ptr<ChunkedResponse> resp;
+
+    AsyncChunkedResponseHandler(MiddlewarePtr currMiddleware, const Request &req,
+                                std::shared_ptr<ChunkedResponse> resp)
+            : currMiddleware(std::move(currMiddleware)), req(req), resp(std::move(resp)) {}
+};
 
 class HttpServer {
     std::shared_ptr<Middleware> middleware;
@@ -19,7 +30,14 @@ class HttpServer {
 
     const int DEFAULT_BACKLOG = 128;
 
-    void writeData(uv_stream_t *client, const std::string &data);
+    static void writeCallback(uv_write_t *req, int status);
+
+    static void writeChunkCallback(uv_write_t *req, int status);
+
+    void writeData(uv_stream_t *client, const std::string &data,
+                   void *addition = nullptr, uv_write_cb callback = writeCallback);
+
+    void processChunks(AsyncChunkedResponseHandler *handler, uv_stream_t *client);
 
 public:
     HttpServer(std::shared_ptr<Middleware> middleware, const std::string &_bindAddr, int port);
@@ -32,7 +50,7 @@ public:
 
     void writeResponse(uv_stream_t *client, std::shared_ptr<const Response> resp);
 
-    void writeChunks(uv_stream_t *client, std::shared_ptr<ChunkedResponse> resp);
+    void writeChunks(AsyncChunkedResponseHandler *handler, uv_stream_t *tcp);
 };
 
 #endif

@@ -12,7 +12,7 @@
 //}
 
 Client::Client(HttpServer *server)
-        : server(server) {
+        : server(server), queued(0) {
     tcp = new uv_tcp_t;
     tcp->data = this;
 }
