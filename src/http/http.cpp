@@ -8,7 +8,6 @@
 #include "../utils/logger.hpp"
 #include "../utils/protocol_helper.hpp"
 #include "client.hpp"
-#include "../middlewares/middleware.hpp"
 #include "errors.hpp"
 
 HttpServer::HttpServer(std::shared_ptr<Middleware> middleware, const std::string &_bindAddr, int port)
@@ -159,50 +158,6 @@ void HttpServer::start() {
     uv_run(uv_default_loop(), UV_RUN_DEFAULT);
 }
 
-//void processChunkedResponse() {
-//    auto handler = static_cast<AsyncChunkedResponseHandler *>(req->data);
-//    auto client = static_cast<Client *>(handler->tcp->data);
-//    while (!handler->resp->finished && client->queued < 8) {
-//        auto polyResp = std::dynamic_pointer_cast<Response>(handler->resp);
-//        handler->currMiddleware = handler->currMiddleware->call(handler->req, polyResp);
-//        handler->server->writeChunks(handler->tcp, handler->resp);
-//    }
-//}
-//
-//void asyncProcessChunkedResponseCallback(uv_work_t *req, int status) {
-//    auto handler = static_cast<AsyncChunkedResponseHandler *>(req->data);
-//    delete req;
-//    auto client = static_cast<Client *>(handler->tcp->data);
-//
-//    if (status < 0) {
-//        Logger::getInstance().error("Process chunked response error: {}", uv_strerror(status));
-//        delete handler;
-//        client->closeConnection();
-//        return;
-//    }
-//
-//    if (!handler->resp->finished) {
-//        auto work = new uv_work_t;
-//        work->data = handler;
-////        uv_queue_work(uv_default_loop(), work, asyncProcessChunkedResponse, asyncProcessChunkedResponseCallback);
-//    } else {
-//        delete handler;
-//    }
-//}
-
-//void writeChunkCallback(uv_write_t *req, int status) {
-//    if (status < 0) {
-//        Logger::getInstance().error("Write error: {}", uv_strerror(status));
-//        // error!
-//    }
-//
-//    auto handler = static_cast<WriteHandler *>(req->data);
-//    handler->client->queued--;
-//    delete[] (handler->arr);
-//    delete handler;
-//    delete req;
-//}
-
 /**
  * This function will call the middleware.
  * After calling the middleware, if the response has "Transfer-Encoding: chunked",
@@ -221,13 +176,6 @@ void HttpServer::process(const Request &req, uv_tcp_t *client) {
         processChunks(
                 new AsyncChunkedResponseHandler(currMiddleware, req, chunkedResp),
                 reinterpret_cast<uv_stream_t *>(client));
-//        while (!chunkedResp->finished) {
-//            currMiddleware = currMiddleware->call(req, resp);
-//            writeChunks(reinterpret_cast<uv_stream_t *>(client), chunkedResp);
-//        }
-//        auto handler = new AsyncChunkedResponseHandler(currMiddleware, req, chunkedResp, this,
-//                                                       reinterpret_cast<uv_stream_t *>(client));
-//        uv_queue_work(uv_default_loop(), work, asyncProcessChunkedResponse, asyncProcessChunkedResponseCallback);
     }
 
     auto connectionEntry = req.getHeader().get("Connection");
@@ -271,27 +219,26 @@ void HttpServer::writeChunkCallback(uv_write_t *req, int status) {
     auto asyncHandler = static_cast<AsyncChunkedResponseHandler *>(handler->addition);
     auto server = handler->client->server;
     auto tcp = handler->client->tcp;
-    handler->client->queued--;
-    if (status < 0) {
-        Logger::getInstance().error("Write error: {}", uv_strerror(status));
-        // error!
-        delete asyncHandler;
-        delete[] (handler->arr);
-        delete handler;
-        delete req;
-        return;
-    }
 
-    auto newAsyncHandler = new AsyncChunkedResponseHandler(asyncHandler->currMiddleware,
-                                                           asyncHandler->req,
-                                                           asyncHandler->resp);
+    handler->client->queued--;
+
+    auto currMiddleware = asyncHandler->currMiddleware;
+    auto &chunkedReq = asyncHandler->req;
+    auto resp = asyncHandler->resp;
+
     delete asyncHandler;
     delete[] (handler->arr);
     delete handler;
     delete req;
 
-    if (!newAsyncHandler->resp->finished)
-        server->processChunks(newAsyncHandler,
-                              reinterpret_cast<uv_stream_t *>(tcp));
+    if (status < 0) {
+        Logger::getInstance().error("Write error: {}", uv_strerror(status));
+        // error!
+        return;
+    }
+
+    auto newAsyncHandler = new AsyncChunkedResponseHandler(currMiddleware, chunkedReq, resp);
+
+    server->processChunks(newAsyncHandler, reinterpret_cast<uv_stream_t *>(tcp));
 
 }
