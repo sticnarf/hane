@@ -1,4 +1,5 @@
 #include "static_middleware.hpp"
+#include "../utils/logger.hpp"
 
 MiddlewarePtr StaticMiddleware::call(const Request &req, std::shared_ptr<Response> &resp) {
     if (!file.is_open()) {
