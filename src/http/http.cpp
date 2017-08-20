@@ -49,7 +49,7 @@ struct WriteHandler {
     WriteHandler(char *arr, Client *client, void *addition) : arr(arr), client(client), addition(addition) {}
 };
 
-void readCallback(uv_stream_t *clientTcp, ssize_t nread, const uv_buf_t *buf) {
+void HttpServer::readCallback(uv_stream_t *clientTcp, ssize_t nread, const uv_buf_t *buf) {
     auto *client = static_cast<Client *>(clientTcp->data);
     if (nread > 0) {
         Logger::getInstance().info("Read {} bytes.", nread);
@@ -84,7 +84,7 @@ void HttpServer::writeCallback(uv_write_t *req, int status) {
     delete req;
 }
 
-void onNewConnection(uv_stream_t *serverTcp, int status) {
+void HttpServer::onNewConnection(uv_stream_t *serverTcp, int status) {
     auto *server = static_cast<HttpServer *>(serverTcp->data);
     if (status < 0) {
         Logger::getInstance().error("New connection error: {}", uv_strerror(status));

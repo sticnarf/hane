@@ -34,6 +34,10 @@ class HttpServer {
 
     static void writeChunkCallback(uv_write_t *req, int status);
 
+    static void onNewConnection(uv_stream_t *serverTcp, int status);
+
+    static void readCallback(uv_stream_t *clientTcp, ssize_t nread, const uv_buf_t *buf);
+
     void writeData(uv_stream_t *client, const std::string &data,
                    void *addition = nullptr, uv_write_cb callback = writeCallback);
 
