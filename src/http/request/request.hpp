@@ -6,6 +6,7 @@
 #include "../header/header.hpp"
 #include "../../utils/buffer.hpp"
 #include "./form_data.hpp"
+#include "../header/cookies.hpp"
 
 typedef BufferPtr Body;
 
@@ -22,6 +23,8 @@ public:
     const Body &getBody() const;
 
     const std::map<std::string, FormData> &getQueries() const;
+
+    CookiesPtr getCookies() const;
 
 private:
     HttpVersion httpVersion;

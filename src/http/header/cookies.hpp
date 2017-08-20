@@ -6,6 +6,7 @@
 #include <ctime>
 #include <memory>
 #include <map>
+#include "header.hpp"
 
 struct Cookie {
     std::string name;
@@ -19,6 +20,8 @@ struct Cookie {
 
     std::string toCookieString();
 
+    Cookie() = default;
+
     Cookie(const std::string &name, const std::string &value);
 };
 
@@ -30,7 +33,9 @@ struct CookieHelper {
     static std::string toRfc1123(time_t time);
 };
 
-class Cookies : std::map<std::string, Cookie> {
+class Cookies : public std::map<std::string, Cookie>, public HeaderContent {
 };
+
+typedef std::shared_ptr<Cookies> CookiesPtr;
 
 #endif

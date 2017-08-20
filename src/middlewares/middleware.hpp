@@ -12,6 +12,12 @@ typedef std::shared_ptr<Middleware> MiddlewarePtr;
 
 class Middleware : public std::enable_shared_from_this<Middleware> {
 public:
+    /**
+     * If the call function returns nullptr, then the middleware finishes.
+     * @param req
+     * @param resp
+     * @return The middleware that remains to be called
+     */
     virtual MiddlewarePtr call(const Request &req, std::shared_ptr<Response>& resp) = 0;
 };
 
