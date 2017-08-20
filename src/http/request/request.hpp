@@ -58,7 +58,7 @@ private:
 
     friend class MultipartFormParser;
 
-    friend class TrunkedBodyParser;
+    friend class ChunkedBodyParser;
 };
 
 #endif

@@ -3,9 +3,9 @@
 
 #include "./abstract_parser.hpp"
 
-class TrunkedBodyParser : public AbstractParser {
+class ChunkedBodyParser : public AbstractParser {
 public:
-    TrunkedBodyParser(Request &&req, BufferPtr buffer);
+    ChunkedBodyParser(Request &&req, BufferPtr buffer);
 
     ParserPtr process() override;
 };

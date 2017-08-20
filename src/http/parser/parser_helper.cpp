@@ -8,7 +8,7 @@
 #include "body_form_parser.hpp"
 #include "multipart_form_parser.hpp"
 #include "sized_body_parser.hpp"
-#include "trunked_body_parser.hpp"
+#include "chunked_body_parser.hpp"
 
 void ParserHelper::parseUrlEncodedQueries(const std::string &data, Request &req, size_t begin) {
     bool eof = false;
@@ -193,8 +193,8 @@ ParserPtr ParserHelper::buildBodyParser(Request &&partialRequest, BufferPtr buff
     auto transferEncoding = partialRequest.header.get("Transfer-Encoding");
     if (transferEncoding.isValid()) {
         if (transferEncoding.getValue()->getContent() == TRANSFER_ENCODING_TRUNKED) {
-            // trunked encoding
-            return std::make_shared<TrunkedBodyParser>(std::move(partialRequest), buffer);
+            // chunked encoding
+            return std::make_shared<ChunkedBodyParser>(std::move(partialRequest), buffer);
         } else {
             throw HttpError(StatusCode::HTTP_BAD_REQUEST, "Unsupported Transfer-Encoding");
         }
