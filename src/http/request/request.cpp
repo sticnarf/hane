@@ -40,3 +40,7 @@ CookiesPtr Request::getCookies() const {
         return std::make_shared<Cookies>();
     }
 }
+
+SessionPtr &Request::getSession() {
+    return session;
+}

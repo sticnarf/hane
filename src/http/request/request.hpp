@@ -2,6 +2,7 @@
 #define HANE_REQUEST_HPP
 
 #include <string>
+#include "../session/session_base.hpp"
 #include "../../constants.hpp"
 #include "../header/header.hpp"
 #include "../../utils/buffer.hpp"
@@ -43,6 +44,11 @@ private:
 
     Header header;
     Body body;
+    SessionPtr session;
+public:
+    SessionPtr &getSession();
+
+private:
 
     // Set all parser classes as friends
     friend class AbstractParser;
@@ -62,6 +68,8 @@ private:
     friend class MultipartFormParser;
 
     friend class ChunkedBodyParser;
+
+    friend class SessionMiddleware;
 };
 
 #endif

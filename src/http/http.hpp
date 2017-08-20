@@ -13,10 +13,10 @@
 
 struct AsyncChunkedResponseHandler {
     MiddlewarePtr currMiddleware;
-    const Request &req;
+    Request &req;
     std::shared_ptr<ChunkedResponse> resp;
 
-    AsyncChunkedResponseHandler(MiddlewarePtr currMiddleware, const Request &req,
+    AsyncChunkedResponseHandler(MiddlewarePtr currMiddleware, Request &req,
                                 std::shared_ptr<ChunkedResponse> resp)
             : currMiddleware(std::move(currMiddleware)), req(req), resp(std::move(resp)) {}
 };
@@ -50,7 +50,7 @@ public:
 
     void start();
 
-    void process(const Request &req, uv_tcp_t *client);
+    void process(Request &req, uv_tcp_t *client);
 
     void writeResponse(uv_stream_t *client, std::shared_ptr<const Response> resp);
 

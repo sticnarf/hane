@@ -6,6 +6,7 @@
 #include <memory>
 #include <string>
 #include <chrono>
+#include <random>
 
 class Session : public std::map<std::string, std::shared_ptr<void>> {
     std::string id;

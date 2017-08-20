@@ -172,7 +172,7 @@ void HttpServer::start() {
  * @param req
  * @param client
  */
-void HttpServer::process(const Request &req, uv_tcp_t *client) {
+void HttpServer::process(Request &req, uv_tcp_t *client) {
     auto resp = std::make_shared<Response>(req.getHttpVersion());
     auto currMiddleware = middleware->call(req, resp);
     writeResponse(reinterpret_cast<uv_stream_t *>(client), resp);

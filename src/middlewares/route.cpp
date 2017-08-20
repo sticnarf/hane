@@ -1,7 +1,7 @@
 #include "../http/errors.hpp"
 #include "route.hpp"
 
-MiddlewarePtr RouteMiddleware::call(const Request &req, std::shared_ptr<Response> &resp) {
+MiddlewarePtr RouteMiddleware::call(Request &req, std::shared_ptr<Response> &resp) {
     for (auto rule:rules) {
         auto regex = rule.first;
         if (std::regex_match(req.getAbsPath(), regex)) {
