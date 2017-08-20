@@ -5,6 +5,7 @@
 #include <chrono>
 #include <ctime>
 #include <memory>
+#include <map>
 
 struct Cookie {
     std::string name;
@@ -16,7 +17,9 @@ struct Cookie {
     bool secure{false};
     bool httpOnly{false};
 
-    std::string getCookieString();
+    std::string toCookieString();
+
+    Cookie(const std::string &name, const std::string &value);
 };
 
 struct CookieHelper {
@@ -27,8 +30,7 @@ struct CookieHelper {
     static std::string toRfc1123(time_t time);
 };
 
-class Cookies {
-
+class Cookies : std::map<std::string, Cookie> {
 };
 
 #endif

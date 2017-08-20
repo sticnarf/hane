@@ -7,7 +7,7 @@
 #include <stdexcept>
 #include <sstream>
 
-std::string Cookie::getCookieString() {
+std::string Cookie::toCookieString() {
     if (!CookieHelper::validateName(name))
         throw std::invalid_argument("Cookie name is not a valid token");
 
@@ -21,29 +21,31 @@ std::string Cookie::getCookieString() {
         ss << "; Expires=" << CookieHelper::toRfc1123(expires);
     }
 
-    if(maxAge > 0) {
+    if (maxAge > 0) {
         ss << "; Max-Age=" << maxAge;
     }
 
-    if(!domain.empty()) {
+    if (!domain.empty()) {
         ss << "; Domain=" << domain;
     }
 
-    if(!path.empty()) {
+    if (!path.empty()) {
         ss << "; Path=" << path;
     }
 
-    if(secure) {
+    if (secure) {
         ss << "; Secure";
     }
 
-    if(httpOnly) {
+    if (httpOnly) {
         ss << "; HttpOnly";
     }
 
 
     return ss.str();
 }
+
+Cookie::Cookie(const std::string &name, const std::string &value) : name(name), value(value) {}
 
 bool CookieHelper::validateName(std::string name) {
     return ParserHelper::validateToken(name);

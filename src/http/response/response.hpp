@@ -6,6 +6,7 @@
 #include <vector>
 #include <memory>
 #include <uv.h>
+#include <http/header/cookies.hpp>
 #include "../header/header.hpp"
 #include "../../constants.hpp"
 
@@ -27,6 +28,7 @@ public:
 
     Header headers;
     std::string body;
+    Cookies cookies;
 
 protected:
     HttpVersion httpVersion;

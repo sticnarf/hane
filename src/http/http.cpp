@@ -120,6 +120,12 @@ void HttpServer::writeResponse(uv_stream_t *tcp, std::shared_ptr<const Response>
         responseText << pair.getKey() << ": " << pair.getValue()->getContent() << "\r\n";
     }
 
+    // Append cookies
+    for (auto &e : resp->cookies) {
+        auto cookie = e.second;
+        responseText << "Set-Cookie: " << cookie.toCookieString() << "\r\n";
+    }
+
     // Append Content-Length if not chunked
     auto contentLengthEntry = resp->headers.get("Content-Length");
     if (!resp->isChunked() && !contentLengthEntry.isValid()) {
