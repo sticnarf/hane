@@ -21,6 +21,8 @@ public:
 
     static void parseHeaderFieldWithParameters(HeaderContentWithParametersPtr content, const std::string &fieldContent);
 
+    static void parseCookies(CookiesPtr cookies, const std::string &fieldContent);
+
     static ParserPtr buildFormParser(Request &&partialRequest, BufferPtr buffer);
 
     static ParserPtr buildBodyParser(Request &&partialRequest, BufferPtr buffer);

@@ -33,7 +33,11 @@ public:
 class PrintBodyMiddleware : public Middleware {
 public:
     MiddlewarePtr call(const Request &req, std::shared_ptr<Response> &resp) override {
-        resp->body = req.getBody()->toString();
+        for (auto &e : *req.getCookies()) {
+            auto cookie = e.second;
+            resp->body += fmt::format("{0} = {1}\r\n", cookie.name, cookie.value);
+        }
+//        resp->body = req.getBody()->toString();
         return nullptr;
     }
 };

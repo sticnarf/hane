@@ -1,6 +1,7 @@
 #include "parser_helper.hpp"
 #include <cctype>
 #include <cstring>
+#include <cassert>
 #include "http/header/content_type.hpp"
 #include "../errors.hpp"
 #include "abstract_parser.hpp"
@@ -201,5 +202,25 @@ ParserPtr ParserHelper::buildBodyParser(Request &&partialRequest, BufferPtr buff
     } else {
         // With Content-Length
         return std::make_shared<SizedBodyParser>(std::move(partialRequest), buffer);
+    }
+}
+
+void ParserHelper::parseCookies(CookiesPtr cookies, const std::string &fieldContent) {
+    size_t start = 0, eqs;
+    for (;;) {
+        size_t sep = fieldContent.find(';', start);
+        eqs = fieldContent.rfind('=', sep);
+
+        std::string name = StringUtils::trim_copy(fieldContent.substr(start, eqs - start));
+        std::string value = StringUtils::trim_copy(fieldContent.substr(eqs + 1, sep - eqs - 1));
+        if (!CookieHelper::validateName(name) || !CookieHelper::validateOctet(value))
+            throw HttpError(StatusCode::HTTP_BAD_REQUEST, "Bad cookies");
+
+        (*cookies)[name] = Cookie(name, value);
+
+        if (sep == std::string::npos)
+            break;
+
+        start = sep + 1;
     }
 }

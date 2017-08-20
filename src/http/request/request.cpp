@@ -31,3 +31,12 @@ const std::string &Request::getAbsPath() const {
 Request::Request() {
     body = std::make_shared<Buffer>();
 }
+
+CookiesPtr Request::getCookies() const {
+    auto entry = header.get("Cookie");
+    if (entry.isValid()) {
+        return std::dynamic_pointer_cast<Cookies>(entry.getValue());
+    } else {
+        return std::make_shared<Cookies>();
+    }
+}

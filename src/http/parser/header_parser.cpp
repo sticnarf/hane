@@ -37,10 +37,19 @@ HeaderContentPtr parseContentType(const std::string &fieldContent) {
     return contentType;
 }
 
+HeaderContentPtr parseCookies(const std::string &fieldContent) {
+    auto cookies = std::make_shared<Cookies>();
+
+    ParserHelper::parseCookies(cookies, fieldContent);
+
+    return cookies;
+}
+
 HeaderContentPtr HeaderParser::parseField(const std::string &fieldName, const std::string &fieldContent) {
     // TODO Add other header fields
     static std::map<std::string, std::function<HeaderContentPtr(const std::string &)>> functionMap = {
-            {"content-type", parseContentType}
+            {"content-type", parseContentType},
+            {"cookie",       parseCookies},
     };
 
     auto function = functionMap.find(StringUtils::toLowercase(fieldName));

@@ -15,7 +15,7 @@ add_executable(ecpc src/ecp/compiler.cpp)
 target_link_libraries(ecpc)
 
 set(SOURCE_FILES
-        src/http/http.cpp src/http/client.cpp
+        src/http/http.cpp src/http/client.cpp src/http/errors.hpp
         src/http/parser/parser.cpp src/http/parser/start_line_parser.cpp src/http/parser/abstract_parser.cpp
         src/http/parser/header_parser.cpp src/http/parser/sized_body_parser.cpp src/http/parser/final_parser.cpp
         src/http/parser/url_queries_parser.cpp src/http/parser/body_form_parser.cpp src/http/parser/chunked_body_parser.cpp
@@ -25,7 +25,7 @@ set(SOURCE_FILES
         src/utils/logger.cpp src/utils/buffer.cpp src/utils/protocol_helper.cpp src/utils/string_utils.cpp
         src/utils/case_insensitive_map.hpp
         src/http/request/request.cpp src/http/header/header.hpp src/http/request/form_data.cpp
-        src/http/header/content_type.cpp src/http/errors.hpp
+        src/http/header/content_type.cpp src/http/header/cookies.cpp
         src/http/response/response.cpp src/http/response/chunked_response.cpp
         src/ecp/template.hpp
         src/constants.hpp src/hane.hpp)
