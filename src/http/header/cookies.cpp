@@ -6,6 +6,7 @@
 #include "../parser/parser_helper.hpp"
 #include <stdexcept>
 #include <sstream>
+#include <cstring>
 
 std::string Cookie::toCookieString() {
     if (!CookieHelper::validateName(name))
