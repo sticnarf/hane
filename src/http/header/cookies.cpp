@@ -87,3 +87,7 @@ std::string CookieHelper::toRfc1123(time_t t) {
 
     return result;
 }
+
+void Cookies::putCookie(const Cookie &cookie) {
+    (*this)[cookie.name] = cookie;
+}

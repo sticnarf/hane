@@ -13,10 +13,10 @@
 
 struct AsyncChunkedResponseHandler {
     MiddlewarePtr currMiddleware;
-    const Request &req;
+    Request &req;
     std::shared_ptr<ChunkedResponse> resp;
 
-    AsyncChunkedResponseHandler(MiddlewarePtr currMiddleware, const Request &req,
+    AsyncChunkedResponseHandler(MiddlewarePtr currMiddleware, Request &req,
                                 std::shared_ptr<ChunkedResponse> resp)
             : currMiddleware(std::move(currMiddleware)), req(req), resp(std::move(resp)) {}
 };
@@ -34,6 +34,10 @@ class HttpServer {
 
     static void writeChunkCallback(uv_write_t *req, int status);
 
+    static void onNewConnection(uv_stream_t *serverTcp, int status);
+
+    static void readCallback(uv_stream_t *clientTcp, ssize_t nread, const uv_buf_t *buf);
+
     void writeData(uv_stream_t *client, const std::string &data,
                    void *addition = nullptr, uv_write_cb callback = writeCallback);
 
@@ -46,7 +50,7 @@ public:
 
     void start();
 
-    void process(const Request &req, uv_tcp_t *client);
+    void process(Request &req, uv_tcp_t *client);
 
     void writeResponse(uv_stream_t *client, std::shared_ptr<const Response> resp);
 

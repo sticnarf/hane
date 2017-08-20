@@ -34,6 +34,8 @@ struct CookieHelper {
 };
 
 class Cookies : public std::map<std::string, Cookie>, public HeaderContent {
+public:
+    void putCookie(const Cookie& cookie);
 };
 
 typedef std::shared_ptr<Cookies> CookiesPtr;

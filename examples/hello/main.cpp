@@ -5,7 +5,7 @@
 
 class HelloMiddleware : public Middleware {
 public:
-    MiddlewarePtr call(const Request &req, std::shared_ptr<Response> &resp) override {
+    MiddlewarePtr call(Request &req, std::shared_ptr<Response> &resp) override {
         resp->headers.put("Content-Type", std::make_shared<HeaderContent>("text/html"));
 
         HelloHtml t;
@@ -24,7 +24,7 @@ public:
 
 class AssetsMiddleware : public Middleware {
 public:
-    MiddlewarePtr call(const Request &req, std::shared_ptr<Response> &resp) override {
+    MiddlewarePtr call(Request &req, std::shared_ptr<Response> &resp) override {
         auto sm = std::make_shared<StaticMiddleware>("." + req.getAbsPath());
         return sm->call(req, resp);
     }
@@ -32,7 +32,7 @@ public:
 
 class PrintBodyMiddleware : public Middleware {
 public:
-    MiddlewarePtr call(const Request &req, std::shared_ptr<Response> &resp) override {
+    MiddlewarePtr call(Request &req, std::shared_ptr<Response> &resp) override {
         for (auto &e : *req.getCookies()) {
             auto cookie = e.second;
             resp->body += fmt::format("{0} = {1}\r\n", cookie.name, cookie.value);

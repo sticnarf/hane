@@ -28,7 +28,7 @@ set(SOURCE_FILES
         src/http/header/content_type.cpp src/http/header/cookies.cpp
         src/http/response/response.cpp src/http/response/chunked_response.cpp
         src/ecp/template.hpp
-        src/constants.hpp src/hane.hpp)
+        src/constants.hpp src/hane.hpp src/http/session/session_base.cpp src/http/session/session_base.hpp src/middlewares/session_middleware.cpp src/middlewares/session_middleware.hpp)
 
 set(HANE_LIBRARIES ${LIBUV_LIBRARIES})
 

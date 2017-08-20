@@ -11,7 +11,7 @@ class StaticMiddleware : public Middleware {
 public:
     explicit StaticMiddleware(const std::string &path);
 
-    MiddlewarePtr call(const Request &req, std::shared_ptr<Response> &resp) override;
+    MiddlewarePtr call(Request &req, std::shared_ptr<Response> &resp) override;
 };
 
 #endif

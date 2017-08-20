@@ -26,18 +26,6 @@ public:
     ~Client();
 
     friend class HttpServer;
-
-    friend void onNewConnection(uv_stream_t *serverTcp, int status);
-
-    friend void readCallback(uv_stream_t *clientTcp, ssize_t nread, const uv_buf_t *buf);
-
-//    friend void writeCallback(uv_write_t *req, int status);
-
-    friend void processChunkedResponse(uv_work_t *req);
-
-    friend void asyncProcessChunkedResponseCallback(uv_work_t *req, int status);
-
-    friend void writeChunkCallback(uv_write_t *req, int status);
 };
 
 #endif
