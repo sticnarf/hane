@@ -5,7 +5,7 @@
 #include <http/errors.hpp>
 
 ChunkedBodyParser::ChunkedBodyParser(Request &&req, BufferPtr buffer)
-        : AbstractParser(std::move(req), std::move(buffer)) {}
+        : AbstractParser(std::move(req), buffer) {}
 
 ParserPtr ChunkedBodyParser::process() {
     size_t lineSep = buffer->find("\r\n", 2);

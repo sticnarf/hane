@@ -5,7 +5,7 @@
 #include "parser_helper.hpp"
 
 UrlQueriesParser::UrlQueriesParser(Request &&req, BufferPtr buffer)
-        : AbstractParser(std::move(req), std::move(buffer)) {}
+        : AbstractParser(std::move(req), buffer) {}
 
 ParserPtr UrlQueriesParser::process() {
     const std::string &target = partialRequest.target;

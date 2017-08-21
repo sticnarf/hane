@@ -7,7 +7,7 @@
 #include "parser_helper.hpp"
 
 SizedBodyParser::SizedBodyParser(Request &&req, BufferPtr buffer)
-        : AbstractParser(std::move(req), std::move(buffer)) {}
+        : AbstractParser(std::move(req), buffer) {}
 
 ParserPtr SizedBodyParser::process() {
     auto contentLengthEntry = partialRequest.header.get("Content-Length");

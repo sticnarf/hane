@@ -12,13 +12,12 @@
 #include "./response/chunked_response.hpp"
 
 struct AsyncChunkedResponseHandler {
-    MiddlewarePtr currMiddleware;
     Request &req;
     std::shared_ptr<ChunkedResponse> resp;
 
-    AsyncChunkedResponseHandler(MiddlewarePtr currMiddleware, Request &req,
+    AsyncChunkedResponseHandler(Request &req,
                                 std::shared_ptr<ChunkedResponse> resp)
-            : currMiddleware(std::move(currMiddleware)), req(req), resp(std::move(resp)) {}
+            : req(req), resp(std::move(resp)) {}
 };
 
 class HttpServer {
@@ -50,7 +49,7 @@ public:
 
     void start();
 
-    void process(Request &req, uv_tcp_t *client);
+    void process(Request &req, uv_tcp_t *tcp);
 
     void writeResponse(uv_stream_t *client, std::shared_ptr<const Response> resp);
 

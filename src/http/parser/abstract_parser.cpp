@@ -3,7 +3,7 @@
 #include "abstract_parser.hpp"
 
 AbstractParser::AbstractParser(Request &&req, BufferPtr buffer)
-        : partialRequest(req), buffer(std::move(buffer)), finished(false) {}
+        : partialRequest(req), buffer(buffer), finished(false) {}
 
 ParserPtr AbstractParser::process() {
     throw std::logic_error("Invoke process() of AbstractParser");

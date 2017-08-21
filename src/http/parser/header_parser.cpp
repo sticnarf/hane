@@ -7,7 +7,7 @@
 #include "parser_helper.hpp"
 
 HeaderParser::HeaderParser(Request &&req, BufferPtr buffer)
-        : AbstractParser(std::move(req), std::move(buffer)) {}
+        : AbstractParser(std::move(req), buffer) {}
 
 ParserPtr HeaderParser::process() {
     size_t lineSep = buffer->find("\r\n", 2);
