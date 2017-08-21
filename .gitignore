@@ -5,3 +5,4 @@ build
 CMakeSettings.json
 Debug/
 examples/hello/templates/*.cpp
+examples/hello/assets/*.test

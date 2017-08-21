@@ -17,7 +17,7 @@ MiddlewarePtr StaticMiddleware::call(Request &req, std::shared_ptr<Response> &re
     if (file.eof()) {
         chunkedResp->finished = true;
     } else {
-        char buf[4096];
+        char buf[65536];
         file.read(buf, sizeof(buf));
         auto len = file.gcount();
         std::string data(buf, len);

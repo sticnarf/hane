@@ -40,7 +40,7 @@ class HttpServer {
     void writeData(uv_stream_t *client, const std::string &data,
                    void *addition = nullptr, uv_write_cb callback = writeCallback);
 
-    void processChunks(AsyncChunkedResponseHandler *handler, uv_stream_t *client);
+    void processChunks(AsyncChunkedResponseHandler handler, uv_stream_t *client);
 
 public:
     HttpServer(std::shared_ptr<Middleware> middleware, const std::string &_bindAddr, int port);
@@ -53,7 +53,7 @@ public:
 
     void writeResponse(uv_stream_t *client, std::shared_ptr<const Response> resp);
 
-    void writeChunks(AsyncChunkedResponseHandler *handler, uv_stream_t *tcp);
+    void writeChunks(AsyncChunkedResponseHandler handler, uv_stream_t *tcp);
 };
 
 #endif

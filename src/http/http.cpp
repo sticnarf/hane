@@ -139,9 +139,9 @@ void HttpServer::writeResponse(uv_stream_t *tcp, std::shared_ptr<const Response>
     writeData(tcp, str);
 }
 
-void HttpServer::writeChunks(AsyncChunkedResponseHandler *handler, uv_stream_t *tcp) {
+void HttpServer::writeChunks(AsyncChunkedResponseHandler handler, uv_stream_t *tcp) {
     std::string data;
-    auto resp = handler->resp;
+    auto resp = handler.resp;
     if (resp->finished)
         data = "0\r\n\r\n";
 
@@ -151,7 +151,7 @@ void HttpServer::writeChunks(AsyncChunkedResponseHandler *handler, uv_stream_t *
     }
 
     static_cast<Client *>(tcp->data)->queued++;
-    writeData(tcp, data, handler, writeChunkCallback);
+    writeData(tcp, data, new AsyncChunkedResponseHandler(handler), writeChunkCallback);
 }
 
 void HttpServer::start() {
@@ -181,7 +181,7 @@ void HttpServer::process(Request &req, uv_tcp_t *tcp) {
     if (resp->isChunked()) {
         auto chunkedResp = std::dynamic_pointer_cast<ChunkedResponse>(resp);
         processChunks(
-                new AsyncChunkedResponseHandler(req, chunkedResp),
+                AsyncChunkedResponseHandler(req, chunkedResp),
                 reinterpret_cast<uv_stream_t *>(tcp));
     }
 
@@ -205,19 +205,24 @@ void HttpServer::writeData(uv_stream_t *tcp, const std::string &data, void *addi
     uv_write(write, tcp, &buf, 1, callback);
 }
 
-void HttpServer::processChunks(AsyncChunkedResponseHandler *handler, uv_stream_t *tcp) {
+void HttpServer::processChunks(AsyncChunkedResponseHandler handler, uv_stream_t *tcp) {
     auto client = static_cast<Client *>(tcp->data);
 //    while (!handler->resp->finished && client->queued < 8) {
 //        auto polyResp = std::dynamic_pointer_cast<Response>(handler->resp);
 //        handler->currMiddleware = handler->currMiddleware->call(handler->req, polyResp);
 //        writeChunks(handler, tcp);
 //    }
-    if (!handler->resp->finished) {
-        auto polyResp = std::dynamic_pointer_cast<Response>(handler->resp);
-        client->currMiddleware = client->currMiddleware->call(handler->req, polyResp);
+    if (handler.resp->finished) {
+        // Process the next request
+        client->processRequest();
+        return;
+    }
+
+    while (!handler.resp->finished && client->queued < 8) {
+        auto polyResp = std::dynamic_pointer_cast<Response>(handler.resp);
+        client->currMiddleware = client->currMiddleware->call(handler.req, polyResp);
         writeChunks(handler, tcp);
-    } else
-        delete handler;
+    }
 }
 
 void HttpServer::writeChunkCallback(uv_write_t *req, int status) {
@@ -242,7 +247,6 @@ void HttpServer::writeChunkCallback(uv_write_t *req, int status) {
         return;
     }
 
-    auto newAsyncHandler = new AsyncChunkedResponseHandler(chunkedReq, resp);
-
-    server->processChunks(newAsyncHandler, reinterpret_cast<uv_stream_t *>(tcp));
+    server->processChunks(AsyncChunkedResponseHandler(chunkedReq, resp),
+                          reinterpret_cast<uv_stream_t *>(tcp));
 }
