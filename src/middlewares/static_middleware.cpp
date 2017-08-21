@@ -17,11 +17,12 @@ MiddlewarePtr StaticMiddleware::call(Request &req, std::shared_ptr<Response> &re
     if (file.eof()) {
         chunkedResp->finished = true;
     } else {
-        char buf[4096];
-        file.read(buf, sizeof(buf));
-        auto len = file.gcount();
-        std::string data(buf, len);
-        chunkedResp->pushChunk(data);
+        const size_t BUF_SIZE = 65536;
+
+        auto chunk = std::make_shared<Chunk>(BUF_SIZE);
+        file.read(chunk->buf, chunk->len);
+        chunk->len = static_cast<size_t>(file.gcount());
+        chunkedResp->pushChunk(chunk);
     }
 
     return shared_from_this();

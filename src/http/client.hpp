@@ -12,6 +12,8 @@ private:
     uv_write_t write;
     uv_buf_t buf;
     Parser parser;
+
+    MiddlewarePtr currMiddleware;
     int queued;
 
 public:

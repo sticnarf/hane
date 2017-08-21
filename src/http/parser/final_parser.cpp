@@ -3,7 +3,7 @@
 #include <utility>
 
 FinalParser::FinalParser(Request &&req, BufferPtr buffer)
-        : AbstractParser(std::move(req), std::move(buffer)) {
+        : AbstractParser(std::move(req), buffer) {
     finished = true;
 }
 

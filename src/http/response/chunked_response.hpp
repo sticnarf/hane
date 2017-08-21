@@ -3,13 +3,25 @@
 
 #include "response.hpp"
 #include <queue>
+#include <memory>
+
+struct Chunk {
+    char* buf;
+    size_t len;
+
+    explicit Chunk(size_t len);
+    Chunk(const std::string& data);
+    ~Chunk();
+};
+
+typedef std::shared_ptr<Chunk> ChunkPtr;
 
 /**
  * A ChunkedResponse must have header field "Transfer-Encoding: chunked",
  * and must have an empty body.
  */
 class ChunkedResponse : public Response {
-    std::queue<std::string> chunks;
+    std::queue<ChunkPtr> chunks;
 public:
     bool finished;
 
@@ -19,9 +31,9 @@ public:
 
     ChunkedResponse(const Response &resp);
 
-    void pushChunk(const std::string &chunk);
+    void pushChunk(ChunkPtr chunk);
 
-    std::string popChunk();
+    ChunkPtr popChunk();
 
     bool empty();
 };

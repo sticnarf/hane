@@ -9,7 +9,7 @@
 #include "final_parser.hpp"
 
 BodyFormParser::BodyFormParser(Request &&req, BufferPtr buffer)
-        : AbstractParser(std::move(req), std::move(buffer)) {}
+        : AbstractParser(std::move(req), buffer) {}
 
 ParserPtr BodyFormParser::process() {
     auto body = partialRequest.getBody();

@@ -6,7 +6,7 @@
 #include "parser_helper.hpp"
 
 MultipartFormParser::MultipartFormParser(Request &&req, BufferPtr buffer)
-        : AbstractParser(std::move(req), std::move(buffer)) {}
+        : AbstractParser(std::move(req), buffer) {}
 
 // TODO Too complex! To be refactored
 ParserPtr MultipartFormParser::process() {
