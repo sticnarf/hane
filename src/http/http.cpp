@@ -147,7 +147,9 @@ void HttpServer::writeChunks(AsyncChunkedResponseHandler handler, uv_stream_t *t
 
     while (!resp->empty()) {
         auto chunk = resp->popChunk();
-        data += fmt::format("{0:x}\r\n{1}\r\n", chunk.length(), chunk);
+        data += fmt::format("{0:x}\r\n", chunk->len);
+        data.insert(data.end(), chunk->buf, chunk->buf + chunk->len);
+        data += "\r\n";
     }
 
     static_cast<Client *>(tcp->data)->queued++;
