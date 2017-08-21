@@ -5,13 +5,13 @@
 
 class SessionMiddleware : public SimpleMiddleware {
 public:
+    explicit SessionMiddleware(MiddlewarePtr nextMiddleware);
+
     virtual void process(Request &req, std::shared_ptr<Response> &resp);
 
     virtual ~SessionMiddleware() = default;
 
 protected:
-    explicit SessionMiddleware(MiddlewarePtr nextMiddleware);
-
     std::shared_ptr<Middleware> nextMiddleware;
 };
 
