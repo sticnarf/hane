@@ -21,14 +21,15 @@ set(SOURCE_FILES
         src/http/parser/url_queries_parser.cpp src/http/parser/body_form_parser.cpp src/http/parser/chunked_body_parser.cpp
         src/http/parser/parser_helper.cpp src/http/parser/multipart_form_parser.cpp
         src/middlewares/middleware.hpp src/middlewares/simple_middleware.cpp src/middlewares/route.cpp
-        src/middlewares/static_middleware.cpp
+        src/middlewares/static_middleware.cpp src/middlewares/session_middleware.cpp
         src/utils/logger.cpp src/utils/buffer.cpp src/utils/protocol_helper.cpp src/utils/string_utils.cpp
         src/utils/case_insensitive_map.hpp
         src/http/request/request.cpp src/http/header/header.hpp src/http/request/form_data.cpp
         src/http/header/content_type.cpp src/http/header/cookies.cpp
         src/http/response/response.cpp src/http/response/chunked_response.cpp
+        src/http/session/session_base.cpp
         src/ecp/template.hpp
-        src/constants.hpp src/hane.hpp src/http/session/session_base.cpp src/http/session/session_base.hpp src/middlewares/session_middleware.cpp src/middlewares/session_middleware.hpp)
+        src/constants.hpp src/hane.hpp)
 
 set(HANE_LIBRARIES ${LIBUV_LIBRARIES})
 
