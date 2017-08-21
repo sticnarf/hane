@@ -11,12 +11,12 @@
 struct Cookie {
     std::string name;
     std::string value;
-    time_t expires;
+    time_t expires{0};
     int maxAge{0};
     std::string domain;
-    std::string path;
+    std::string path{"/"};
     bool secure{false};
-    bool httpOnly{false};
+    bool httpOnly{true};
 
     std::string toCookieString();
 
@@ -35,7 +35,7 @@ struct CookieHelper {
 
 class Cookies : public std::map<std::string, Cookie>, public HeaderContent {
 public:
-    void putCookie(const Cookie& cookie);
+    void putCookie(const Cookie &cookie);
 };
 
 typedef std::shared_ptr<Cookies> CookiesPtr;
