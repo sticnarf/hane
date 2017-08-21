@@ -50,9 +50,9 @@ int main(int argc, char *argv[]) {
     auto assets = std::make_shared<AssetsMiddleware>();
     auto print = std::make_shared<PrintBodyMiddleware>();
 
-    route->addRule(std::regex("\\/(hello){0,1}"), HttpMethod::METHOD_GET, hello);
-    route->addRule(std::regex("\\/assets/.+"), HttpMethod::METHOD_GET, assets);
-    route->addRule(std::regex("\\/print"), HttpMethod::METHOD_GET, print);
+    route->addRule(std::regex("/(hello){0,1}"), HttpMethod::METHOD_GET, hello);
+    route->addRule(std::regex("/assets/.+"), HttpMethod::METHOD_GET, assets);
+    route->addRule(std::regex("/print"), HttpMethod::METHOD_GET, print);
 
     HttpServer server(route, "0.0.0.0", 8089);
     server.start();
