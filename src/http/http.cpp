@@ -187,6 +187,7 @@ void HttpServer::process(Request &req, uv_tcp_t *tcp) {
                 reinterpret_cast<uv_stream_t *>(tcp));
     }
 
+    // TODO This breaks chunked response
     auto connectionEntry = req.getHeader().get("Connection");
     if (connectionEntry.isValid() && connectionEntry.getValue()->getContent() == "close")
         static_cast<Client *>(tcp->data)->closeConnection();

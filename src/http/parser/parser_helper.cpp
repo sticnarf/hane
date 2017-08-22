@@ -30,6 +30,7 @@ void ParserHelper::parseUrlEncodedQueries(const std::string &data, Request &req,
         size_t ampersand = data.find('&', equalSign);
         eof = ampersand == std::string::npos;
         size_t end = eof ? data.size() : ampersand;
+        begin = ampersand + 1;
         for (size_t i = equalSign + 1; i < end; i++) {
             if (data[i] == '%') {
                 val += (char) std::stoi(data.substr(i + 1, 2), 0, 16);

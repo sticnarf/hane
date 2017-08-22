@@ -7,6 +7,7 @@
 #include "middlewares/session_middleware.hpp"
 #include "http/http.hpp"
 #include "http/client.hpp"
+#include "http/errors.hpp"
 #include "http/response/response.hpp"
 #include "http/request/request.hpp"
 #include "ecp/template.hpp"

@@ -1,3 +1,4 @@
+#include <cassert>
 #include "../http/errors.hpp"
 #include "route.hpp"
 
