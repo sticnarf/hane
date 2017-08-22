@@ -16,7 +16,7 @@ const Header &Request::getHeader() const {
     return header;
 }
 
-const Body &Request::getBody() const {
+const Body Request::getBody() const {
     return body;
 }
 
@@ -41,6 +41,6 @@ CookiesPtr Request::getCookies() const {
     }
 }
 
-SessionPtr &Request::getSession() {
+SessionPtr Request::getSession() {
     return session;
 }

@@ -21,7 +21,7 @@ public:
 
     const Header &getHeader() const;
 
-    const Body &getBody() const;
+    const Body getBody() const;
 
     const std::map<std::string, FormData> &getQueries() const;
 
@@ -46,7 +46,7 @@ private:
     Body body;
     SessionPtr session;
 public:
-    SessionPtr &getSession();
+    SessionPtr getSession();
 
 private:
 
