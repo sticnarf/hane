@@ -13,26 +13,6 @@ RUN mkdir build \
  && cd build \
  && cmake -DCMAKE_BUILD_TYPE=RELEASE .. \
  && make -j2 \
- && make install
-
-WORKDIR /work/examples/hello
-
-RUN mkdir build \
- && cd build \
- && cmake -DCMAKE_BUILD_TYPE=RELEASE .. \
- && make -j2 \
  && make install \
- && ldconfig
-# && cd / \
-# && rm -rf work \
-# && apt-get remove --purge -y build-essential libspdlog-dev libuv1-dev cmake \
-# && apt-get autoremove --purge -y \
-# && rm -rf /var/lib/apt/lists/*
-
-RUN cd assets \
- && dd if=/dev/zero of=./100mb.test bs=1024 count=102400
-
-VOLUME /var/log
-EXPOSE 8089
-
-ENTRYPOINT "hello"
+ && ldconfig \
+ && rm -rf /work

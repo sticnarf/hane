@@ -1,2 +1,0 @@
-#!/bin/sh
-ecpc hello.html.hpp HelloHtml < ./templates/hello.html.ecp > ./templates/hello.html.cpp
