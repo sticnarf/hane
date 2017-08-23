@@ -8,7 +8,7 @@ SessionMiddleware::SessionMiddleware(MiddlewarePtr nextMiddleware) : SimpleMiddl
 void SessionMiddleware::process(Request &req, std::shared_ptr<Response> &resp) {
     const std::string SESSION_COOKIE_NAME = "HANE_SESSIONID";
 
-    auto sessionBase = SessionBase::getInstance();
+    auto &sessionBase = SessionBase::getInstance();
 
     auto cookies = req.getCookies();
     auto sessionId = cookies->find(SESSION_COOKIE_NAME);

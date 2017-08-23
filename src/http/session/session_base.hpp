@@ -7,6 +7,7 @@
 #include <string>
 #include <chrono>
 #include <random>
+#include <mutex>
 
 class Session : public std::map<std::string, std::shared_ptr<void>> {
     std::string id;
@@ -24,6 +25,7 @@ typedef std::shared_ptr<Session> SessionPtr;
 class SessionBase {
     std::mt19937 gen;
 
+    std::mutex sessionMutex;
     std::time_t expires;
     std::shared_ptr<std::unordered_map<std::string, SessionPtr>> oldGen;
     std::shared_ptr<std::unordered_map<std::string, SessionPtr>> newGen;
