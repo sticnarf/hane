@@ -22,6 +22,8 @@ void ParserHelper::parseUrlEncodedQueries(const std::string &data, Request &req,
             if (data[i] == '%') {
                 key += (char) std::stoi(data.substr(i + 1, 2), 0, 16);
                 i += 2;
+            } else if (data[i] == '+') {
+                key += ' ';
             } else {
                 key += data[i];
             }
@@ -35,6 +37,8 @@ void ParserHelper::parseUrlEncodedQueries(const std::string &data, Request &req,
             if (data[i] == '%') {
                 val += (char) std::stoi(data.substr(i + 1, 2), 0, 16);
                 i += 2;
+            } else if (data[i] == '+') {
+                val += ' ';
             } else {
                 val += data[i];
             }
