@@ -11,7 +11,7 @@ StartLineParser::StartLineParser(RequestPtr req, BufferPtr buffer)
 ParserPtr StartLineParser::process() {
     size_t lineSep = buffer->find("\r\n", 2);
     if (lineSep >= buffer->len())
-        return std::make_shared<StartLineParser>(std::move(partialRequest), buffer);
+        return std::make_shared<StartLineParser>(partialRequest, buffer);
     std::string startLine = buffer->split(lineSep + 2)->toString(0, lineSep);
 
     size_t sp1 = startLine.find(' ');
@@ -30,5 +30,5 @@ ParserPtr StartLineParser::process() {
     partialRequest->target = target;
     partialRequest->httpVersion = version;
 
-    return UrlQueriesParser(std::move(partialRequest), buffer).process();
+    return UrlQueriesParser(partialRequest, buffer).process();
 }

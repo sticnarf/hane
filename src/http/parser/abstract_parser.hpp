@@ -13,7 +13,6 @@ class AbstractParser : public std::enable_shared_from_this<AbstractParser> {
 protected:
     RequestPtr partialRequest;
     BufferPtr buffer;
-
     bool finished;
 
     AbstractParser(RequestPtr req, BufferPtr buffer);

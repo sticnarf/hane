@@ -10,12 +10,12 @@ ChunkedBodyParser::ChunkedBodyParser(RequestPtr req, BufferPtr buffer)
 ParserPtr ChunkedBodyParser::process() {
     size_t lineSep = buffer->find("\r\n", 2);
     if (lineSep >= buffer->len())
-        return std::make_shared<ChunkedBodyParser>(std::move(partialRequest), buffer);
+        return std::make_shared<ChunkedBodyParser>(partialRequest, buffer);
 
     auto lengthString = buffer->toString(0, lineSep);
     auto chunkLength = std::stoul(lengthString, 0, 16);
     if (chunkLength + lineSep + 4 > buffer->len())
-        return std::make_shared<ChunkedBodyParser>(std::move(partialRequest), buffer);
+        return std::make_shared<ChunkedBodyParser>(partialRequest, buffer);
 
     // TODO Cannot push a buffer into another buffer. Try avoid useless copy!
 
@@ -29,7 +29,7 @@ ParserPtr ChunkedBodyParser::process() {
     partialRequest->body->push(chunkData.data(), chunkData.length());
 
     if (chunkLength == 0)
-        return ParserHelper::buildFormParser(std::move(partialRequest), buffer)->process();
+        return ParserHelper::buildFormParser(partialRequest, buffer)->process();
 
-    return std::make_shared<ChunkedBodyParser>(std::move(partialRequest), buffer)->process();
+    return std::make_shared<ChunkedBodyParser>(partialRequest, buffer)->process();
 }

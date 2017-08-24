@@ -15,5 +15,5 @@ ParserPtr BodyFormParser::process() {
     auto body = partialRequest->getBody();
     ParserHelper::parseUrlEncodedQueries(body->toString(), partialRequest);
 
-    return std::make_shared<FinalParser>(std::move(partialRequest), buffer);
+    return std::make_shared<FinalParser>(partialRequest, buffer);
 }

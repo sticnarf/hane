@@ -30,8 +30,8 @@ ParserPtr SizedBodyParser::process() {
     // TODO Not supporting charset parameter
     auto contentType = partialRequest->header->get("Content-Type");
     if (contentType.isValid() && contentType.getValue()->getContent() == CONTENT_TYPE_URLENCODED_FORM) {
-        return BodyFormParser(std::move(partialRequest), buffer).process();
+        return BodyFormParser(partialRequest, buffer).process();
     }
 
-    return ParserHelper::buildFormParser(std::move(partialRequest), buffer)->process();
+    return ParserHelper::buildFormParser(partialRequest, buffer)->process();
 }

@@ -19,7 +19,6 @@ Client::Client(HttpServer *server)
 
 void Client::pushBuf(const char *buf, size_t len) {
     parser.pushBuf(buf, len);
-
     processRequest();
 }
 

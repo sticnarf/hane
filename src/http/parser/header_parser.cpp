@@ -12,11 +12,11 @@ HeaderParser::HeaderParser(RequestPtr req, BufferPtr buffer)
 ParserPtr HeaderParser::process() {
     size_t lineSep = buffer->find("\r\n", 2);
     if (lineSep >= buffer->len())
-        return std::make_shared<HeaderParser>(std::move(partialRequest), buffer);
+        return std::make_shared<HeaderParser>(partialRequest, buffer);
 
     auto fieldBuf = buffer->split(lineSep + 2);
     if (lineSep == 0)
-        return ParserHelper::buildBodyParser(std::move(partialRequest), buffer)->process();
+        return ParserHelper::buildBodyParser(partialRequest, buffer)->process();
 
     std::string headerField = fieldBuf->toString(0, lineSep);
 

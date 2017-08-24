@@ -15,5 +15,5 @@ ParserPtr UrlQueriesParser::process() {
         ParserHelper::parseUrlEncodedQueries(target, partialRequest, begin + 1);
     partialRequest->absPath = target.substr(0, begin);
 
-    return HeaderParser(std::move(partialRequest), buffer).process();
+    return HeaderParser(partialRequest, buffer).process();
 }

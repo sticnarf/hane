@@ -174,7 +174,7 @@ ParserPtr ParserHelper::buildFormParser(RequestPtr partialRequest, BufferPtr buf
     auto contentTypeEntry = partialRequest->header->get("Content-Type");
     if (!contentTypeEntry.isValid()) {
         // Unknown!
-        return std::make_shared<FinalParser>(std::move(partialRequest), buffer);
+        return std::make_shared<FinalParser>(partialRequest, buffer);
     }
     auto contentType = std::dynamic_pointer_cast<ContentType>(contentTypeEntry.getValue());
     auto mediaType = contentType->getLowercasedMediaType();
@@ -182,16 +182,16 @@ ParserPtr ParserHelper::buildFormParser(RequestPtr partialRequest, BufferPtr buf
     // application/x-www-form-urlencoded
     // TODO Not supporting charset parameter
     if (mediaType == CONTENT_TYPE_URLENCODED_FORM) {
-        return std::make_shared<BodyFormParser>(std::move(partialRequest), buffer);
+        return std::make_shared<BodyFormParser>(partialRequest, buffer);
     }
 
     // multipart/form-data
     if (mediaType == CONTENT_TYPE_FORM_MULTIPART) {
-        return std::make_shared<MultipartFormParser>(std::move(partialRequest), buffer);
+        return std::make_shared<MultipartFormParser>(partialRequest, buffer);
     }
 
     // Unknown!
-    return std::make_shared<FinalParser>(std::move(partialRequest), buffer);
+    return std::make_shared<FinalParser>(partialRequest, buffer);
 }
 
 ParserPtr ParserHelper::buildBodyParser(RequestPtr partialRequest, BufferPtr buffer) {
@@ -200,13 +200,13 @@ ParserPtr ParserHelper::buildBodyParser(RequestPtr partialRequest, BufferPtr buf
     if (transferEncoding.isValid()) {
         if (transferEncoding.getValue()->getContent() == TRANSFER_ENCODING_TRUNKED) {
             // chunked encoding
-            return std::make_shared<ChunkedBodyParser>(std::move(partialRequest), buffer);
+            return std::make_shared<ChunkedBodyParser>(partialRequest, buffer);
         } else {
             throw HttpError(StatusCode::HTTP_BAD_REQUEST, "Unsupported Transfer-Encoding");
         }
     } else {
         // With Content-Length
-        return std::make_shared<SizedBodyParser>(std::move(partialRequest), buffer);
+        return std::make_shared<SizedBodyParser>(partialRequest, buffer);
     }
 }
 

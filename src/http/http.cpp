@@ -51,9 +51,9 @@ struct WriteHandler {
 
 void HttpServer::readCallback(uv_stream_t *clientTcp, ssize_t nread, const uv_buf_t *buf) {
     auto *client = static_cast<Client *>(clientTcp->data);
-    if (nread > 0) {
-        // Logger::getInstance().info("Read {} bytes.", nread);
+    if (nread > 0) {  // Read successfully
         try {
+            // Push data to client to parse
             client->pushBuf(buf->base, nread);
         } catch (const HttpError &e) {
             Logger::getInstance().error("Error code {}: {}", static_cast<int>(e.getCode()), e.getReason());
@@ -65,8 +65,9 @@ void HttpServer::readCallback(uv_stream_t *clientTcp, ssize_t nread, const uv_bu
     }
     if (nread < 0) {
         if (nread != UV_EOF)
-            // Logger::getInstance().error("Read error: {}", uv_strerror((int) nread));
-            uv_close(reinterpret_cast<uv_handle_t *>(clientTcp), closeCallback);
+            Logger::getInstance().error("Read error: {}", uv_strerror((int) nread));
+
+        uv_close(reinterpret_cast<uv_handle_t *>(clientTcp), closeCallback);
     }
     delete[] buf->base;
 }
@@ -199,9 +200,6 @@ void HttpServer::writeData(uv_stream_t *tcp, const std::string &data, void *addi
     auto arr = new char[data.length()];
     memcpy(arr, data.data(), data.length());
 
-//    auto *client = static_cast<Client *>(tcp->data);
-//    client->write.data = arr;
-//    client->buf = uv_buf_init(arr, static_cast<unsigned int>(data.length()));
     auto write = new uv_write_t;
     write->data = new WriteHandler(arr, client, addition);
     auto buf = uv_buf_init(arr, static_cast<unsigned int>(data.length()));

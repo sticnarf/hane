@@ -20,7 +20,7 @@ ParserPtr MultipartFormParser::process() {
 
     size_t lineSep = body->find("\r\n", 2);
     if (lineSep >= body->len())
-        return std::make_shared<FinalParser>(std::move(partialRequest), buffer);
+        return std::make_shared<FinalParser>(partialRequest, buffer);
 
     auto lineBuf = body->split(lineSep + 2);
     if (lineBuf->find(boundary.c_str(), boundary.length()) != 0)
@@ -33,7 +33,7 @@ ParserPtr MultipartFormParser::process() {
         for (;;) {
             lineSep = body->find("\r\n", 2);
             if (lineSep >= body->len())
-                return std::make_shared<FinalParser>(std::move(partialRequest), buffer);
+                return std::make_shared<FinalParser>(partialRequest, buffer);
 
             lineBuf = body->split(lineSep + 2);
             if (lineSep == 0)
