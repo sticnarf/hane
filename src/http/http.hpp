@@ -12,10 +12,10 @@
 #include "./response/chunked_response.hpp"
 
 struct AsyncChunkedResponseHandler {
-    Request &req;
+    RequestPtr req;
     std::shared_ptr<ChunkedResponse> resp;
 
-    AsyncChunkedResponseHandler(Request &req,
+    AsyncChunkedResponseHandler(RequestPtr req,
                                 std::shared_ptr<ChunkedResponse> resp)
             : req(req), resp(std::move(resp)) {}
 };
@@ -49,7 +49,7 @@ public:
 
     void start();
 
-    void process(Request &req, uv_tcp_t *tcp);
+    void process(RequestPtr req, uv_tcp_t *tcp);
 
     void writeResponse(uv_stream_t *client, std::shared_ptr<const Response> resp);
 

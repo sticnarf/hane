@@ -4,8 +4,8 @@
 #include <utility>
 #include <http/errors.hpp>
 
-ChunkedBodyParser::ChunkedBodyParser(Request &&req, BufferPtr buffer)
-        : AbstractParser(std::move(req), buffer) {}
+ChunkedBodyParser::ChunkedBodyParser(RequestPtr req, BufferPtr buffer)
+        : AbstractParser(req, buffer) {}
 
 ParserPtr ChunkedBodyParser::process() {
     size_t lineSep = buffer->find("\r\n", 2);
@@ -26,7 +26,7 @@ ParserPtr ChunkedBodyParser::process() {
         throw HttpError(StatusCode::HTTP_BAD_REQUEST, "Bad chunk");
 
 
-    partialRequest.body->push(chunkData.data(), chunkData.length());
+    partialRequest->body->push(chunkData.data(), chunkData.length());
 
     if (chunkLength == 0)
         return ParserHelper::buildFormParser(std::move(partialRequest), buffer)->process();

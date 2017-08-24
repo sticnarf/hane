@@ -10,7 +10,7 @@ class Parser {
 private:
     BufferPtr buffer;
     ParserPtr currentParser;
-    std::queue<Request> completeRequests;
+    std::queue<RequestPtr> completeRequests;
 
     void process();
 
@@ -22,7 +22,7 @@ public:
 
     bool hasCompleteRequest();
 
-    Request yieldRequest();
+    RequestPtr yieldRequest();
 };
 
 #endif

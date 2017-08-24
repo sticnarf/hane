@@ -5,7 +5,7 @@
 
 class FinalParser : public AbstractParser {
 public:
-    FinalParser(Request &&req, BufferPtr buffer);
+    FinalParser(RequestPtr req, BufferPtr buffer);
 
     ParserPtr process() override;
 };

@@ -5,12 +5,12 @@
 SessionMiddleware::SessionMiddleware(MiddlewarePtr nextMiddleware) : SimpleMiddleware(nextMiddleware) {
 }
 
-void SessionMiddleware::process(Request &req, std::shared_ptr<Response> &resp) {
+void SessionMiddleware::process(RequestPtr req, std::shared_ptr<Response> &resp) {
     const std::string SESSION_COOKIE_NAME = "HANE_SESSIONID";
 
     auto &sessionBase = SessionBase::getInstance();
 
-    auto cookies = req.getCookies();
+    auto cookies = req->getCookies();
     auto sessionId = cookies->find(SESSION_COOKIE_NAME);
 
     SessionPtr session;
@@ -26,5 +26,5 @@ void SessionMiddleware::process(Request &req, std::shared_ptr<Response> &resp) {
         }
     }
 
-    req.session = session;
+    req->session = session;
 }

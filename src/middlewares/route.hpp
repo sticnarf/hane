@@ -12,7 +12,7 @@ typedef std::pair<std::regex, std::shared_ptr<Middleware>> Rule;
 class RouteMiddleware : public Middleware {
     std::map<HttpMethod, std::vector<Rule>> rules;
 public:
-    MiddlewarePtr call(Request &req, std::shared_ptr<Response> &resp) override;
+    MiddlewarePtr call(RequestPtr req, std::shared_ptr<Response> &resp) override;
 
     void addRule(std::regex, HttpMethod, std::shared_ptr<Middleware>);
 };

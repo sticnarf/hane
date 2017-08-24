@@ -7,7 +7,7 @@ class HeaderParser : public AbstractParser {
     HeaderContentPtr parseField(const std::string &fieldName, const std::string &fieldContent);
 
 public:
-    HeaderParser(Request &&req, BufferPtr buffer);
+    HeaderParser(RequestPtr req, BufferPtr buffer);
 
     ParserPtr process() override;
 };

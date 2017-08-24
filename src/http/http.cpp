@@ -84,20 +84,22 @@ void HttpServer::writeCallback(uv_write_t *req, int status) {
 }
 
 void HttpServer::onNewConnection(uv_stream_t *serverTcp, int status) {
-    auto *server = static_cast<HttpServer *>(serverTcp->data);
     if (status < 0) {
         Logger::getInstance().error("New connection error: {}", uv_strerror(status));
         return;
     }
 
+    auto *server = static_cast<HttpServer *>(serverTcp->data);
     auto *client = new Client(server);
 
     uv_tcp_init(uv_default_loop(), client->tcp);
     auto uvTcp = reinterpret_cast<uv_stream_t *>(client->tcp);
 
     if (uv_accept(serverTcp, uvTcp) == 0) {
+        // Success. Start reading from the connection:
         uv_read_start(uvTcp, allocBuffer, readCallback);
     } else {
+        // Fail. Close the connection directly:
         uv_close(reinterpret_cast<uv_handle_t *>(client->tcp), closeCallback);
     }
 }
@@ -158,7 +160,7 @@ void HttpServer::writeChunks(AsyncChunkedResponseHandler handler, uv_stream_t *t
 
 void HttpServer::start() {
     Logger::getInstance().info("Start listening {} port {}", bindAddr, port);
-    int r = uv_listen((uv_stream_t * ) & server, DEFAULT_BACKLOG, onNewConnection);
+    int r = uv_listen(reinterpret_cast<uv_stream_t *>(&server), DEFAULT_BACKLOG, onNewConnection);
     if (r > 0) {
         Logger::getInstance().error("Listen error {}", uv_strerror(r));
         exit(1);
@@ -174,8 +176,8 @@ void HttpServer::start() {
  * @param req
  * @param tcp
  */
-void HttpServer::process(Request &req, uv_tcp_t *tcp) {
-    auto resp = std::make_shared<Response>(req.getHttpVersion());
+void HttpServer::process(RequestPtr req, uv_tcp_t *tcp) {
+    auto resp = std::make_shared<Response>(req->getHttpVersion());
     auto client = static_cast<Client *>(tcp->data);
     client->currMiddleware = middleware->call(req, resp);
     writeResponse(reinterpret_cast<uv_stream_t *>(tcp), resp);
@@ -186,7 +188,7 @@ void HttpServer::process(Request &req, uv_tcp_t *tcp) {
                 AsyncChunkedResponseHandler(req, chunkedResp),
                 reinterpret_cast<uv_stream_t *>(tcp));
     } else {
-        auto connectionEntry = req.getHeader().get("Connection");
+        auto connectionEntry = req->getHeader()->get("Connection");
         if (connectionEntry.isValid() && connectionEntry.getValue()->getContent() == "close")
             static_cast<Client *>(tcp->data)->closeConnection();
     }
@@ -209,15 +211,10 @@ void HttpServer::writeData(uv_stream_t *tcp, const std::string &data, void *addi
 
 void HttpServer::processChunks(AsyncChunkedResponseHandler handler, uv_stream_t *tcp) {
     auto client = static_cast<Client *>(tcp->data);
-//    while (!handler->resp->finished && client->queued < 8) {
-//        auto polyResp = std::dynamic_pointer_cast<Response>(handler->resp);
-//        handler->currMiddleware = handler->currMiddleware->call(handler->req, polyResp);
-//        writeChunks(handler, tcp);
-//    }
     if (handler.resp->finished) {
-        auto connectionEntry = handler.req.getHeader().get("Connection");
+        auto connectionEntry = handler.req->getHeader()->get("Connection");
         if (connectionEntry.isValid() && connectionEntry.getValue()->getContent() == "close")
-            static_cast<Client *>(tcp->data)->closeConnection();
+            client->closeConnection();
         else
             // Process the next request
             client->processRequest();
@@ -239,7 +236,7 @@ void HttpServer::writeChunkCallback(uv_write_t *req, int status) {
 
     handler->client->queued--;
 
-    auto &chunkedReq = asyncHandler->req;
+    auto chunkedReq = asyncHandler->req;
     auto resp = asyncHandler->resp;
 
     delete asyncHandler;

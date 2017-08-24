@@ -28,8 +28,9 @@ public:
 typedef std::shared_ptr<HeaderContent> HeaderContentPtr;
 
 class Header : public CaseInsensitiveMap<HeaderContentPtr> {
-
 };
+
+typedef std::shared_ptr<Header> HeaderPtr;
 
 typedef CaseInsensitiveMap<std::string> FieldParameters;
 

@@ -5,7 +5,7 @@
 
 class ChunkedBodyParser : public AbstractParser {
 public:
-    ChunkedBodyParser(Request &&req, BufferPtr buffer);
+    ChunkedBodyParser(RequestPtr req, BufferPtr buffer);
 
     ParserPtr process() override;
 };

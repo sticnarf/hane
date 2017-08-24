@@ -5,9 +5,9 @@
 
 class SimpleMiddleware : public Middleware {
 public:
-    virtual MiddlewarePtr call(Request &req, std::shared_ptr<Response> &resp);
+    virtual MiddlewarePtr call(RequestPtr req, std::shared_ptr<Response> &resp);
 
-    virtual void process(Request &req, std::shared_ptr<Response> &resp);
+    virtual void process(RequestPtr req, std::shared_ptr<Response> &resp);
 
     virtual ~SimpleMiddleware() = default;
 

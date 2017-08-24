@@ -5,7 +5,7 @@
 
 class SizedBodyParser : public AbstractParser {
 public:
-    SizedBodyParser(Request &&req, BufferPtr buffer);
+    SizedBodyParser(RequestPtr req, BufferPtr buffer);
 
     ParserPtr process() override;
 };

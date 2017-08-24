@@ -1,7 +1,7 @@
 #include "static_middleware.hpp"
 #include "../utils/logger.hpp"
 
-MiddlewarePtr StaticMiddleware::call(Request &req, std::shared_ptr<Response> &resp) {
+MiddlewarePtr StaticMiddleware::call(RequestPtr req, std::shared_ptr<Response> &resp) {
     if (!file.is_open()) {
         resp->setStatusCode(StatusCode::HTTP_NOT_FOUND);
         resp->body = "404 Not Found";

@@ -19,7 +19,7 @@ public:
 
     const std::string &getTarget() const;
 
-    const Header &getHeader() const;
+    HeaderPtr getHeader() const;
 
     const Body getBody() const;
 
@@ -42,7 +42,7 @@ private:
     std::string absPath;
     std::map<std::string, FormData> queries;
 
-    Header header;
+    HeaderPtr header;
     Body body;
     SessionPtr session;
 public:
@@ -71,5 +71,7 @@ private:
 
     friend class SessionMiddleware;
 };
+
+typedef std::shared_ptr<Request> RequestPtr;
 
 #endif

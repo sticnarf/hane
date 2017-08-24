@@ -2,10 +2,10 @@
 #include "../http/errors.hpp"
 #include "route.hpp"
 
-MiddlewarePtr RouteMiddleware::call(Request &req, std::shared_ptr<Response> &resp) {
-    for (auto rule:rules[req.getHttpMethod()]) {
+MiddlewarePtr RouteMiddleware::call(RequestPtr req, std::shared_ptr<Response> &resp) {
+    for (auto rule:rules[req->getHttpMethod()]) {
         auto regex = rule.first;
-        if (std::regex_match(req.getAbsPath(), regex)) {
+        if (std::regex_match(req->getAbsPath(), regex)) {
             return rule.second->call(req, resp);
         }
     }

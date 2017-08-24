@@ -12,7 +12,7 @@ const std::string &Request::getTarget() const {
     return target;
 }
 
-const Header &Request::getHeader() const {
+HeaderPtr Request::getHeader() const {
     return header;
 }
 
@@ -30,10 +30,11 @@ const std::string &Request::getAbsPath() const {
 
 Request::Request() {
     body = std::make_shared<Buffer>();
+    header = std::make_shared<Header>();
 }
 
 CookiesPtr Request::getCookies() const {
-    auto entry = header.get("Cookie");
+    auto entry = header->get("Cookie");
     if (entry.isValid()) {
         return std::dynamic_pointer_cast<Cookies>(entry.getValue());
     } else {

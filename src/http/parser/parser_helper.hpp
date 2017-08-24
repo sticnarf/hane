@@ -9,7 +9,7 @@
 
 class ParserHelper {
 public:
-    static void parseUrlEncodedQueries(const std::string &data, Request &req, size_t begin = 0);
+    static void parseUrlEncodedQueries(const std::string &data, RequestPtr req, size_t begin = 0);
 
     static void parseParameters(const std::string &data, FieldParameters &req, size_t begin = 0);
 
@@ -23,9 +23,9 @@ public:
 
     static void parseCookies(CookiesPtr cookies, const std::string &fieldContent);
 
-    static ParserPtr buildFormParser(Request &&partialRequest, BufferPtr buffer);
+    static ParserPtr buildFormParser(RequestPtr partialRequest, BufferPtr buffer);
 
-    static ParserPtr buildBodyParser(Request &&partialRequest, BufferPtr buffer);
+    static ParserPtr buildBodyParser(RequestPtr partialRequest, BufferPtr buffer);
 };
 
 #endif

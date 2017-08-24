@@ -11,7 +11,7 @@
 #include "sized_body_parser.hpp"
 #include "chunked_body_parser.hpp"
 
-void ParserHelper::parseUrlEncodedQueries(const std::string &data, Request &req, size_t begin) {
+void ParserHelper::parseUrlEncodedQueries(const std::string &data, RequestPtr req, size_t begin) {
     bool eof = false;
     while (!eof) {
         size_t equalSign = data.find('=', begin);
@@ -44,7 +44,7 @@ void ParserHelper::parseUrlEncodedQueries(const std::string &data, Request &req,
             }
         }
 
-        req.queries.insert({key, val});
+        req->queries.insert({key, val});
     }
 }
 
@@ -170,8 +170,8 @@ void ParserHelper::parseHeaderFieldWithParameters(HeaderContentWithParametersPtr
         ParserHelper::parseParameters(fieldContent, content->parameters, semicolon + 1);
 }
 
-ParserPtr ParserHelper::buildFormParser(Request &&partialRequest, BufferPtr buffer) {
-    auto contentTypeEntry = partialRequest.header.get("Content-Type");
+ParserPtr ParserHelper::buildFormParser(RequestPtr partialRequest, BufferPtr buffer) {
+    auto contentTypeEntry = partialRequest->header->get("Content-Type");
     if (!contentTypeEntry.isValid()) {
         // Unknown!
         return std::make_shared<FinalParser>(std::move(partialRequest), buffer);
@@ -194,9 +194,9 @@ ParserPtr ParserHelper::buildFormParser(Request &&partialRequest, BufferPtr buff
     return std::make_shared<FinalParser>(std::move(partialRequest), buffer);
 }
 
-ParserPtr ParserHelper::buildBodyParser(Request &&partialRequest, BufferPtr buffer) {
+ParserPtr ParserHelper::buildBodyParser(RequestPtr partialRequest, BufferPtr buffer) {
     // TODO Build different BodyParser according to Transfer-Encoding
-    auto transferEncoding = partialRequest.header.get("Transfer-Encoding");
+    auto transferEncoding = partialRequest->header->get("Transfer-Encoding");
     if (transferEncoding.isValid()) {
         if (transferEncoding.getValue()->getContent() == TRANSFER_ENCODING_TRUNKED) {
             // chunked encoding

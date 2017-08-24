@@ -5,7 +5,7 @@
 
 class UrlQueriesParser : public AbstractParser {
 public:
-    UrlQueriesParser(Request &&req, BufferPtr buffer);
+    UrlQueriesParser(RequestPtr req, BufferPtr buffer);
 
     ParserPtr process() override;
 };

@@ -2,7 +2,7 @@
 #include <utility>
 #include "abstract_parser.hpp"
 
-AbstractParser::AbstractParser(Request &&req, BufferPtr buffer)
+AbstractParser::AbstractParser(RequestPtr req, BufferPtr buffer)
         : partialRequest(req), buffer(buffer), finished(false) {}
 
 ParserPtr AbstractParser::process() {
@@ -13,6 +13,6 @@ bool AbstractParser::isFinished() const {
     return finished;
 }
 
-Request AbstractParser::getRequest() const {
+RequestPtr AbstractParser::getRequest() const {
     return partialRequest;
 }

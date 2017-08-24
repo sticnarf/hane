@@ -4,16 +4,16 @@
 #include "header_parser.hpp"
 #include "parser_helper.hpp"
 
-UrlQueriesParser::UrlQueriesParser(Request &&req, BufferPtr buffer)
-        : AbstractParser(std::move(req), buffer) {}
+UrlQueriesParser::UrlQueriesParser(RequestPtr req, BufferPtr buffer)
+        : AbstractParser(req, buffer) {}
 
 ParserPtr UrlQueriesParser::process() {
-    const std::string &target = partialRequest.target;
+    const std::string &target = partialRequest->target;
     size_t begin = target.find_last_of('?');
 
     if (begin != std::string::npos && begin != target.length() - 1)
         ParserHelper::parseUrlEncodedQueries(target, partialRequest, begin + 1);
-    partialRequest.absPath = target.substr(0, begin);
+    partialRequest->absPath = target.substr(0, begin);
 
     return HeaderParser(std::move(partialRequest), buffer).process();
 }

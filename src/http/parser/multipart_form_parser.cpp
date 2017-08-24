@@ -5,13 +5,13 @@
 #include "final_parser.hpp"
 #include "parser_helper.hpp"
 
-MultipartFormParser::MultipartFormParser(Request &&req, BufferPtr buffer)
-        : AbstractParser(std::move(req), buffer) {}
+MultipartFormParser::MultipartFormParser(RequestPtr req, BufferPtr buffer)
+        : AbstractParser(req, buffer) {}
 
 // TODO Too complex! To be refactored
 ParserPtr MultipartFormParser::process() {
-    auto body = partialRequest.body;
-    auto contentType = std::dynamic_pointer_cast<ContentType>(partialRequest.header.get("Content-Type").getValue());
+    auto body = partialRequest->body;
+    auto contentType = std::dynamic_pointer_cast<ContentType>(partialRequest->header->get("Content-Type").getValue());
     auto boundaryEntry = contentType->getParameters().get("boundary");
     if (!boundaryEntry.isValid())
         throw HttpError(StatusCode::HTTP_BAD_REQUEST, "invalid Content-Type");
@@ -81,6 +81,6 @@ ParserPtr MultipartFormParser::process() {
             formData.data += lineBuf->toString(0, lineSep);
         }
 
-        partialRequest.queries.insert({name, formData});
+        partialRequest->queries.insert({name, formData});
     }
 }

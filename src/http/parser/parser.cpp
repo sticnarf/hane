@@ -6,10 +6,10 @@ void Parser::pushBuf(const char *buf, size_t len) {
     process();
 }
 
-Request Parser::yieldRequest() {
-    Request req = completeRequests.front();
+RequestPtr Parser::yieldRequest() {
+    RequestPtr req = completeRequests.front();
     completeRequests.pop();
-    return req; // Possible optimization using std::move?
+    return req;
 }
 
 bool Parser::hasCompleteRequest() {
@@ -21,11 +21,11 @@ void Parser::process() {
 
     if (currentParser->isFinished()) {
         completeRequests.push(currentParser->getRequest());
-        currentParser = std::make_shared<StartLineParser>(Request(), buffer);
+        currentParser = std::make_shared<StartLineParser>(std::make_shared<Request>(), buffer);
     }
 }
 
 Parser::Parser() {
     buffer = std::make_shared<Buffer>();
-    currentParser = std::make_shared<StartLineParser>(Request(), buffer);
+    currentParser = std::make_shared<StartLineParser>(std::make_shared<Request>(), buffer);
 }

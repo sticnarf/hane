@@ -5,8 +5,8 @@
 #include "header_parser.hpp"
 #include "url_queries_parser.hpp"
 
-StartLineParser::StartLineParser(Request &&req, BufferPtr buffer)
-        : AbstractParser(std::move(req), buffer) {}
+StartLineParser::StartLineParser(RequestPtr req, BufferPtr buffer)
+        : AbstractParser(req, buffer) {}
 
 ParserPtr StartLineParser::process() {
     size_t lineSep = buffer->find("\r\n", 2);
@@ -26,9 +26,9 @@ ParserPtr StartLineParser::process() {
     HttpVersion version = toHttpVersion(startLine.data() + sp2 + 1, lineSep - sp2 - 1);
 
     // If no exception is thrown, the format is OK.
-    partialRequest.httpMethod = method;
-    partialRequest.target = target;
-    partialRequest.httpVersion = version;
+    partialRequest->httpMethod = method;
+    partialRequest->target = target;
+    partialRequest->httpVersion = version;
 
     return UrlQueriesParser(std::move(partialRequest), buffer).process();
 }

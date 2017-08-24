@@ -7,7 +7,7 @@ class SessionMiddleware : public SimpleMiddleware {
 public:
     explicit SessionMiddleware(MiddlewarePtr nextMiddleware);
 
-    virtual void process(Request &req, std::shared_ptr<Response> &resp);
+    virtual void process(RequestPtr req, std::shared_ptr<Response> &resp);
 
     virtual ~SessionMiddleware() = default;
 

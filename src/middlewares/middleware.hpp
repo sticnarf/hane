@@ -18,7 +18,7 @@ public:
      * @param resp
      * @return The middleware that remains to be called
      */
-    virtual MiddlewarePtr call(Request &req, std::shared_ptr<Response>& resp) = 0;
+    virtual MiddlewarePtr call(RequestPtr req, std::shared_ptr<Response>& resp) = 0;
 };
 
 #endif

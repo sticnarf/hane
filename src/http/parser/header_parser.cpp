@@ -6,8 +6,8 @@
 #include "http/header/content_type.hpp"
 #include "parser_helper.hpp"
 
-HeaderParser::HeaderParser(Request &&req, BufferPtr buffer)
-        : AbstractParser(std::move(req), buffer) {}
+HeaderParser::HeaderParser(RequestPtr req, BufferPtr buffer)
+        : AbstractParser(req, buffer) {}
 
 ParserPtr HeaderParser::process() {
     size_t lineSep = buffer->find("\r\n", 2);
@@ -24,7 +24,7 @@ ParserPtr HeaderParser::process() {
     auto fieldName = parseResult.first;
     auto fieldContent = parseResult.second;
 
-    partialRequest.header.put(fieldName, parseField(fieldName, fieldContent));
+    partialRequest->header->put(fieldName, parseField(fieldName, fieldContent));
 
     return this->process();
 }

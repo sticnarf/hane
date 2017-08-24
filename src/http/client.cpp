@@ -34,7 +34,7 @@ void Client::processRequest() {
     // If there is no chunk in queue, the next request will be processed immediately.
     // Otherwise, the process of the next request should be triggered by the chunk-writing callback.
     if (queued == 0) {
-        Request req = parser.yieldRequest();
+        RequestPtr req = parser.yieldRequest();
         server->process(req, this->tcp);
     }
 }

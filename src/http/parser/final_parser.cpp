@@ -2,8 +2,8 @@
 
 #include <utility>
 
-FinalParser::FinalParser(Request &&req, BufferPtr buffer)
-        : AbstractParser(std::move(req), buffer) {
+FinalParser::FinalParser(RequestPtr req, BufferPtr buffer)
+        : AbstractParser(req, buffer) {
     finished = true;
 }
 

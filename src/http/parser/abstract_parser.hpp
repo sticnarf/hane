@@ -11,12 +11,12 @@ typedef std::shared_ptr<AbstractParser> ParserPtr;
 
 class AbstractParser : public std::enable_shared_from_this<AbstractParser> {
 protected:
-    Request partialRequest;
+    RequestPtr partialRequest;
     BufferPtr buffer;
 
     bool finished;
 
-    AbstractParser(Request &&req, BufferPtr buffer);
+    AbstractParser(RequestPtr req, BufferPtr buffer);
 
 public:
     // Throws HttpError if it is a bad request
@@ -24,7 +24,7 @@ public:
 
     bool isFinished() const;
 
-    Request getRequest() const;
+    RequestPtr getRequest() const;
 };
 
 #endif
