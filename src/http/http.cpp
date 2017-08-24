@@ -66,7 +66,7 @@ void HttpServer::readCallback(uv_stream_t *clientTcp, ssize_t nread, const uv_bu
     if (nread < 0) {
         if (nread != UV_EOF)
             // Logger::getInstance().error("Read error: {}", uv_strerror((int) nread));
-        uv_close(reinterpret_cast<uv_handle_t *>(clientTcp), closeCallback);
+            uv_close(reinterpret_cast<uv_handle_t *>(clientTcp), closeCallback);
     }
     delete[] buf->base;
 }
@@ -158,7 +158,7 @@ void HttpServer::writeChunks(AsyncChunkedResponseHandler handler, uv_stream_t *t
 
 void HttpServer::start() {
     Logger::getInstance().info("Start listening {} port {}", bindAddr, port);
-    int r = uv_listen((uv_stream_t *) &server, DEFAULT_BACKLOG, onNewConnection);
+    int r = uv_listen((uv_stream_t * ) & server, DEFAULT_BACKLOG, onNewConnection);
     if (r > 0) {
         Logger::getInstance().error("Listen error {}", uv_strerror(r));
         exit(1);
@@ -185,12 +185,11 @@ void HttpServer::process(Request &req, uv_tcp_t *tcp) {
         processChunks(
                 AsyncChunkedResponseHandler(req, chunkedResp),
                 reinterpret_cast<uv_stream_t *>(tcp));
+    } else {
+        auto connectionEntry = req.getHeader().get("Connection");
+        if (connectionEntry.isValid() && connectionEntry.getValue()->getContent() == "close")
+            static_cast<Client *>(tcp->data)->closeConnection();
     }
-
-    // TODO This breaks chunked response
-    auto connectionEntry = req.getHeader().get("Connection");
-    if (connectionEntry.isValid() && connectionEntry.getValue()->getContent() == "close")
-        static_cast<Client *>(tcp->data)->closeConnection();
 }
 
 void HttpServer::writeData(uv_stream_t *tcp, const std::string &data, void *addition, uv_write_cb callback) {
@@ -216,8 +215,12 @@ void HttpServer::processChunks(AsyncChunkedResponseHandler handler, uv_stream_t 
 //        writeChunks(handler, tcp);
 //    }
     if (handler.resp->finished) {
-        // Process the next request
-        client->processRequest();
+        auto connectionEntry = handler.req.getHeader().get("Connection");
+        if (connectionEntry.isValid() && connectionEntry.getValue()->getContent() == "close")
+            static_cast<Client *>(tcp->data)->closeConnection();
+        else
+            // Process the next request
+            client->processRequest();
         return;
     }
 
