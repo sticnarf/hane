@@ -5,15 +5,13 @@ services:
   - docker
 
 env:
-  - APP_HOST="http://localhost:8089"
+  - APP_HOST="http://localhost:18089"
 
 before_install:
-- git submodule init
-- git submodule update
 - sudo apt-get install xvfb qt5-default libqt5webkit5-dev gstreamer1.0-plugins-base gstreamer1.0-tools gstreamer1.0-x
 - sudo docker build -t libhane .
 
 script:
-- cd examples/msgboard
-- sudo docker-compose -d
+- cd examples/msgboard && sudo docker-compose up -d
+- sleep 15
 - xvfb-run -a bundle exec rake
