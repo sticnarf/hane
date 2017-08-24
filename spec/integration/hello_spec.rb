@@ -9,13 +9,10 @@ Capybara.configure do |config|
 end
 
 describe 'the main website' do
-  it 'shows hello' do
+  it 'shows Message board and reject users not logged in' do
     visit '/'
-    expect(page).to have_content 'Hello'
-  end
-
-  it 'should greet the user if name is provided' do
-    visit '/?name=Alice'
-    expect(page).to have_content 'Hello, Alice'
+    expect(page).to have_content 'Message board'
+    expect(page).to have_content 'You are not logged in.'
+    expect(page).not_to have_content 'New message'
   end
 end

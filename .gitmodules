@@ -1,0 +1,3 @@
+[submodule "examples/msgboard"]
+	path = examples/msgboard
+	url = https://github.com/sticnarf/msgboard.git

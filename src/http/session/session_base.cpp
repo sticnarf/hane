@@ -8,6 +8,8 @@ SessionBase &SessionBase::getInstance() {
 }
 
 SessionPtr SessionBase::newSession() {
+    std::lock_guard<std::mutex> lk(sessionMutex);
+
     std::uniform_int_distribution<unsigned long long> dis;
 
     auto d1 = dis(gen), d2 = dis(gen);
@@ -45,6 +47,8 @@ void SessionBase::updateGen() {
 }
 
 SessionPtr SessionBase::getSession(const std::string &sessionId) {
+    std::lock_guard<std::mutex> lk(sessionMutex);
+
     checkUpdateGen();
 
     auto entry = newGen->find(sessionId);
@@ -63,6 +67,8 @@ SessionPtr SessionBase::getSession(const std::string &sessionId) {
 }
 
 void SessionBase::deleteSession(const std::string &sessionId) {
+    std::lock_guard<std::mutex> lk(sessionMutex);
+
     checkUpdateGen();
 
     auto entry = newGen->find(sessionId);

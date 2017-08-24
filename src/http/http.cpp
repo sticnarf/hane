@@ -52,7 +52,7 @@ struct WriteHandler {
 void HttpServer::readCallback(uv_stream_t *clientTcp, ssize_t nread, const uv_buf_t *buf) {
     auto *client = static_cast<Client *>(clientTcp->data);
     if (nread > 0) {
-        Logger::getInstance().info("Read {} bytes.", nread);
+        // Logger::getInstance().info("Read {} bytes.", nread);
         try {
             client->pushBuf(buf->base, nread);
         } catch (const HttpError &e) {
@@ -65,7 +65,7 @@ void HttpServer::readCallback(uv_stream_t *clientTcp, ssize_t nread, const uv_bu
     }
     if (nread < 0) {
         if (nread != UV_EOF)
-            Logger::getInstance().error("Read error: {}", uv_strerror((int) nread));
+            // Logger::getInstance().error("Read error: {}", uv_strerror((int) nread));
         uv_close(reinterpret_cast<uv_handle_t *>(clientTcp), closeCallback);
     }
     delete[] buf->base;
@@ -73,7 +73,7 @@ void HttpServer::readCallback(uv_stream_t *clientTcp, ssize_t nread, const uv_bu
 
 void HttpServer::writeCallback(uv_write_t *req, int status) {
     if (status < 0) {
-        Logger::getInstance().error("Write error: {}", uv_strerror(status));
+        // Logger::getInstance().error("Write error: {}", uv_strerror(status));
         // error!
     }
 
@@ -245,7 +245,7 @@ void HttpServer::writeChunkCallback(uv_write_t *req, int status) {
     delete req;
 
     if (status < 0) {
-        Logger::getInstance().error("Write error: {}", uv_strerror(status));
+        // Logger::getInstance().error("Write error: {}", uv_strerror(status));
         // error!
         return;
     }
