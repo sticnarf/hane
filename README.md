@@ -32,40 +32,26 @@ You shall link the library to your application.
 
 ## Example
 
-An example project called `hello` that simply greets is provided.
+An example project `msgboard` is provided.
 
-You can check `example/hello` and see how it works.
+You can check `example/msgboard` and see how it works.
 
-Also, a `Dockerfile` for `hello` is provided. You can build the image using: 
+Also, this example project is dockerized. So, just have a try if you want! 
 
-```
-# docker build -t hane_hello .
-```
-
-And run it in a container:
+First, build the base image of the library `hane`:
 
 ```
-# docker run -d -v /tmp:/var/log -p 80:8089 hane_hello
+# docker build -t libhane .
 ```
 
-Now, you can access the website through port `80`:
+Then, change to the example directory, and run docker compose:
 
 ```
-$ curl http://localhost/hello?name=Alice
-<!DOCTYPE HTML>
-<html>
-<head>
-    <title>Hello</title>
-    <meta charset="UTF-8">
-    <link rel="stylesheet" type="text/css" href="assets/style.css">
-</head>
-<body>
-    
-    <h1>Hello!</h1>
-    
-</body>
-</html>
+# cd examples/msgboard
+# docker-compose up
 ```
+
+Now, you can access the website: http://localhost:18089/
 
 ## Todo
 
