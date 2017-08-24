@@ -10,7 +10,6 @@ env:
 before_install:
 - sudo apt-get install xvfb qt5-default libqt5webkit5-dev gstreamer1.0-plugins-base gstreamer1.0-tools gstreamer1.0-x
 - sudo docker build -t libhane .
-- sudo docker volume create msgboard_pgdata
 
 script:
 - cd examples/msgboard && sudo docker-compose up -d
