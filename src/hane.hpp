@@ -1,5 +1,6 @@
 #ifndef HANE_HANE_HPP
 #define HANE_HANE_HPP
+
 #include "constants.hpp"
 #include "middlewares/route.hpp"
 #include "middlewares/simple_middleware.hpp"
@@ -12,4 +13,5 @@
 #include "http/request/request.hpp"
 #include "ecp/template.hpp"
 #include "utils/logger.hpp"
+
 #endif

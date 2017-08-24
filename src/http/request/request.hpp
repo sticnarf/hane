@@ -39,7 +39,7 @@ public:
 
 private:
     std::string target;
-    std::string absPath;
+    std::string absPath; // equals to target without query string
     std::map<std::string, FormData> queries;
 
     HeaderPtr header;

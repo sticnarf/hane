@@ -6,11 +6,13 @@
 #include <memory>
 
 struct Chunk {
-    char* buf;
+    char *buf;
     size_t len;
 
     explicit Chunk(size_t len);
-    Chunk(const std::string& data);
+
+    Chunk(const std::string &data);
+
     ~Chunk();
 };
 
