@@ -23,6 +23,7 @@ public:
 
     void processRequest();
 
+    // Do not use it! Bugs exist!
     void closeConnection();
 
     ~Client();

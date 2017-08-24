@@ -59,7 +59,6 @@ void HttpServer::readCallback(uv_stream_t *clientTcp, ssize_t nread, const uv_bu
             Logger::getInstance().error("Error code {}: {}", static_cast<int>(e.getCode()), e.getReason());
             auto errorResp = buildErrorResponse(e);
             client->server->writeResponse(clientTcp, errorResp);
-            client->closeConnection();
         }
 
     }
@@ -188,10 +187,6 @@ void HttpServer::process(RequestPtr req, uv_tcp_t *tcp) {
         processChunks(
                 AsyncChunkedResponseHandler(req, chunkedResp),
                 reinterpret_cast<uv_stream_t *>(tcp));
-    } else {
-        auto connectionEntry = req->getHeader()->get("Connection");
-        if (connectionEntry.isValid() && connectionEntry.getValue()->getContent() == "close")
-            static_cast<Client *>(tcp->data)->closeConnection();
     }
 }
 
@@ -210,12 +205,8 @@ void HttpServer::writeData(uv_stream_t *tcp, const std::string &data, void *addi
 void HttpServer::processChunks(AsyncChunkedResponseHandler handler, uv_stream_t *tcp) {
     auto client = static_cast<Client *>(tcp->data);
     if (handler.resp->finished) {
-        auto connectionEntry = handler.req->getHeader()->get("Connection");
-        if (connectionEntry.isValid() && connectionEntry.getValue()->getContent() == "close")
-            client->closeConnection();
-        else
-            // Process the next request
-            client->processRequest();
+        // Process the next request
+        client->processRequest();
         return;
     }
 
