@@ -11,3 +11,7 @@ MiddlewarePtr SimpleMiddleware::call(Request &req, std::shared_ptr<Response> &re
 
 SimpleMiddleware::SimpleMiddleware(MiddlewarePtr nextMiddleware)
         : nextMiddleware(std::move(nextMiddleware)) {}
+
+void SimpleMiddleware::process(Request &req, std::shared_ptr<Response> &resp) {
+    // empty implementation
+}

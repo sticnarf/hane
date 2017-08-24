@@ -17,7 +17,7 @@ ParserPtr SizedBodyParser::process() {
         // TODO: Not handle overflow
         contentLength = std::stoul(contentLengthEntry.getValue()->getContent());
         if (buffer->len() < contentLength) {
-            return std::shared_ptr<AbstractParser>(this);
+            return shared_from_this();
         }
 
         partialRequest.body = buffer->split((size_t) contentLength);

@@ -8,5 +8,5 @@ FinalParser::FinalParser(Request &&req, BufferPtr buffer)
 }
 
 ParserPtr FinalParser::process() {
-    return std::make_shared<FinalParser>(std::move(partialRequest), buffer);
+    return shared_from_this();
 }

@@ -9,7 +9,7 @@ class AbstractParser;
 
 typedef std::shared_ptr<AbstractParser> ParserPtr;
 
-class AbstractParser {
+class AbstractParser : public std::enable_shared_from_this<AbstractParser> {
 protected:
     Request partialRequest;
     BufferPtr buffer;
