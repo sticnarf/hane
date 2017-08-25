@@ -17,7 +17,7 @@ struct AsyncChunkedResponseHandler {
 
     AsyncChunkedResponseHandler(RequestPtr req,
                                 std::shared_ptr<ChunkedResponse> resp)
-            : req(req), resp(std::move(resp)) {}
+            : req(req), resp(resp) {}
 };
 
 class HttpServer {

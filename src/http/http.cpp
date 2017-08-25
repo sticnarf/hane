@@ -234,7 +234,7 @@ void HttpServer::writeChunkCallback(uv_write_t *req, int status) {
     delete req;
 
     if (status < 0) {
-        // Logger::getInstance().error("Write error: {}", uv_strerror(status));
+        Logger::getInstance().error("Write error: {}", uv_strerror(status));
         // error!
         return;
     }

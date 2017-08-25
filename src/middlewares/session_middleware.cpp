@@ -6,7 +6,7 @@ SessionMiddleware::SessionMiddleware(MiddlewarePtr nextMiddleware) : SimpleMiddl
 }
 
 void SessionMiddleware::process(RequestPtr req, std::shared_ptr<Response> &resp) {
-    const std::string SESSION_COOKIE_NAME = "HANE_SESSIONID";
+    static const std::string SESSION_COOKIE_NAME = "HANE_SESSIONID";
 
     auto &sessionBase = SessionBase::getInstance();
 

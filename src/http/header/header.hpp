@@ -40,7 +40,6 @@ typedef std::shared_ptr<HeaderContentWithParameters> HeaderContentWithParameters
 
 class HeaderContentWithParameters : public HeaderContent {
 protected:
-    // Case insensitive!
     std::string mainContent;
 
     FieldParameters parameters;
