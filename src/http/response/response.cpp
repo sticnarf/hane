@@ -21,3 +21,8 @@ bool Response::isChunked() const {
 void Response::makeChunked() {
     headers.put("Transfer-Encoding", std::make_shared<HeaderContent>("chunked"));
 }
+
+void Response::redirectTo(const std::string &location) {
+    setStatusCode(StatusCode::HTTP_SEE_OTHER);
+    headers.put("Location", std::make_shared<HeaderContent>("/"));
+}
