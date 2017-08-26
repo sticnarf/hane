@@ -1,4 +1,5 @@
 #include <random>
+#include <iostream>
 #include "../../utils/logger.hpp"
 #include "session_base.hpp"
 
@@ -9,6 +10,8 @@ SessionBase &SessionBase::getInstance() {
 
 SessionPtr SessionBase::newSession() {
     std::lock_guard<std::mutex> lk(sessionMutex);
+
+    checkUpdateGen();
 
     std::uniform_int_distribution<unsigned long long> dis;
 
@@ -36,7 +39,7 @@ void SessionBase::updateExpires() {
 
 void SessionBase::checkUpdateGen() {
     auto now = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
-    if (now > expires)
+    if (now > expires || newGen->size() > maxBaseSize)
         updateGen();
 }
 
@@ -80,6 +83,14 @@ void SessionBase::deleteSession(const std::string &sessionId) {
     if (oldEntry != oldGen->end()) {
         oldGen->erase(oldEntry);
     }
+}
+
+size_t SessionBase::getMaxBaseSize() const {
+    return maxBaseSize;
+}
+
+void SessionBase::setMaxBaseSize(size_t maxBaseSize) {
+    SessionBase::maxBaseSize = maxBaseSize;
 }
 
 const std::string &Session::getId() const {

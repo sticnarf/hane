@@ -64,3 +64,16 @@ std::string StringUtils::processQuotedPair(const std::string &str) {
     }
     return result;
 }
+
+std::string StringUtils::toUppercase(const std::string &str) {
+    std::string result;
+    for (char c : str) {
+        result.push_back((char) toupper(c));
+    }
+    return result;
+}
+
+void StringUtils::uppercase(std::string &str) {
+    for (size_t i = 0; i < str.length(); i++)
+        str[i] = (char) toupper(str[i]);
+}

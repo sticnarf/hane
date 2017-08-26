@@ -30,6 +30,8 @@ class SessionBase {
     std::shared_ptr<std::unordered_map<std::string, SessionPtr>> oldGen;
     std::shared_ptr<std::unordered_map<std::string, SessionPtr>> newGen;
 
+    size_t maxBaseSize = 1 << 20;
+
     void checkUpdateGen();
 
     void updateGen();
@@ -42,6 +44,10 @@ public:
     SessionBase();
 
     SessionPtr newSession();
+
+    size_t getMaxBaseSize() const;
+
+    void setMaxBaseSize(size_t maxBaseSize);
 
     /**
      * Get session by id

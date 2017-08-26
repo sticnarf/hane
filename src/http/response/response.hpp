@@ -26,6 +26,8 @@ public:
 
     void makeChunked();
 
+    void redirectTo(const std::string &location);
+
     Header headers;
     std::string body;
     Cookies cookies;

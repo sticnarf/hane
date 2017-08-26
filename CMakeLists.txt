@@ -29,7 +29,7 @@ set(SOURCE_FILES
         src/http/response/response.cpp src/http/response/chunked_response.cpp
         src/http/session/session_base.cpp
         src/ecp/template.hpp
-        src/constants.hpp src/hane.hpp)
+        src/constants.hpp src/hane.hpp src/middlewares/lambda_middleware.cpp src/middlewares/lambda_middleware.hpp)
 
 set(HANE_LIBRARIES ${LIBUV_LIBRARIES})
 
