@@ -56,9 +56,11 @@ static std::shared_ptr<Response> buildErrorResponse(const HttpError &e) {
 void Client::processRequest() {
     if (currRequest && currResponse && currMiddleware) {
         std::unique_lock<std::mutex> queueLock(queueMutex);
+//        std::cout << "queueMutex locked in processRequest, start wait" << std::endl;
         queueCv.wait(queueLock, [&] {
             return queued < 8;
         });
+//        std::cout << "queueMutex unlocked in processRequest, stop wait" << std::endl;
         auto polyResponse = std::dynamic_pointer_cast<Response>(currResponse);
         currMiddleware = currMiddleware->call(currRequest, polyResponse);
         server->writeChunks(
@@ -112,10 +114,17 @@ void Client::startProcessing(uv_work_t *work) {
                                         client->parser.hasCompleteRequest() || client->closed;
                              });
 
+
+//        std::cout << "to lock process in processing" << std::endl;
         std::lock_guard<std::mutex> processLock(client->processMutex);
-        if (client->closed) break;
+//        std::cout << "locked process in processing" << std::endl;
+        if (client->closed) {
+//            std::cout << "unlocked process in processing" << std::endl;
+            break;
+        }
 
         client->processRequest();
+//        std::cout << "unlocked process in processing" << std::endl;
     }
 }
 
@@ -147,11 +156,17 @@ void Parser::process() {
 
 void Client::closeConnection() {
     {
-        std::lock_guard<std::mutex> processLock(processMutex);
-        std::unique_lock<std::mutex> lock(closeMutex);
-        closeCv.wait(lock, [&] {
+        std::unique_lock<std::mutex> processLock(processMutex, std::defer_lock);
+        std::unique_lock<std::mutex> closeLock(closeMutex, std::defer_lock);
+//        std::cout << "to lock process in close" << std::endl;
+        std::lock(processLock, closeLock);
+//        std::cout << "locked process in close, start wait" << std::endl;
+        closeCv.wait(closeLock, [&] {
+            std::lock_guard<std::mutex> lk(modifyQueuedMutex);
+//            std::cout << "notified: " << queued << std::endl;
             return queued == 0;
         });
+//        std::cout << "stop wait" << std::endl;
         closed = true;
     }
     awaitCv.notify_all();

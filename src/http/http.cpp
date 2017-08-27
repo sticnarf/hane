@@ -38,6 +38,7 @@ void HttpServer::readCallback(uv_stream_t *clientTcp, ssize_t nread, const uv_bu
         client->pushBuf(buf->base, nread);
     }
     if (nread < 0) {
+//        std::cout << "Read error code: " << nread << std::endl;
         if (nread != UV_EOF)
             Logger::getInstance().error("Read error: {}", uv_strerror((int) nread));
 
@@ -185,7 +186,6 @@ struct WriteHandler {
 void HttpServer::writeData(uv_stream_t *tcp, const std::string &data, void *addition, uv_write_cb callback) {
     auto lock = new std::unique_lock<std::mutex>(writeMutex);
     auto client = static_cast<Client *>(tcp->data);
-    client->queued++;
     auto arr = new char[data.length()];
     memcpy(arr, data.data(), data.length());
 
@@ -214,11 +214,26 @@ void HttpServer::processChunks(AsyncChunkedResponseHandler handler, uv_stream_t 
 }
 
 void HttpServer::writeChunkCallback(uv_write_t *req, int status) {
+//    std::cout << "WriteChunkCallback status: " << status << std::endl;
+    if (status < 0) {
+        Logger::getInstance().error("Write error: {}", uv_strerror(status));
+        // error!
+//        return;
+    }
+
     auto handler = static_cast<WriteHandler *>(req->data);
     auto asyncHandler = static_cast<AsyncChunkedResponseHandler *>(handler->addition);
 
-    handler->client->queued--;
+    {
+//        std::cout << "to lock modifyQueuedMutex in writeChunkCallback" << std::endl;
+        std::lock_guard<std::mutex> queueLock(handler->client->modifyQueuedMutex);
+//        std::cout << "modifyQueuedMutex locked in writeChunkCallback" << std::endl;
+        handler->client->queued--;
+//        std::cout << handler->client->queued << std::endl;
+    }
+//    std::cout << "modifyQueuedMutex unlocked in writeChunkCallback" << std::endl;
     handler->client->queueCv.notify_one();
+    handler->client->closeCv.notify_all();
 
     delete asyncHandler;
     delete[] (handler->arr);
@@ -226,17 +241,24 @@ void HttpServer::writeChunkCallback(uv_write_t *req, int status) {
     delete handler;
     delete req;
 
-    if (status < 0) {
-        Logger::getInstance().error("Write error: {}", uv_strerror(status));
-        // error!
-//        return;
-    }
 }
 
 void HttpServer::realWriteData(uv_async_t *handle) {
     auto asyncHandler = static_cast<AsyncSendHandler *>(handle->data);
     uv_write(asyncHandler->write, asyncHandler->tcp, &asyncHandler->buf, 1, asyncHandler->callback);
     asyncHandler->lock->unlock();
+//    std::cout << "writeMutex unlocked" << std::endl;
+
+    auto client = static_cast<Client *>(asyncHandler->tcp->data);
+    {
+//        std::cout << "to lock modifyQueuedMutex" << std::endl;
+        std::lock_guard<std::mutex> queuedLock(client->modifyQueuedMutex);
+//        std::cout << "writeMutex locked" << std::endl;
+        client->queued++;
+//        std::cout << "modifyQueuedMutex locked and add queued, now queued: " << client->queued << std::endl;
+    }
+//    std::cout << "modifyQueuedMutex unlocked" << std::endl;
+
     delete asyncHandler->lock;
 }
 
@@ -247,7 +269,16 @@ void HttpServer::writeCallback(uv_write_t *req, int status) {
     }
 
     auto handler = static_cast<WriteHandler *>(req->data);
-    handler->client->queued--;
+    {
+//        std::cout << "to lock modifyQueuedMutex in writeCallback" << std::endl;
+        std::lock_guard<std::mutex> queueLock(handler->client->modifyQueuedMutex);
+//        std::cout << "modifyQueuedMutex locked in writeCallback" << std::endl;
+        handler->client->queued--;
+//        std::cout << handler->client->queued << std::endl;
+    }
+//    std::cout << "modifyQueuedMutex unlocked in writeCallback" << std::endl;
+    handler->client->queueCv.notify_one();
+    handler->client->closeCv.notify_all();
     delete[] (handler->arr);
     delete handler->asyncSendHandler;
     delete handler;

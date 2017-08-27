@@ -14,6 +14,7 @@ private:
     uv_write_t write;
     uv_buf_t buf;
     Parser parser;
+    std::mutex modifyQueuedMutex;
     std::mutex queueMutex;
     std::mutex awaitMutex;
     std::mutex closeMutex;
