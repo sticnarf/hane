@@ -1,4 +1,5 @@
 #include <stdexcept>
+#include <iostream>
 #include "../errors.hpp"
 #include "../../utils/protocol_helper.hpp"
 #include "start_line_parser.hpp"

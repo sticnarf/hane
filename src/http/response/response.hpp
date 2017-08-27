@@ -12,6 +12,7 @@
 
 class Response {
     friend class HttpServer;
+    friend class Client;
 
 public:
     Response(const Response &resp) = default;

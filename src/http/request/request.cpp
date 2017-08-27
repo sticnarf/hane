@@ -45,3 +45,7 @@ CookiesPtr Request::getCookies() const {
 SessionPtr Request::getSession() {
     return session;
 }
+
+bool Request::isBad() {
+    return false;
+}

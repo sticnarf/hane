@@ -16,71 +16,35 @@ HttpServer::HttpServer(std::shared_ptr<Middleware> middleware, const std::string
     uv_ip4_addr(_bindAddr.c_str(), port, &addr);
     uv_tcp_bind(&server, reinterpret_cast<const sockaddr *>(&addr), 0);
     server.data = this;
+    uv_async_init(uv_default_loop(), &async, realWriteData);
 }
 
 HttpServer::~HttpServer() = default;
 
-static void closeCallback(uv_handle_t *handle) {
-    delete static_cast<Client *>(handle->data);
-}
+//void HttpServer::closeCallback(uv_handle_t *handle) {
+////    auto client = static_cast<Client *>(handle->data);
+////    client->closed = true;
+////    client->awaitCv.notify_all();
+//}
 
 static void allocBuffer(uv_handle_t *handle, size_t suggested_size, uv_buf_t *buf) {
     buf->base = new char[suggested_size];
     buf->len = suggested_size;
 }
 
-static std::shared_ptr<Response> buildErrorResponse(const HttpError &e) {
-    // TODO Now use HTTP/1.1 arbitrarily
-    auto resp = std::make_shared<Response>(HttpVersion::HTTP_1_1);
-
-    resp->setStatusCode(e.getCode());
-    resp->body = e.getReason();
-
-    return resp;
-}
-
-struct WriteHandler {
-    char *arr;
-    Client *client;
-    void *addition;
-
-    WriteHandler(const WriteHandler &) = default;
-
-    WriteHandler(char *arr, Client *client, void *addition) : arr(arr), client(client), addition(addition) {}
-};
-
 void HttpServer::readCallback(uv_stream_t *clientTcp, ssize_t nread, const uv_buf_t *buf) {
     auto *client = static_cast<Client *>(clientTcp->data);
     if (nread > 0) {  // Read successfully
-        try {
-            // Push data to client to parse
-            client->pushBuf(buf->base, nread);
-        } catch (const HttpError &e) {
-            Logger::getInstance().error("Error code {}: {}", static_cast<int>(e.getCode()), e.getReason());
-            auto errorResp = buildErrorResponse(e);
-            client->server->writeResponse(clientTcp, errorResp);
-        }
-
+        client->pushBuf(buf->base, nread);
     }
     if (nread < 0) {
+        delete[] buf->base;
         if (nread != UV_EOF)
             Logger::getInstance().error("Read error: {}", uv_strerror((int) nread));
 
-        uv_close(reinterpret_cast<uv_handle_t *>(clientTcp), closeCallback);
+        client->closeConnection();
+//        uv_close(reinterpret_cast<uv_handle_t *>(clientTcp), closeCallback);
     }
-    delete[] buf->base;
-}
-
-void HttpServer::writeCallback(uv_write_t *req, int status) {
-    if (status < 0) {
-        // Logger::getInstance().error("Write error: {}", uv_strerror(status));
-        // error!
-    }
-
-    auto handler = static_cast<WriteHandler *>(req->data);
-    delete[] (handler->arr);
-    delete handler;
-    delete req;
 }
 
 void HttpServer::onNewConnection(uv_stream_t *serverTcp, int status) {
@@ -91,6 +55,11 @@ void HttpServer::onNewConnection(uv_stream_t *serverTcp, int status) {
 
     auto *server = static_cast<HttpServer *>(serverTcp->data);
     auto *client = new Client(server);
+    client->closed = false;
+
+    auto work = new uv_work_t;
+    work->data = client;
+    uv_queue_work(uv_default_loop(), work, Client::startProcessing, Client::startProcessingCallback);
 
     uv_tcp_init(uv_default_loop(), client->tcp);
     auto uvTcp = reinterpret_cast<uv_stream_t *>(client->tcp);
@@ -100,12 +69,9 @@ void HttpServer::onNewConnection(uv_stream_t *serverTcp, int status) {
         uv_read_start(uvTcp, allocBuffer, readCallback);
     } else {
         // Fail. Close the connection directly:
-        uv_close(reinterpret_cast<uv_handle_t *>(client->tcp), closeCallback);
+//        uv_close(reinterpret_cast<uv_handle_t *>(client->tcp), closeCallback);
+        client->closeConnection();
     }
-}
-
-void Client::closeConnection() {
-    uv_close(reinterpret_cast<uv_handle_t *>(this->tcp), closeCallback);
 }
 
 void HttpServer::writeResponse(uv_stream_t *tcp, std::shared_ptr<const Response> resp) {
@@ -154,7 +120,6 @@ void HttpServer::writeChunks(AsyncChunkedResponseHandler handler, uv_stream_t *t
         data += "\r\n";
     }
 
-    static_cast<Client *>(tcp->data)->queued++;
     writeData(tcp, data, new AsyncChunkedResponseHandler(handler), writeChunkCallback);
 }
 
@@ -190,16 +155,47 @@ void HttpServer::process(RequestPtr req, uv_tcp_t *tcp) {
     }
 }
 
+struct AsyncSendHandler {
+    uv_write_t *write;
+    uv_stream_t *tcp;
+    uv_buf_t buf;
+    uv_write_cb callback;
+    std::unique_lock<std::mutex> *lock;
+
+    AsyncSendHandler(uv_write_t *write,
+                     uv_stream_t *tcp,
+                     const uv_buf_t &buf,
+                     uv_write_cb callback,
+                     std::unique_lock<std::mutex> *lock)
+            : write(write), tcp(tcp), buf(buf), callback(callback), lock(lock) {}
+};
+
+struct WriteHandler {
+    char *arr;
+    Client *client;
+    AsyncSendHandler *asyncSendHandler;
+    void *addition;
+
+    WriteHandler(const WriteHandler &) = default;
+
+    WriteHandler(char *arr, Client *client, AsyncSendHandler *asyncHandler, void *addition)
+            : arr(arr), client(client), asyncSendHandler(asyncHandler), addition(addition) {}
+};
+
 void HttpServer::writeData(uv_stream_t *tcp, const std::string &data, void *addition, uv_write_cb callback) {
+    auto lock = new std::unique_lock<std::mutex>(writeMutex);
     auto client = static_cast<Client *>(tcp->data);
+    client->queued++;
     auto arr = new char[data.length()];
     memcpy(arr, data.data(), data.length());
 
     auto write = new uv_write_t;
-    write->data = new WriteHandler(arr, client, addition);
     auto buf = uv_buf_init(arr, static_cast<unsigned int>(data.length()));
+    auto asyncSendData = new AsyncSendHandler(write, tcp, buf, callback, lock);
+    write->data = new WriteHandler(arr, client, asyncSendData, addition);
 
-    uv_write(write, tcp, &buf, 1, callback);
+    async.data = asyncSendData;
+    uv_async_send(&async);
 }
 
 void HttpServer::processChunks(AsyncChunkedResponseHandler handler, uv_stream_t *tcp) {
@@ -220,25 +216,40 @@ void HttpServer::processChunks(AsyncChunkedResponseHandler handler, uv_stream_t 
 void HttpServer::writeChunkCallback(uv_write_t *req, int status) {
     auto handler = static_cast<WriteHandler *>(req->data);
     auto asyncHandler = static_cast<AsyncChunkedResponseHandler *>(handler->addition);
-    auto server = handler->client->server;
-    auto tcp = handler->client->tcp;
 
     handler->client->queued--;
-
-    auto chunkedReq = asyncHandler->req;
-    auto resp = asyncHandler->resp;
+    handler->client->queueCv.notify_one();
 
     delete asyncHandler;
     delete[] (handler->arr);
+    delete handler->asyncSendHandler;
     delete handler;
     delete req;
 
     if (status < 0) {
         Logger::getInstance().error("Write error: {}", uv_strerror(status));
         // error!
-        return;
+//        return;
+    }
+}
+
+void HttpServer::realWriteData(uv_async_t *handle) {
+    auto asyncHandler = static_cast<AsyncSendHandler *>(handle->data);
+    uv_write(asyncHandler->write, asyncHandler->tcp, &asyncHandler->buf, 1, asyncHandler->callback);
+    asyncHandler->lock->unlock();
+    delete asyncHandler->lock;
+}
+
+void HttpServer::writeCallback(uv_write_t *req, int status) {
+    if (status < 0) {
+        Logger::getInstance().error("Write error: {}", uv_strerror(status));
+        // error!
     }
 
-    server->processChunks(AsyncChunkedResponseHandler(chunkedReq, resp),
-                          reinterpret_cast<uv_stream_t *>(tcp));
+    auto handler = static_cast<WriteHandler *>(req->data);
+    handler->client->queued--;
+    delete[] (handler->arr);
+    delete handler->asyncSendHandler;
+    delete handler;
+    delete req;
 }

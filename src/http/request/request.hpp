@@ -48,6 +48,8 @@ private:
 public:
     SessionPtr getSession();
 
+    virtual bool isBad();
+
 private:
 
     // Set all parser classes as friends

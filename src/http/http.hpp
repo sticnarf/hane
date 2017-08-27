@@ -6,6 +6,7 @@
 #include <memory>
 #include <utility>
 #include <uv.h>
+#include <mutex>
 #include "../middlewares/middleware.hpp"
 #include "./request/request.hpp"
 #include "./response/response.hpp"
@@ -26,6 +27,8 @@ class HttpServer {
     int port;
     uv_tcp_t server;
     sockaddr_in addr;
+    std::mutex writeMutex;
+    uv_async_t async;
 
     const int DEFAULT_BACKLOG = 128;
 
@@ -36,6 +39,10 @@ class HttpServer {
     static void onNewConnection(uv_stream_t *serverTcp, int status);
 
     static void readCallback(uv_stream_t *clientTcp, ssize_t nread, const uv_buf_t *buf);
+
+    static void closeCallback(uv_handle_t *handle);
+
+    static void realWriteData(uv_async_t *handle);
 
     void writeData(uv_stream_t *client, const std::string &data,
                    void *addition = nullptr, uv_write_cb callback = writeCallback);
@@ -54,6 +61,8 @@ public:
     void writeResponse(uv_stream_t *client, std::shared_ptr<const Response> resp);
 
     void writeChunks(AsyncChunkedResponseHandler handler, uv_stream_t *tcp);
+
+    friend class Client;
 };
 
 #endif
