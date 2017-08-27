@@ -38,13 +38,13 @@ void HttpServer::readCallback(uv_stream_t *clientTcp, ssize_t nread, const uv_bu
         client->pushBuf(buf->base, nread);
     }
     if (nread < 0) {
-        delete[] buf->base;
         if (nread != UV_EOF)
             Logger::getInstance().error("Read error: {}", uv_strerror((int) nread));
 
         client->closeConnection();
 //        uv_close(reinterpret_cast<uv_handle_t *>(clientTcp), closeCallback);
     }
+    delete[] buf->base;
 }
 
 void HttpServer::onNewConnection(uv_stream_t *serverTcp, int status) {
