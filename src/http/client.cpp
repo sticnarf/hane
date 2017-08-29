@@ -119,6 +119,8 @@ void Client::startProcessing(uv_work_t *work) {
         auto processLock = new std::unique_lock<std::mutex>(client->processMutex);
 //        std::cout << "locked process in processing" << std::endl;
         if (client->closed) {
+            processLock->unlock();
+            delete processLock;
 //            std::cout << "unlocked process in processing" << std::endl;
             break;
         }
