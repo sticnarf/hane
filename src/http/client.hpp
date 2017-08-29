@@ -42,7 +42,7 @@ public:
 
     static void startProcessingCallback(uv_work_t *work, int status);
 
-    void processRequest();
+    void processRequest(std::unique_lock<std::mutex> *processLock);
 
     void closeConnection();
 

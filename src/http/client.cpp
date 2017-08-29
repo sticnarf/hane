@@ -53,7 +53,7 @@ static std::shared_ptr<Response> buildErrorResponse(const HttpError &e) {
     return resp;
 }
 
-void Client::processRequest() {
+void Client::processRequest(std::unique_lock<std::mutex> *processLock) {
     if (currRequest && currResponse && currMiddleware) {
         std::unique_lock<std::mutex> queueLock(queueMutex);
 //        std::cout << "queueMutex locked in processRequest, start wait" << std::endl;
@@ -63,9 +63,9 @@ void Client::processRequest() {
 //        std::cout << "queueMutex unlocked in processRequest, stop wait" << std::endl;
         auto polyResponse = std::dynamic_pointer_cast<Response>(currResponse);
         currMiddleware = currMiddleware->call(currRequest, polyResponse);
-        server->writeChunks(
-                AsyncChunkedResponseHandler(currRequest, currResponse),
-                reinterpret_cast<uv_stream_t *>(tcp));
+        server->writeChunks(AsyncChunkedResponseHandler(currRequest, currResponse),
+                            reinterpret_cast<uv_stream_t *>(tcp),
+                            processLock);
 
         if (currResponse->finished) {
             currMiddleware = nullptr;
@@ -84,14 +84,14 @@ void Client::processRequest() {
         auto e = badRequest->getError();
         Logger::getInstance().error("Error code {}: {}", static_cast<int>(e.getCode()), e.getReason());
         auto errorResp = buildErrorResponse(e);
-        server->writeResponse(reinterpret_cast<uv_stream_t *>(tcp), errorResp);
+        server->writeResponse(reinterpret_cast<uv_stream_t *>(tcp), errorResp, processLock);
         return;
     }
 
     try {
         auto resp = std::make_shared<Response>(req->getHttpVersion());
         currMiddleware = server->middleware->call(req, resp);
-        server->writeResponse(reinterpret_cast<uv_stream_t *>(tcp), resp);
+        server->writeResponse(reinterpret_cast<uv_stream_t *>(tcp), resp, processLock);
 
         if (resp->isChunked()) {
             currRequest = req;
@@ -99,7 +99,7 @@ void Client::processRequest() {
         }
     } catch (HttpError &e) {
         auto errorResp = buildErrorResponse(e);
-        server->writeResponse(reinterpret_cast<uv_stream_t *>(tcp), errorResp);
+        server->writeResponse(reinterpret_cast<uv_stream_t *>(tcp), errorResp, processLock);
     }
 }
 
@@ -116,14 +116,14 @@ void Client::startProcessing(uv_work_t *work) {
 
 
 //        std::cout << "to lock process in processing" << std::endl;
-        std::lock_guard<std::mutex> processLock(client->processMutex);
+        auto processLock = new std::unique_lock<std::mutex>(client->processMutex);
 //        std::cout << "locked process in processing" << std::endl;
         if (client->closed) {
 //            std::cout << "unlocked process in processing" << std::endl;
             break;
         }
 
-        client->processRequest();
+        client->processRequest(processLock);
 //        std::cout << "unlocked process in processing" << std::endl;
     }
 }
