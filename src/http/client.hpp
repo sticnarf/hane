@@ -9,29 +9,28 @@
 class Client {
 private:
     HttpServer *server;
-//    uv_idle_t idler;
     uv_tcp_t *tcp;
-    uv_write_t write;
     uv_buf_t buf;
     Parser parser;
-    std::mutex modifyQueuedMutex;
-    std::mutex queueMutex;
     std::mutex awaitMutex;
-    std::mutex closeMutex;
-    std::mutex processMutex;
-    std::condition_variable closeCv;
     std::condition_variable awaitCv;
-    bool closed;
+    std::atomic_bool closed;
 
     RequestPtr currRequest;
     std::shared_ptr<ChunkedResponse> currResponse;
     MiddlewarePtr currMiddleware;
-    int queued;
+    std::atomic_int queued;
     std::condition_variable queueCv;
 
     static void pushBuffer(uv_work_t *work);
 
     static void pushBufferCallback(uv_work_t *work, int status);
+
+    static void realCloseConnection(uv_work_t *work);
+
+    static void realCloseConnectionCallback(uv_work_t *work, int status);
+
+    static void closeCallback(uv_handle_t* handle);
 
 public:
     explicit Client(HttpServer *server);
@@ -42,7 +41,7 @@ public:
 
     static void startProcessingCallback(uv_work_t *work, int status);
 
-    void processRequest(std::unique_lock<std::mutex> *processLock);
+    void processRequest();
 
     void closeConnection();
 

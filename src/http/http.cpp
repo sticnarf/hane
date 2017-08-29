@@ -75,8 +75,7 @@ void HttpServer::onNewConnection(uv_stream_t *serverTcp, int status) {
     }
 }
 
-void HttpServer::writeResponse(uv_stream_t *tcp, std::shared_ptr<const Response> resp,
-                               std::unique_lock<std::mutex> *processLock) {
+void HttpServer::writeResponse(uv_stream_t *tcp, std::shared_ptr<const Response> resp) {
     std::stringstream responseText;
 
     // Append status line
@@ -106,11 +105,10 @@ void HttpServer::writeResponse(uv_stream_t *tcp, std::shared_ptr<const Response>
 
     std::string str = responseText.str();
 
-    writeData(tcp, str, processLock, nullptr, writeCallback);
+    writeData(tcp, str, nullptr, writeCallback);
 }
 
-void HttpServer::writeChunks(AsyncChunkedResponseHandler handler, uv_stream_t *tcp,
-                             std::unique_lock<std::mutex> *processLock) {
+void HttpServer::writeChunks(AsyncChunkedResponseHandler handler, uv_stream_t *tcp) {
     std::string data;
     auto resp = handler.resp;
     if (resp->finished)
@@ -123,7 +121,7 @@ void HttpServer::writeChunks(AsyncChunkedResponseHandler handler, uv_stream_t *t
         data += "\r\n";
     }
 
-    writeData(tcp, data, processLock, new AsyncChunkedResponseHandler(handler), writeChunkCallback);
+    writeData(tcp, data, new AsyncChunkedResponseHandler(handler), writeChunkCallback);
 }
 
 void HttpServer::start() {
@@ -148,7 +146,7 @@ void HttpServer::process(RequestPtr req, uv_tcp_t *tcp) {
     auto resp = std::make_shared<Response>(req->getHttpVersion());
     auto client = static_cast<Client *>(tcp->data);
     client->currMiddleware = middleware->call(req, resp);
-    writeResponse(reinterpret_cast<uv_stream_t *>(tcp), resp, nullptr);
+    writeResponse(reinterpret_cast<uv_stream_t *>(tcp), resp);
 
     if (resp->isChunked()) {
         auto chunkedResp = std::dynamic_pointer_cast<ChunkedResponse>(resp);
@@ -163,16 +161,14 @@ struct AsyncSendHandler {
     uv_stream_t *tcp;
     uv_buf_t buf;
     uv_write_cb callback;
-    std::unique_lock<std::mutex> *lock;
-    std::unique_lock<std::mutex> *processLock;
+    std::unique_lock<std::mutex> *writeLock;
 
     AsyncSendHandler(uv_write_t *write,
                      uv_stream_t *tcp,
                      const uv_buf_t &buf,
                      uv_write_cb callback,
-                     std::unique_lock<std::mutex> *lock,
-                     std::unique_lock<std::mutex> *processLock)
-            : write(write), tcp(tcp), buf(buf), callback(callback), lock(lock), processLock(processLock) {}
+                     std::unique_lock<std::mutex> *writeLock)
+            : write(write), tcp(tcp), buf(buf), callback(callback), writeLock(writeLock) {}
 };
 
 struct WriteHandler {
@@ -187,17 +183,19 @@ struct WriteHandler {
             : arr(arr), client(client), asyncSendHandler(asyncHandler), addition(addition) {}
 };
 
-void HttpServer::writeData(uv_stream_t *tcp, const std::string &data, std::unique_lock<std::mutex> *processLock,
+void HttpServer::writeData(uv_stream_t *tcp, const std::string &data,
                            void *addition, uv_write_cb callback) {
-    auto lock = new std::unique_lock<std::mutex>(writeMutex);
+    auto writeLock = new std::unique_lock<std::mutex>(writeMutex);
     auto client = static_cast<Client *>(tcp->data);
     auto arr = new char[data.length()];
     memcpy(arr, data.data(), data.length());
 
     auto write = new uv_write_t;
     auto buf = uv_buf_init(arr, static_cast<unsigned int>(data.length()));
-    auto asyncSendData = new AsyncSendHandler(write, tcp, buf, callback, lock, processLock);
+    auto asyncSendData = new AsyncSendHandler(write, tcp, buf, callback, writeLock);
     write->data = new WriteHandler(arr, client, asyncSendData, addition);
+
+    client->queued++;
 
     async.data = asyncSendData;
     uv_async_send(&async);
@@ -207,15 +205,14 @@ void HttpServer::processChunks(AsyncChunkedResponseHandler handler, uv_stream_t 
     auto client = static_cast<Client *>(tcp->data);
     if (handler.resp->finished) {
         // Process the next request
-        client->processRequest(nullptr);
+        client->processRequest();
         return;
     }
 
     while (!handler.resp->finished && client->queued < 8) {
         auto polyResp = std::dynamic_pointer_cast<Response>(handler.resp);
         client->currMiddleware = client->currMiddleware->call(handler.req, polyResp);
-        writeChunks(handler, tcp,
-                    nullptr);
+        writeChunks(handler, tcp);
     }
 }
 
@@ -230,16 +227,8 @@ void HttpServer::writeChunkCallback(uv_write_t *req, int status) {
     auto handler = static_cast<WriteHandler *>(req->data);
     auto asyncHandler = static_cast<AsyncChunkedResponseHandler *>(handler->addition);
 
-    {
-//        std::cout << "to lock modifyQueuedMutex in writeChunkCallback" << std::endl;
-        std::lock_guard<std::mutex> queueLock(handler->client->modifyQueuedMutex);
-//        std::cout << "modifyQueuedMutex locked in writeChunkCallback" << std::endl;
-        handler->client->queued--;
-//        std::cout << handler->client->queued << std::endl;
-    }
-//    std::cout << "modifyQueuedMutex unlocked in writeChunkCallback" << std::endl;
+    handler->client->queued--;
     handler->client->queueCv.notify_one();
-    handler->client->closeCv.notify_all();
 
     delete asyncHandler;
     delete[] (handler->arr);
@@ -252,22 +241,9 @@ void HttpServer::writeChunkCallback(uv_write_t *req, int status) {
 void HttpServer::realWriteData(uv_async_t *handle) {
     auto asyncHandler = static_cast<AsyncSendHandler *>(handle->data);
     uv_write(asyncHandler->write, asyncHandler->tcp, &asyncHandler->buf, 1, asyncHandler->callback);
-    asyncHandler->lock->unlock();
-//    std::cout << "writeMutex unlocked" << std::endl;
+    asyncHandler->writeLock->unlock();
 
-    auto client = static_cast<Client *>(asyncHandler->tcp->data);
-    {
-//        std::cout << "to lock modifyQueuedMutex" << std::endl;
-        std::lock_guard<std::mutex> queuedLock(client->modifyQueuedMutex);
-//        std::cout << "writeMutex locked" << std::endl;
-        client->queued++;
-//        std::cout << "modifyQueuedMutex locked and add queued, now queued: " << client->queued << std::endl;
-    }
-//    std::cout << "modifyQueuedMutex unlocked" << std::endl;
-
-    asyncHandler->processLock->unlock();
-    delete asyncHandler->lock;
-    delete asyncHandler->processLock;
+    delete asyncHandler->writeLock;
 }
 
 void HttpServer::writeCallback(uv_write_t *req, int status) {
@@ -277,16 +253,9 @@ void HttpServer::writeCallback(uv_write_t *req, int status) {
     }
 
     auto handler = static_cast<WriteHandler *>(req->data);
-    {
-//        std::cout << "to lock modifyQueuedMutex in writeCallback" << std::endl;
-        std::lock_guard<std::mutex> queueLock(handler->client->modifyQueuedMutex);
-//        std::cout << "modifyQueuedMutex locked in writeCallback" << std::endl;
-        handler->client->queued--;
-//        std::cout << handler->client->queued << std::endl;
-    }
-//    std::cout << "modifyQueuedMutex unlocked in writeCallback" << std::endl;
+    handler->client->queued--;
     handler->client->queueCv.notify_one();
-    handler->client->closeCv.notify_all();
+
     delete[] (handler->arr);
     delete handler->asyncSendHandler;
     delete handler;

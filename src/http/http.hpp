@@ -7,6 +7,7 @@
 #include <utility>
 #include <uv.h>
 #include <mutex>
+#include <atomic>
 #include "../middlewares/middleware.hpp"
 #include "./request/request.hpp"
 #include "./response/response.hpp"
@@ -44,8 +45,8 @@ class HttpServer {
 
     static void realWriteData(uv_async_t *handle);
 
-    void writeData(uv_stream_t *client, const std::string &data, std::unique_lock<std::mutex> *processLock,
-                       void *addition, uv_write_cb callback);
+    void writeData(uv_stream_t *client, const std::string &data,
+                   void *addition, uv_write_cb callback);
 
     void processChunks(AsyncChunkedResponseHandler handler, uv_stream_t *client);
 
@@ -58,11 +59,9 @@ public:
 
     void process(RequestPtr req, uv_tcp_t *tcp);
 
-    void writeResponse(uv_stream_t *client, std::shared_ptr<const Response> resp,
-                           std::unique_lock<std::mutex> *processLock);
+    void writeResponse(uv_stream_t *client, std::shared_ptr<const Response> resp);
 
-    void writeChunks(AsyncChunkedResponseHandler handler, uv_stream_t *tcp,
-                         std::unique_lock<std::mutex> *processLock);
+    void writeChunks(AsyncChunkedResponseHandler handler, uv_stream_t *tcp);
 
     friend class Client;
 };
