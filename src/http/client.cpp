@@ -148,21 +148,23 @@ void Client::closeConnection() {
 //        uv_close(reinterpret_cast<uv_handle_t *>(this->tcp), nullptr);
     auto work = new uv_work_t;
     work->data = this;
-    uv_queue_work(uv_default_loop(), work, realCloseConnection, realCloseConnectionCallback);
+    uv_queue_work(uv_default_loop(), work, closeConnectionWork, closeConnectionWorkCallback);
 }
 
-void Client::realCloseConnection(uv_work_t *work) {
+void Client::closeConnectionWork(uv_work_t *work) {
     auto client = static_cast<Client *>(work->data);
     if (client->queued < 0) {
-        uv_close(reinterpret_cast<uv_handle_t *>(client->tcp), closeCallback);
+        auto closeLock = new std::unique_lock<std::mutex>(client->server->closeMutex);
+        client->server->closeAsync.data = new AsyncCloseConnectionHandler(client, closeLock);
+        uv_async_send(&client->server->closeAsync);
     } else {
         auto work2 = new uv_work_t;
         work2->data = client;
-        uv_queue_work(uv_default_loop(), work2, realCloseConnection, realCloseConnectionCallback);
+        uv_queue_work(uv_default_loop(), work2, closeConnectionWork, closeConnectionWorkCallback);
     }
 }
 
-void Client::realCloseConnectionCallback(uv_work_t *work, int status) {
+void Client::closeConnectionWorkCallback(uv_work_t *work, int status) {
     if (status < 0) {
         Logger::getInstance().error("realCloseConnection error: {}", uv_strerror(status));
         // error!

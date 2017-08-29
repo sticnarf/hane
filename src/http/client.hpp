@@ -26,11 +26,11 @@ private:
 
     static void pushBufferCallback(uv_work_t *work, int status);
 
-    static void realCloseConnection(uv_work_t *work);
+    static void closeConnectionWork(uv_work_t *work);
 
-    static void realCloseConnectionCallback(uv_work_t *work, int status);
+    static void closeConnectionWorkCallback(uv_work_t *work, int status);
 
-    static void closeCallback(uv_handle_t* handle);
+    static void closeCallback(uv_handle_t *handle);
 
 public:
     explicit Client(HttpServer *server);
@@ -48,7 +48,17 @@ public:
     ~Client();
 
     friend class HttpServer;
+
     friend class Parser;
+};
+
+struct AsyncCloseConnectionHandler {
+    Client *client;
+    std::unique_lock<std::mutex> *closeLock;
+
+    AsyncCloseConnectionHandler(Client *client,
+                                std::unique_lock<std::mutex> *closeLock)
+            : client(client), closeLock(closeLock) {}
 };
 
 #endif

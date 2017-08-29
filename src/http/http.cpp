@@ -16,7 +16,8 @@ HttpServer::HttpServer(std::shared_ptr<Middleware> middleware, const std::string
     uv_ip4_addr(_bindAddr.c_str(), port, &addr);
     uv_tcp_bind(&server, reinterpret_cast<const sockaddr *>(&addr), 0);
     server.data = this;
-    uv_async_init(uv_default_loop(), &async, realWriteData);
+    uv_async_init(uv_default_loop(), &writeAsync, realWriteData);
+    uv_async_init(uv_default_loop(), &closeAsync, realCloseConnection);
 }
 
 HttpServer::~HttpServer() = default;
@@ -197,8 +198,8 @@ void HttpServer::writeData(uv_stream_t *tcp, const std::string &data,
 
     client->queued++;
 
-    async.data = asyncSendData;
-    uv_async_send(&async);
+    writeAsync.data = asyncSendData;
+    uv_async_send(&writeAsync);
 }
 
 void HttpServer::processChunks(AsyncChunkedResponseHandler handler, uv_stream_t *tcp) {
@@ -260,4 +261,13 @@ void HttpServer::writeCallback(uv_write_t *req, int status) {
     delete handler->asyncSendHandler;
     delete handler;
     delete req;
+}
+
+void HttpServer::realCloseConnection(uv_async_t *handle) {
+    auto closeHandler = static_cast<AsyncCloseConnectionHandler *>(handle->data);
+    auto client = closeHandler->client;
+    uv_close(reinterpret_cast<uv_handle_t *>(client->tcp), Client::closeCallback);
+    closeHandler->closeLock->unlock();
+    delete closeHandler->closeLock;
+    delete closeHandler;
 }

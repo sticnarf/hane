@@ -29,7 +29,9 @@ class HttpServer {
     uv_tcp_t server;
     sockaddr_in addr;
     std::mutex writeMutex;
-    uv_async_t async;
+    uv_async_t writeAsync;
+    std::mutex closeMutex;
+    uv_async_t closeAsync;
 
     const int DEFAULT_BACKLOG = 128;
 
@@ -41,9 +43,9 @@ class HttpServer {
 
     static void readCallback(uv_stream_t *clientTcp, ssize_t nread, const uv_buf_t *buf);
 
-    static void closeCallback(uv_handle_t *handle);
-
     static void realWriteData(uv_async_t *handle);
+
+    static void realCloseConnection(uv_async_t *handle);
 
     void writeData(uv_stream_t *client, const std::string &data,
                    void *addition, uv_write_cb callback);
