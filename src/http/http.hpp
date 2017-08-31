@@ -50,16 +50,12 @@ class HttpServer {
     void writeData(uv_stream_t *client, const std::string &data,
                    void *addition, uv_write_cb callback);
 
-    void processChunks(AsyncChunkedResponseHandler handler, uv_stream_t *client);
-
 public:
     HttpServer(std::shared_ptr<Middleware> middleware, const std::string &_bindAddr, int port);
 
     ~HttpServer();
 
     void start();
-
-    void process(RequestPtr req, uv_tcp_t *tcp);
 
     void writeResponse(uv_stream_t *client, std::shared_ptr<const Response> resp);
 

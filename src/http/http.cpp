@@ -135,28 +135,6 @@ void HttpServer::start() {
     uv_run(uv_default_loop(), UV_RUN_DEFAULT);
 }
 
-/**
- * This function will call the middleware.
- * After calling the middleware, if the response has "Transfer-Encoding: chunked",
- * the response should be able to and will be cast to a ChunkedResponse.
- * Then the middleware returned back will be repeatedly called until the response is finished.
- * @param req
- * @param tcp
- */
-void HttpServer::process(RequestPtr req, uv_tcp_t *tcp) {
-    auto resp = std::make_shared<Response>(req->getHttpVersion());
-    auto client = static_cast<Client *>(tcp->data);
-    client->currMiddleware = middleware->call(req, resp);
-    writeResponse(reinterpret_cast<uv_stream_t *>(tcp), resp);
-
-    if (resp->isChunked()) {
-        auto chunkedResp = std::dynamic_pointer_cast<ChunkedResponse>(resp);
-        processChunks(
-                AsyncChunkedResponseHandler(req, chunkedResp),
-                reinterpret_cast<uv_stream_t *>(tcp));
-    }
-}
-
 struct AsyncSendHandler {
     uv_write_t *write;
     uv_stream_t *tcp;
@@ -200,21 +178,6 @@ void HttpServer::writeData(uv_stream_t *tcp, const std::string &data,
 
     writeAsync.data = asyncSendData;
     uv_async_send(&writeAsync);
-}
-
-void HttpServer::processChunks(AsyncChunkedResponseHandler handler, uv_stream_t *tcp) {
-    auto client = static_cast<Client *>(tcp->data);
-    if (handler.resp->finished) {
-        // Process the next request
-        client->processRequest();
-        return;
-    }
-
-    while (!handler.resp->finished && client->queued < 8) {
-        auto polyResp = std::dynamic_pointer_cast<Response>(handler.resp);
-        client->currMiddleware = client->currMiddleware->call(handler.req, polyResp);
-        writeChunks(handler, tcp);
-    }
 }
 
 void HttpServer::writeChunkCallback(uv_write_t *req, int status) {

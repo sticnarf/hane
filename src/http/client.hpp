@@ -10,7 +10,6 @@ class Client {
 private:
     HttpServer *server;
     uv_tcp_t *tcp;
-    uv_buf_t buf;
     Parser parser;
     std::mutex awaitMutex;
     std::condition_variable awaitCv;
@@ -21,10 +20,6 @@ private:
     MiddlewarePtr currMiddleware;
     std::atomic_int queued;
     std::condition_variable queueCv;
-
-    static void pushBuffer(uv_work_t *work);
-
-    static void pushBufferCallback(uv_work_t *work, int status);
 
     static void closeConnectionWork(uv_work_t *work);
 

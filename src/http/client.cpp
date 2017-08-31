@@ -17,21 +17,6 @@ struct PushBufferHandler {
     PushBufferHandler(Client *client, const char *buf, size_t len) : client(client), buf(buf), len(len) {}
 };
 
-void Client::pushBuffer(uv_work_t *work) {
-    auto handler = static_cast<PushBufferHandler *>(work->data);
-    auto client = handler->client;
-    client->parser.pushBuf(handler->buf, handler->len);
-}
-
-void Client::pushBufferCallback(uv_work_t *work, int status) {
-    if (status < 0)
-        Logger::getInstance().error("PushBuffer error: {}", uv_strerror(status));
-
-    auto handler = static_cast<PushBufferHandler *>(work->data);
-    delete[] handler->buf;
-    delete handler;
-}
-
 void Client::pushBuf(const char *buf, size_t len) {
     parser.pushBuf(buf, len);
 //    auto *pushWork = new uv_work_t;
